@@ -4,5 +4,11 @@ Our solution for p2.
 
 Steps for our program:
 
--login
--posting
+-login,
+-json,
+-sign up,
+-all groups page,
+-invitations page
+-create group, 
+-posting page (main page) 
+-calendar, pins, etc
