@@ -56,26 +56,5 @@ body {
     color: #333;
 }
 
+/* Sign Up */
 
-/* post.html */
-#input-post {
-    position: absolute;
-    bottom: 10%;
-    left: 20px;
-    width: 80%; 
-    padding: 10px; 
-    border: 2px solid gray;
-    border-radius: 10px;
-}
-
-#post-btn {
-    position: relative;
-    bottom: 10%;
-    width: 50px;
-}
-
-.all-posts{
-    background: white;
-    width: 300px;
-    height: 300px;
-}

@@ -1,0 +1,58 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    background-color: aliceblue;
+}
+
+header{
+    display: flex;
+    justify-content: space-between;
+    background-color: lightcoral;
+    padding: 20px;
+}
+
+.user {
+    width: 60px;
+    height: 60px;
+    border: 2px solid grey;
+    background: rgba(255, 255, 255, 0.8);
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 15px;
+    color: #333;
+}
+
+.search-bar {
+    width: 65%;
+    height: 55px;
+    border: 2px solid grey;
+    border-radius: 30px;
+    padding: 20px;
+}
+
+.newGroup {
+    position: absolute;
+    right: 0px;
+    display: flex;
+    justify-content: center;
+    border: 2px solid grey;
+    width: 150px;
+    padding: 10px;
+    margin: 20px;
+    font-size: 15px;
+}
+
+.firstGroup {
+    display: flex;
+    margin: 100px 20px;
+    padding: auto;
+    align-items: center;
+    justify-content: center;
+    width: 200px;
+    height: 200px;
+    border: 2px solid grey;
+    border-radius: 10px;
+    text-decoration: none;
+    color: inherit;
+}
