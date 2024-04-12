@@ -21,7 +21,7 @@
         </div>
         <div class="input-box">
             <form action="">
-                <input id="password2" placeholder="Password" type="password" required>
+                <input id="passwordRepeat" placeholder="Repeat Password" type="password" required>
             </form>
         </div>
         <div class="input-box">
@@ -30,12 +30,23 @@
             </form>
         </div>
         <div class="submit">
-            <input class="btn" id="submit-btn" type="submit" value="Sign Up">
+            <input class="btn" id="signup-btn" type="submit" value="Sign Up">
             <input class="btn" id="login-btn" type="submit" value="Login">
-            <a href="login.html">Login</a>
         </div>
     </div>
 
-    <script  src=""></script> 
+    <script>
+        const signupBtn = document.getElementById('signup-btn');
+        const loginBtn = document.getElementById('login-btn');
+
+        signupBtn.addEventListener("click", function() {
+            window.location.href = "groups.html";
+        });
+
+        loginBtn.addEventListener("click", function() {
+            window.location.href = "login.html";
+        });
+
+    </script> 
 </body>
 </html>

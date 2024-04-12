@@ -7,22 +7,35 @@
     <link rel="stylesheet" href="post.css">
 </head>
 <body>
+    <ul class="sidebar">
+        <li><a href="#" onclick=hideSidebar()>x</a></li>
+        <li><a href="#">Calendar</a></li>
+        <li><a href="#">Pins</a></li>
+        <li><a href="groups.html">Group page</a></li>
+        <li><a href="login.html">Log out</a></li>
+    </ul>
+
     <header>
         <div>Logo</div>
         <input class="search-bar" type="text" placeholder="Search">
-        <input class="user" type="submit" value="User">
+        <input onclick=showSidebar() class="user" type="submit" value="User">
     </header>
 
     <div class="all-posts">
         <p id="displayText"></p>
     </div>
+
+    <div class="box">
+        <div class="boxchild">
+            
+        </div>
+    </div>
+
     <div class="post-body">
         <input id="input-post" id="input">
         <input id="post-btn" type="submit" value="Post">
         </div>
     </div>
-
-    <a href="login.html">Back to login</a>
 
     <script  src="post.js"></script> 
 </body>
