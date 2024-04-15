@@ -51,12 +51,10 @@ body {
     height: 45px;
     margin: 5px 0;
     background: rgba(251, 229, 240, 0.8);
-    border: 2px solid grey;
+    border: 2px solid rgba(255, 255, 255, 0.2);
     border-radius: 10px;
     cursor: pointer;
     font-size: 15px;
     color: #333;
 }
-
-/* Sign Up */
 
