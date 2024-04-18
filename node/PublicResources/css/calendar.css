@@ -18,7 +18,7 @@ h1 {
 
 .calendar {
     margin: auto;
-    width: 380px;
+    width: 450px;
     padding: 16px;
     background: #fff;
     border-radius: 10px;
@@ -99,3 +99,5 @@ h1 {
 .dates li.inactive {
     color: #ccc;
 }
+
+/*To do*/
