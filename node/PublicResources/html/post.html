@@ -11,6 +11,7 @@
         <li><a href="#" onclick=hideSidebar()>x</a></li>
         <li><a href="calendar.html">Calendar</a></li>
         <li><a href="#">Pins</a></li>
+        <li><a href="questions.html">Questions for team cohesion</a></li>
         <li><a href="groups.html">Group page</a></li>
         <li><a href="login.html">Log out</a></li>
     </ul>
@@ -31,6 +32,31 @@
     <div class="post-input-body">
         <input id="input-post" id="input">
         <input id="post-btn" type="submit" value="Post">
+        </div>
+    </div>
+  
+
+    <!-- reminder-bot -->
+    <button class="bot-toggler">
+        <span class="open">Open</span>
+        <span class="close">Close</span>
+    </button>
+    <div class="bot-reminder">
+        <div class="bot-header">
+            <h2>Reminder Bot</h2>
+            <span class="close-btn">Close</span>
+        </div>
+        <ul class="chatbox">
+            <li class="chat incoming">
+                <span class="material-symbols">:0</span>
+                <p>Hello there, <br> for when should I set the timer? 
+                <br>Please write it in that order: <br> April 23 2024 10:30:00</p>
+            </li>
+            
+        </ul>
+        <div class="chat-input">
+            <textarea placeholder="Enter a message..." required></textarea>
+            <button id="send-btn">Send</button>
         </div>
     </div>
 
