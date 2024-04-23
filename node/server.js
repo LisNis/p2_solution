@@ -1,19 +1,18 @@
-const http = require('http');
-const fs = require('fs');
+const express = require('express');
+const app = express();
 const port = 3000;
 
+// create the http server
 const server = http.createServer(function(req, res) {
     res.writeHead(200, { 'Content-Type': 'text/html'});
-    fs. readFile('login.html', function(error, data) {
-        if (error) {
-            res.writeHead(404);
-            res.write('Error: File Not Found');
-        } else {
-            res.write(data);
-        }
-        res.end();
-    });
 });
+
+// Include route files
+const usersRoute = require('./routes');
+
+// Use routes
+app.use('/user', userRoute);
+
 
 server.listen(port, function(error) {
     if (error) {

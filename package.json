@@ -1,0 +1,22 @@
+{
+  "name": "p2_solution",
+  "version": "1.0.0",
+  "description": "Our solution for p2.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/LisNis/p2_solution.git"
+  },
+  "author": "group4",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/LisNis/p2_solution/issues"
+  },
+  "homepage": "https://github.com/LisNis/p2_solution#readme",
+  "dependencies": {
+    "express": "^4.19.2"
+  }
+}
