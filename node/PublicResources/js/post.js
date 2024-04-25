@@ -1,3 +1,7 @@
+// delte post, when written post create div, where like
+// and pins option are. Tags, so need to know who is in
+// the group. 
+
 
 // posting site
 const postButton = document.getElementById("post-btn");

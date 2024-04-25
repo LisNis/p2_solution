@@ -18,7 +18,7 @@ header{
     display: flex;
     justify-content: space-between;
     background-color: lightcoral;
-    padding: 20px;
+    padding: 10px;
 }
 
 .user {
