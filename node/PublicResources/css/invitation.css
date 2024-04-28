@@ -1,0 +1,42 @@
+*{
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+.navGroup{
+    height: 80px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.2rem;
+    top: 0;
+    z-index: 999;
+    background-color: lightcoral;
+    background-image: linear-gradient(to left, grey 0%, rgb(46, 45, 45) 100%);
+}
+
+.navGroup__container{
+    display: flex;
+    justify-content: space-between;
+    height: fit-content;
+    z-index: 1;
+    width: 100%;
+    margin: 0 auto;
+    padding: 0 50px;
+}
+
+#navGroup__logo{
+background-color: black;
+background-image: linear-gradient(to top, white 0%, lightgrey 100%);
+background-size: 100%;
+-webkit-background-clip: text;
+-moz-background-clip: text;
+-webkit-text-fill-color: transparent;
+-moz-text-fill-color: transparent;
+display: flex;
+align-items: center;
+cursor: pointer;
+text-decoration: none;
+font-size: 2rem;
+}
