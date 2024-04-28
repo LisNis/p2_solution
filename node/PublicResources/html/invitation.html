@@ -10,12 +10,26 @@
 
 </head>
 <body>
+    <!--Groups button, that takes you back to groups page-->
     <nav class="navGroup">
         <div class="navGroup__container">
-            <a href="groups.html" id="navGroup__logo"> <i class="fa-solid fa-people-group" style="margin-right: 5px;"></i>   Groups</a>
+            <a id="title"> Invitation Page </a>
+            <a href="groups.html" id="navGroup__logo"> 
+                <i class="fa-solid fa-people-group" style="margin-right: 5px;"></i>
+                Groups
+                <i class="fa-solid fa-arrow-left" style="margin-left: 10px; margin-top: 5px;"></i>
+            </a>
         </div>
     </nav>
 
-    <!---->
+        <!--Adds new invitation, placeholder until invitations are able to be send through the server-->
+        <button id="addInvitationButton" >Create Invitation</button>
+
+    <!--Invitation displays-->
+    <div class="invitation">
+        </div>
+    </div>
+    
+    <script src="../js/invitation.js"></script>
 </body>
 </html>
