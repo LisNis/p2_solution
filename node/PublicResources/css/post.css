@@ -40,46 +40,64 @@ header{
     padding: 20px;
 }
 
-/* All posts */
+/* posting */
 
-.all-posts{
+.container {
+    height: 80vh; 
+    width: 70vh;
+    margin: 10vh auto; 
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+
+.input-container {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 80%;
-}
-
-.firstPost {
-    background: white;
-    width: 70%;
-    height: 80%;
-    border: 2px solid grey;
-}
-
-/* Write post */
-
-.post-input-body {
-    position: fixed;
-    bottom: 0;
     width: 100%;
+    height: 70px;
+    position: fixed; 
+    bottom: 0px; 
+    background-color: white;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     display: flex;
-    justify-content: center;
-    padding: 40px;
+    align-items: center;
+    padding: 0 10px;
 }
 
-#input-post { 
-    width: 80%;
-    height: 50px; 
-    border: 2px solid gray;
-    border-radius: 10px;
+.text-input {
+    width: 700px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin-right: 10px; 
 }
 
-#post-btn {
-    width: 50px;
-    height: 50px;
-    border: 2px solid gray;
-    border-radius: 10px;
-    margin: 0 10px;
+button {
+    width: 80px;
+    background-color: lightcoral;
+    color: #fff;
+    border: none;
+    padding: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: rgb(235, 120, 120);
+}
+
+.post {
+    background-color: #f9f9f9;
+    padding: 20px;
+    margin: 30px;
+    border-radius: 5px;
+    width: 60vh; 
+    min-height: 50px;
 }
 
 
@@ -136,7 +154,7 @@ header{
 .bot-toggler {
     position: fixed;
     right: 40px;
-    bottom: 35px;
+    bottom: 10px;
     height: 50px;
     width: 50px;
     color: #fff;

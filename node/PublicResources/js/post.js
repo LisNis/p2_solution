@@ -26,11 +26,17 @@ const secondsHtml = document.querySelector('.seconds');
 
 
 //posting site
-postButton.addEventListener("click", function() {
-    let userInput = inputElement.value;
-    console.log("slay");
-    displayElement.textContent = userInput;
-});
+function postText() {
+    let text = document.getElementById("textInput").value;
+    if (text.trim() !== "") {
+        let postArea = document.getElementById("postArea");
+        let post = document.createElement("div");
+        post.className = "post";
+        post.textContent = text;
+        postArea.appendChild(post);
+        document.getElementById("textInput").value = "";
+    }
+}
 
 
 //sidebar
@@ -55,6 +61,8 @@ const createTextLi = (message, className) => {
     return textLi;
 }
 
+
+// not working only giving error
 const generateResponse = (incomingTextLi) => {
     const messageElement = incomingTextLi.querySelector('p');
 
@@ -65,9 +73,20 @@ const generateResponse = (incomingTextLi) => {
     // bot Countdown
     const newTime = new Date(userMessage);
 
+    if (isNaN(newTime)) {
+        messageElement.textContent = "Invalid date format. Please enter a valid date.";
+        return;
+    }
+
     function updateCountdown() {
         const currentTime = new Date();
         const diff = newTime - currentTime;
+
+        if (diff <= 0) {
+            messageElement.textContent = "Countdown has ended!";
+            clearInterval(intervalId);
+            return;
+        }
 
         const days = Math.floor(diff / 1000 / 60 / 60 / 24);
         const hours =  Math.floor(diff / 1000 / 60 / 60) % 24;
@@ -78,13 +97,6 @@ const generateResponse = (incomingTextLi) => {
 
         messageElement.textContent = result;
 
-        let end = days + hours + minutes + seconds;
-
-        //console.log(result);
-
-        if (end === 0) {
-            alert("The countdown has ended, it's time for a break!")
-        }
 
         // stop the timer when 0, stop timer when writing another one, 
         // delete text in chatbox, after sending
