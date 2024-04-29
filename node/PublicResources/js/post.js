@@ -24,6 +24,44 @@ const hoursHtml = document.querySelector('.hours');
 const minutesHtml = document.querySelector('.minutes');
 const secondsHtml = document.querySelector('.seconds');
 
+const likeButton = document.querySelector('.post-rating:nth-child(1)');
+const dislikeButton = document.querySelector('.post-rating:nth-child(2)');
+const likeCount = document.querySelector('.like-count');
+const dislikeCount = document.querySelector('.dislike-count');
+
+
+
+let likes = 0;
+let dislikes = 0;
+let hasLiked = false;
+let hasDisliked = false;
+
+likeButton.addEventListener('click', () => {
+    if (!hasLiked) {
+        likes++; 
+        likeCount.textContent = likes; 
+        hasLiked = true; 
+        if (hasDisliked) {
+            dislikes--; 
+            dislikeCount.textContent = dislikes; 
+            hasDisliked = false; 
+        }
+    }
+});
+
+dislikeButton.addEventListener('click', () => {
+    if (!hasDisliked) {
+        dislikes++; 
+        dislikeCount.textContent = dislikes; 
+        hasDisliked = true; 
+        if (hasLiked) {
+            likes--;
+            likeCount.textContent = likes; 
+            hasLiked = false; 
+        }
+    }
+});
+
 document.querySelectorAll(".post").forEach(post => {
 	const postId = post.dataset.postId;
 	const ratings = post.querySelectorAll(".post-rating");
