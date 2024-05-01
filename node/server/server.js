@@ -25,6 +25,19 @@ function readFilesRecursively(dirPath) {
 readFilesRecursively(publicResourcesPath);
 
 const server = http.createServer((req, res) => {
+<<<<<<< HEAD
+  res.statusCode = 200;
+  res.setHeader('Content-Type', 'text/html');
+  fs.readFile('../PublicResources/html/login.html', function(error, data) {
+    if (error) {
+        res.writeHead(404);
+        res.write('Error: File not found');
+    } else {
+        res.write(data)
+    }
+    res.end();
+  })
+=======
     res.statusCode = 200;
     res.setHeader('Content-Type', 'text/html');
     fs.readFile('../PublicResources/html/login.html', function(error, data) {
@@ -36,6 +49,7 @@ const server = http.createServer((req, res) => {
         }
         res.end();
     })
+>>>>>>> d71197df1e2832042e3fa915dc31f2bc6c7e76d1
 });
 
 server.listen(port, hostname, (error) => {
