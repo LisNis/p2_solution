@@ -1,0 +1,42 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background: linear-gradient(rgb(234, 234, 210), rgb(30, 6, 6));
+}
+.teamname {
+    width: 239px;
+    border: 2px solid rgba(218, 202, 202, 0.1);
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    color: #fff;
+    border-radius: 10px;
+    padding: 20px 40px;
+    backdrop-filter: blur(18px);
+}
+
+.teammember {
+    width: 239px;
+    border: 2px solid rgba(218, 202, 202, 0.1);
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    color: #fff;
+    border-radius: 10px;
+    padding: 20px 40px;
+    backdrop-filter: blur(18px);
+}
+#form-a-team {
+    color: white;
+}
+
+.btn {
+    padding: 20px;
+    color: white;
+    background-color: black;
+    border: 2px solid black;
+}
