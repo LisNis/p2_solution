@@ -12,7 +12,7 @@ body {
     height: 100vh;
     background-color: aliceblue;
 }
-/*
+
 /* Header */
 header{
     display: flex;
@@ -33,18 +33,20 @@ header{
 }
 
 .search-bar {
-    width: 65%;
-    height: 50px;
+    width: 50%;
+    height: 35px;
     border: 2px solid grey;
-    border-radius: 30px;
+    border-radius: 10px;
     padding: 20px;
 }
 
 /* posting */
 
 .container {
+    display: flex;
+    justify-content: center;
     height: 80vh; 
-    width: 70vh;
+    width: 75%;
     margin: 10vh auto; 
     padding: 20px;
     background-color: #fff;
@@ -94,10 +96,36 @@ button:hover {
 .post {
     background-color: #f9f9f9;
     padding: 20px;
-    margin: 30px;
+    margin: 70px 0 50px 0;
     border-radius: 5px;
-    width: 60vh; 
-    min-height: 50px;
+    width: 70%; 
+    display: block;
+}
+
+.postheader {
+    width: 100%;
+    padding: 0 10px 10px 10px;
+}
+
+.user-information {
+    font-size: 13px;
+    color: #555;
+}
+
+#username {
+    font-weight: bold;
+}
+
+#point {
+    margin-left: 10px;
+}
+
+.post-content {
+    padding: 0 10px;
+}
+
+#title {
+    margin-bottom: 15px;
 }
 
 
@@ -319,9 +347,11 @@ button:hover {
     }
 
 }
+
+/* like and dislike btn*/
 .post {
-	width: 400px;
 	font-family: 'Lexend', sans-serif;
+    position: absolute;
 }
 
 .post-image {
@@ -331,8 +361,10 @@ button:hover {
 
 .post-ratings-container {
 	display: flex;
+    position: absolute;
+    right: 25px;
+    top: 25px;
 	justify-content: end;
-	padding: 12px 0;
 }
 
 .post-rating {
@@ -351,7 +383,6 @@ button:hover {
 }
 
 .post-rating-button {
-	margin-right: 6px;
 	cursor: pointer;
 	color: #555555;
 }
@@ -362,7 +393,6 @@ button:hover {
 .post-ratings-container {
 	display: flex;
 	justify-content: end;
-	padding: 12px 0;
 }
 
 .post-rating {

@@ -19,7 +19,7 @@
     </ul>
 
     <header>
-        <div>Logo</div>
+        <div><a href="/groups">Back</a></div>
         <input class="search-bar" type="text" placeholder="Search">
         <input onclick=showSidebar() class="user" type="submit" value="User">
     </header>
@@ -27,20 +27,33 @@
     <!-- posting -->
     <div class="container">
         <h1>Write and Post</h1>
-        <div id="postArea" class="post-area">
-            </div>
-            <div class="post">Hello there</div>
-            <div class="post-ratings-container">
-                <div class="post-rating">
-                    <span class="post-rating-button material-icons like-button">thumb_up</span>
-                    <span class="post-rating-count like-count">0</span> <!-- Like count element -->
+        <div class="post">
+            <div class="postheader">
+                <div class="user-information">
+                    <span id="username">Username</span>
+                    <span id="point">•</span>
+                    <span id="date">Date</span>
                 </div>
-                <div class="post-rating">
-                    <span class="post-rating-button material-icons dislike-button">thumb_down</span>
-                    <span class="post-rating-count dislike-count">0</span> <!-- Dislike count element -->
+
+                <div class="post-ratings-container">
+                    <div class="post-rating">
+                        <span class="post-rating-button material-icons like-button">thumb_up</span>
+                        <span class="post-rating-count like-count">0</span> <!-- Like count element -->
+                    </div>
+                    <div class="post-rating">
+                        <span class="post-rating-button material-icons dislike-button">thumb_down</span>
+                        <span class="post-rating-count dislike-count">0</span> <!-- Dislike count element -->
+                    </div>
                 </div>
             </div>
+            
+            <div class="post-content">
+                <h3 id="title">Title</h3>
+                Hello there
+            </div>
+            
         </div>
+    
     </div>
     <div class="input-container">
         <input type="text" id="textInput" placeholder="Write something..." class="text-input">

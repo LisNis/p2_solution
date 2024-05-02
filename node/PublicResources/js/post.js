@@ -48,21 +48,70 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function renderPosts(posts) {
-    const postList = document.getElementById('postArea');
+    const postList = document.querySelector('.container');
     // Clear existing posts
-    postList.innerHTML = '';
+    //postList.innerHTML = '';
 
-    // Iterate over the fetched posts and create HTML elements to display them
+
     posts.forEach(post => {
-        const postElement = document.createElement('div');
-        postElement.classList.add('post');
-        postElement.innerHTML = `
-            <p>${post.content}</p>
-            
-        `;
-        //<h2>${post.title}</h2>
+    
+        const postElement = createPostElement(post);
         postList.appendChild(postElement);
     });
+}
+
+function createPostElement(post) {
+    // Create post element
+    const postElement = document.createElement('div');
+    postElement.classList.add('post');
+
+    // Create post header
+    const postHeader = document.createElement('div');
+    postHeader.classList.add('postheader');
+
+    // Create user information
+    const userInformation = document.createElement('div');
+    userInformation.classList.add('user-information');
+
+    // Username
+    const usernameSpan = document.createElement('span');
+    usernameSpan.id = 'username';
+    usernameSpan.textContent = post.username; 
+    userInformation.appendChild(usernameSpan);
+
+    // Point
+    const pointSpan = document.createElement('span');
+    pointSpan.id = 'point';
+    pointSpan.textContent = '•';
+    userInformation.appendChild(pointSpan);
+
+    // Date
+    const dateSpan = document.createElement('span');
+    dateSpan.id = 'date';
+    dateSpan.textContent = post.date;
+    userInformation.appendChild(dateSpan);
+
+    postHeader.appendChild(userInformation);
+
+    // Create post content
+    const postContent = document.createElement('div');
+    postContent.classList.add('post-content');
+
+    // Title
+    const titleHeading = document.createElement('h3');
+    titleHeading.id = 'title';
+    titleHeading.textContent = post.title;
+    postContent.appendChild(titleHeading);
+
+    // Content
+    const contentParagraph = document.createElement('p');
+    contentParagraph.textContent = post.content; 
+    postContent.appendChild(contentParagraph);
+
+    postElement.appendChild(postHeader);
+    postElement.appendChild(postContent);
+
+    return postElement;
 }
 
 document.getElementById('submitPost').addEventListener('click', function() {
@@ -162,25 +211,6 @@ document.querySelectorAll(".post").forEach(post => {
 		});
 	});
 });
-
-
-//posting site
-/*
-function postText() {
-    let text = document.getElementById("textInput").value;
-    if (text.trim() !== "") {
-        let postArea = document.getElementById("postArea");
-        let post = document.createElement("div");
-        post.className = "post";
-        post.textContent = text;
-        postArea.appendChild(post);
-        document.getElementById("textInput").value = "";
-    }
-}
-
-*/
-
-
 
 
 //sidebar
