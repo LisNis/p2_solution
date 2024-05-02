@@ -8,7 +8,6 @@ const postButton = document.getElementById("post-btn");
 const inputElement = document.getElementById("input-post");
 const displayElement = document.getElementById("displayText");
 
-
 // bot send messages
 const chatInput = document.querySelector('.chat-input textarea');
 const sendTextBtn = document.querySelector('.chat-input button');
@@ -24,11 +23,79 @@ const hoursHtml = document.querySelector('.hours');
 const minutesHtml = document.querySelector('.minutes');
 const secondsHtml = document.querySelector('.seconds');
 
+// likes and dislikes
 const likeButton = document.querySelector('.post-rating:nth-child(1)');
 const dislikeButton = document.querySelector('.post-rating:nth-child(2)');
 const likeCount = document.querySelector('.like-count');
 const dislikeCount = document.querySelector('.dislike-count');
 
+document.addEventListener('DOMContentLoaded', function() {
+    // Fetch posts from the server
+    fetch('/posts')
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.json();
+    })
+    .then(posts => {
+        // Render the fetched posts onto the page
+        renderPosts(posts);
+    })
+    .catch(error => {
+        console.error('There was a problem with the fetch operation:', error);
+    });
+});
+
+function renderPosts(posts) {
+    const postList = document.getElementById('postArea');
+    // Clear existing posts
+    postList.innerHTML = '';
+
+    // Iterate over the fetched posts and create HTML elements to display them
+    posts.forEach(post => {
+        const postElement = document.createElement('div');
+        postElement.classList.add('post');
+        postElement.innerHTML = `
+            <p>${post.content}</p>
+            
+        `;
+        //<h2>${post.title}</h2>
+        postList.appendChild(postElement);
+    });
+}
+
+document.getElementById('submitPost').addEventListener('click', function() {
+    const postContent = document.getElementById('textInput').value;
+    const postData = {
+        content: postContent,
+        // username: 
+    };
+
+    // Send the post data to the server
+    fetch('/post', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(postData)
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.text();
+    })
+    .then(data => {
+        console.log(data); // Log the server response
+        alert('Post submitted successfully');
+
+    })
+    .catch(error => {
+        console.error('There was a problem with the fetch operation:', error);
+        alert('There was an error submitting the post');
+    });
+});
 
 
 let likes = 0;
@@ -98,6 +165,7 @@ document.querySelectorAll(".post").forEach(post => {
 
 
 //posting site
+/*
 function postText() {
     let text = document.getElementById("textInput").value;
     if (text.trim() !== "") {
@@ -109,6 +177,10 @@ function postText() {
         document.getElementById("textInput").value = "";
     }
 }
+
+*/
+
+
 
 
 //sidebar
