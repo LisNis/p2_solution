@@ -1,8 +1,3 @@
-// delte post, when written post create div, where like
-// and pins option are. Tags, so need to know who is in
-// the group. 
-
-
 // posting site
 const postButton = document.getElementById("post-btn");
 const inputElement = document.getElementById("input-post");
@@ -22,12 +17,6 @@ const daysHtml = document.querySelector('.days');
 const hoursHtml = document.querySelector('.hours');
 const minutesHtml = document.querySelector('.minutes');
 const secondsHtml = document.querySelector('.seconds');
-
-// likes and dislikes
-const likeButton = document.querySelector('.post-rating:nth-child(1)');
-const dislikeButton = document.querySelector('.post-rating:nth-child(2)');
-const likeCount = document.querySelector('.like-count');
-const dislikeCount = document.querySelector('.dislike-count');
 
 document.addEventListener('DOMContentLoaded', function() {
     // Fetch posts from the server
@@ -49,12 +38,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
 function renderPosts(posts) {
     const postList = document.querySelector('.container');
-    // Clear existing posts
-    //postList.innerHTML = '';
-
 
     posts.forEach(post => {
-    
         const postElement = createPostElement(post);
         postList.appendChild(postElement);
     });
@@ -108,9 +93,111 @@ function createPostElement(post) {
     contentParagraph.textContent = post.content; 
     postContent.appendChild(contentParagraph);
 
+    // Thumbs up and Thumbs down buttons
+    const thumbsUpButton = document.createElement('button');
+    thumbsUpButton.innerHTML = '&#128077;'; // Thumbs up icon
+    thumbsUpButton.classList.add('thumbs-up-btn');
+    const thumbsDownButton = document.createElement('button');
+    thumbsDownButton.innerHTML = '&#128078;'; // Thumbs down icon
+    thumbsDownButton.classList.add('thumbs-down-btn');
+
+    // Like and Dislike count
+    const likeCount = document.createElement('span');
+    likeCount.classList.add('post-rating-count');
+    likeCount.textContent = post.likes; // You need to have this data from server response
+    const dislikeCount = document.createElement('span');
+    dislikeCount.classList.add('post-rating-count');
+    dislikeCount.textContent = post.dislikes; // You need to have this data from server response
+
+    // Add event listeners for thumbs up and thumbs down
+    thumbsUpButton.addEventListener('click', async () => {
+        if (!thumbsUpButton.classList.contains('clicked')) {
+            // Update UI
+            likeCount.textContent = Number(likeCount.textContent) + 1;
+            thumbsUpButton.classList.add('clicked');
+            thumbsDownButton.disabled = true;
+            // Send like action to server and update database
+            const response = await fetch(`/posts/${post.id}/like`, { method: 'POST' });
+            // Handle server response if necessary
+        }
+    });
+
+    thumbsDownButton.addEventListener('click', async () => {
+        if (!thumbsDownButton.classList.contains('clicked')) {
+            // Update UI
+            dislikeCount.textContent = Number(dislikeCount.textContent) + 1;
+            thumbsDownButton.classList.add('clicked');
+            thumbsUpButton.disabled = true;
+            // Send dislike action to server and update database
+            const response = await fetch(`/posts/${post.id}/dislike`, { method: 'POST' });
+            // Handle server response if necessary
+        }
+    });
+
+    // Append elements to post content
+    postContent.appendChild(thumbsUpButton);
+    postContent.appendChild(likeCount);
+    postContent.appendChild(thumbsDownButton);
+    postContent.appendChild(dislikeCount);
+
+    // Append post content to post element
     postElement.appendChild(postHeader);
     postElement.appendChild(postContent);
 
+    // Create the comment button
+    const commentButton = document.createElement("button");
+    commentButton.textContent = "Comment";
+    commentButton.className = "comment-button";
+    commentButton.addEventListener('click', () => {
+        const commentSection = postElement.querySelector(".comment-section");
+        if (commentSection.style.display === "none") {
+            commentSection.style.display = "block";
+        } else {
+            commentSection.style.display = "none";
+        }
+    });
+    postElement.appendChild(commentButton);
+
+    // Create the comment section
+    const commentSection = document.createElement("div");
+    commentSection.className = "comment-section";
+    commentSection.style.display = "none";
+
+    // Create the comment label
+    const commentLabel = document.createElement("div");
+    commentLabel.textContent = "Comments:";
+    commentLabel.style.textDecoration = "underline";
+    commentLabel.style.marginBottom = "5px";
+    commentSection.appendChild(commentLabel);
+
+    // Create the comment list container
+    const commentList = document.createElement("div");
+    commentList.className = "comment-list";
+    commentSection.appendChild(commentList);
+
+    // Create the comment input field
+    const commentInput = document.createElement("textarea");
+    commentInput.placeholder = "Write your comment here...";
+    commentInput.className = "comment-field";
+    commentSection.appendChild(commentInput);
+
+    // Create the submit button
+    const submitButton = document.createElement("button");
+    submitButton.textContent = "Submit";
+    submitButton.className = "submit-comment-button";
+    submitButton.addEventListener('click', () => {
+        let comment = commentInput.value;
+        if (comment.trim() !== "") {
+            let newComment = document.createElement("div");
+            newComment.textContent = comment;
+            newComment.className = "comment";
+            commentList.appendChild(newComment);
+
+            commentInput.value = "";
+        }
+    });
+    commentSection.appendChild(submitButton);
+    postElement.appendChild(commentSection);
     return postElement;
 }
 
@@ -138,7 +225,6 @@ document.getElementById('submitPost').addEventListener('click', function() {
     .then(data => {
         console.log(data); // Log the server response
         alert('Post submitted successfully');
-
     })
     .catch(error => {
         console.error('There was a problem with the fetch operation:', error);
@@ -146,70 +232,38 @@ document.getElementById('submitPost').addEventListener('click', function() {
     });
 });
 
-
-let likes = 0;
-let dislikes = 0;
-let hasLiked = false;
-let hasDisliked = false;
-
-likeButton.addEventListener('click', () => {
-    if (!hasLiked) {
-        likes++; 
-        likeCount.textContent = likes; 
-        hasLiked = true; 
-        if (hasDisliked) {
-            dislikes--; 
-            dislikeCount.textContent = dislikes; 
-            hasDisliked = false; 
-        }
-    }
-});
-
-dislikeButton.addEventListener('click', () => {
-    if (!hasDisliked) {
-        dislikes++; 
-        dislikeCount.textContent = dislikes; 
-        hasDisliked = true; 
-        if (hasLiked) {
-            likes--;
-            likeCount.textContent = likes; 
-            hasLiked = false; 
-        }
-    }
-});
-
 document.querySelectorAll(".post").forEach(post => {
-	const postId = post.dataset.postId;
-	const ratings = post.querySelectorAll(".post-rating");
-	const likeRating = ratings[0];
+    const postId = post.dataset.postId;
+    const ratings = post.querySelectorAll(".post-rating");
+    const likeRating = ratings[0];
 
-	ratings.forEach(rating => {
-		const button = rating.querySelector(".post-rating-button");
-		const count = rating.querySelector(".post-rating-count");
+    ratings.forEach(rating => {
+        const button = rating.querySelector(".post-rating-button");
+        const count = rating.querySelector(".post-rating-count");
 
-		button.addEventListener("click", async () => {
-			if (rating.classList.contains("post-rating-selected")) {
-				return;
-			}
+        button.addEventListener("click", async () => {
+            if (rating.classList.contains("post-rating-selected")) {
+                return;
+            }
 
-			count.textContent = Number(count.textContent) + 1;
+            count.textContent = Number(count.textContent) + 1;
 
-			ratings.forEach(rating => {
-				if (rating.classList.contains("post-rating-selected")) {
-					const count = rating.querySelector(".post-rating-count");
+            ratings.forEach(rating => {
+                if (rating.classList.contains("post-rating-selected")) {
+                    const count = rating.querySelector(".post-rating-count");
 
-					count.textContent = Math.max(0, Number(count.textContent) - 1);
-					rating.classList.remove("post-rating-selected");
-				}
-			});
+                    count.textContent = Math.max(0, Number(count.textContent) - 1);
+                    rating.classList.remove("post-rating-selected");
+                }
+            });
 
-			rating.classList.add("post-rating-selected");
+            rating.classList.add("post-rating-selected");
 
-			const likeOrDislike = likeRating === rating ? "like" : "dislike";
-			const response = await fetch(`/posts/${postId}/${likeOrDislike}`);
-			const body = await response.json();
-		});
-	});
+            const likeOrDislike = likeRating === rating ? "like" : "dislike";
+            const response = await fetch(`/posts/${postId}/${likeOrDislike}`);
+            const body = await response.json();
+        });
+    });
 });
 
 
@@ -234,7 +288,6 @@ const createTextLi = (message, className) => {
     textLi.innerHTML = chatContent;
     return textLi;
 }
-
 
 // not working only giving error
 const generateResponse = (incomingTextLi) => {
@@ -271,14 +324,12 @@ const generateResponse = (incomingTextLi) => {
 
         messageElement.textContent = result;
 
-
         // stop the timer when 0, stop timer when writing another one, 
         // delete text in chatbox, after sending
     }
 
     setInterval(updateCountdown, 1000);
 }
-
 
 const handleChat = () => {
     userMessage = chatInput.value.trim();
@@ -299,7 +350,6 @@ const handleChat = () => {
 }
 
 sendTextBtn.addEventListener('click', handleChat);
-
 
 //bot open and close chat
 botToggler.addEventListener('click', function() {

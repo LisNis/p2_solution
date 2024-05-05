@@ -348,7 +348,7 @@ button:hover {
 
 }
 
-/* like and dislike btn*/
+
 .post {
 	font-family: 'Lexend', sans-serif;
     position: absolute;
@@ -358,64 +358,23 @@ button:hover {
 	display: block;
 	width: 100%;
 }
-
-.post-ratings-container {
-	display: flex;
-    position: absolute;
-    right: 25px;
-    top: 25px;
-	justify-content: end;
+.thumbs-up-btn,
+.thumbs-down-btn {
+    margin-top: 20px; 
+    margin-right: 6px;
 }
 
-.post-rating {
-	display: flex;
-	align-items: center;
-	cursor: default;
+
+.comment-button {
+    background-color: #4CAF50; 
+    color: white;
+    padding: 10px 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 60px;
 }
 
-.post-rating:not(:last-child) {
-	margin-right: 12px;
-}
-
-.post-rating-selected > .post-rating-button,
-.post-rating-selected > .post-rating-count {
-	color: #009578;
-}
-
-.post-rating-button {
-	cursor: pointer;
-	color: #555555;
-}
-
-.post-rating:not(.post-rating-selected) > .post-rating-button:hover {
-	color: #000000;
-}
-.post-ratings-container {
-	display: flex;
-	justify-content: end;
-}
-
-.post-rating {
-	display: flex;
-	align-items: center;
-	cursor: default;
-}
-
-.post-rating:not(:last-child) {
-	margin-right: 12px;
-}
-
-.post-rating-selected > .post-rating-button,
-.post-rating-selected > .post-rating-count {
-	color: #009578;
-}
-
-.post-rating-button {
-	margin-right: 6px;
-	cursor: pointer;
-	color: #555555;
-}
-
-.post-rating:not(.post-rating-selected) > .post-rating-button:hover {
-	color: #000000;
+.comment-button:hover {
+    background-color: #45a049;
 }
