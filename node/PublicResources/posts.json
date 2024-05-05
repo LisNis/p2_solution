@@ -1,10 +1,25 @@
 [
   {
+    "group name": "Group 1",
     "id": 1,
     "title": "Hello",
     "content": "Joooo",
     "username": "Lisa",
     "likes": 4,
-    "dislikes": 1
+    "dislikes": 1,
+    "date": "03-05-2024",
+    "timestamp": "13:13",
+    "comments": [{
+      "user": "Lisa",
+      "content": "dette er en kommentar",
+      "date": "03-05-2024",
+      "timestamp": "13:13"
+    },
+    {
+      "user": "Anders",
+      "content": "dette er en kommentar også",
+      "date": "03-05-2024",
+      "timestamp": "13:14" 
+    }]
   }
 ]

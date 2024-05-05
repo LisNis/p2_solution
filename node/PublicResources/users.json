@@ -1,16 +1,6 @@
 {
-    "users": [
-        {
-            "name": "y",
-            "groupName": "Group1"
-        },
-        {
-            "name": "x",
-            "groupName": "Group1"
-        },
-        {
-            "name": "z",
-            "groupName": "Group2"
-        }
-    ]
+    "username": "Alisanders",
+    "password": "password",
+    "group": ["group 1","group 2", "group 3"],
+    "invitations":["group 4", "group 5"]
 }

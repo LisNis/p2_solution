@@ -13,7 +13,7 @@
     top: 0;
     z-index: 999;
     background-color: rgb(115, 81, 81);
-    background-image: linear-gradient(to left, rgb(44, 47, 44) 0%, rgb(46, 45, 45) 100%);
+    background-image: linear-gradient(to left, #cc9dae 0%, #e13172 100%);
 }
 
 .navGroup__container {
