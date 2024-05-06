@@ -1,0 +1,11 @@
+[
+  {
+    "group name": "Group 1",
+    "id": 1,
+    "title": "Hello",
+    "content": "This is my the text i write for my post",
+    "username": "User 3",
+    "likes": 4,
+    "dislikes": 1
+  }
+]
