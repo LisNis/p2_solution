@@ -1,25 +1,27 @@
-{
-  "group name": "Group 1",
-  "id": 1,
-  "title": "Hello",
-  "content": "This is my the text i write for my post",
-  "username": "User 3",
-  "likes": 4,
-  "dislikes": 1,
-  "date": "03-05-2024",
-  "timestamp": "13:13",
-  "comments": [{
-
-    "user": "Alisanders",
-    "content": "This is a comment",
-    "date": "03-05-2024",
-    "timestamp": "13:13"
-  },
+[
   {
-
-    "user": "User 2",
-    "content": "This is also a comment",
+    "group name": "Group 1",
+    "id": 1,
+    "title": "Hello",
+    "content": "This is my the text i write for my post",
+    "username": "User 3",
+    "likes": 4,
+    "dislikes": 1,
     "date": "03-05-2024",
-    "timestamp": "13:14" 
-  }]
-}
+    "timestamp": "13:13",
+    "comments": [
+      {
+        "user": "Alisanders",
+        "content": "This is a comment",
+        "date": "03-05-2024",
+        "timestamp": "13:13"
+      },
+      {
+        "user": "User 2",
+        "content": "This is also a comment",
+        "date": "03-05-2024",
+        "timestamp": "13:14"
+      }
+    ]
+  }
+]
