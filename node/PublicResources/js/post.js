@@ -76,6 +76,12 @@ function createPostElement(post) {
     dateSpan.textContent = post.date;
     userInformation.appendChild(dateSpan);
 
+    // time
+    const timeSpan = document.createElement('span');
+    timeSpan.id = 'timestamp';
+    timeSpan.textContent = post.timestamp;
+    userInformation.appendChild(timeSpan);
+
     postHeader.appendChild(userInformation);
 
     // Create post content
@@ -201,12 +207,49 @@ function createPostElement(post) {
     return postElement;
 }
 
+//sidebar
+function showSidebar(){
+    const sidebar = document.querySelector('.sidebar');
+    sidebar.style.display = 'flex';
+}
+function hideSidebar(){
+    const sidebar = document.querySelector('.sidebar');
+    sidebar.style.display = 'none';
+}
+
+let username = localStorage.getItem("username");
+    // Display username in the HTML
+    document.getElementById("username").textContent = username;
+    const postUsername = username;
+
+
+
 document.getElementById('submitPost').addEventListener('click', function() {
     const postContent = document.getElementById('textInput').value;
+
+    const today = new Date();
+
+    // Get the day, month, and year
+    const day = today.getDate();
+    const month = today.getMonth() + 1; // Month starts at 0
+    const year = today.getFullYear();
+
+    // Get the hours and minutes
+    const hours = today.getHours();
+    const minutes = today.getMinutes();
+
+    // Format the date and time
+    const currentDate = `${day}/${month}/${year}`;
+    const currentTime = `${hours}:${minutes}`;
+
+
     const postData = {
         content: postContent,
-        // username: 
+        username: postUsername,
+        date: currentDate,
+        timestamp: currentTime, 
     };
+    console.log(postUsername);
 
     // Send the post data to the server
     fetch('/post', {
@@ -265,17 +308,6 @@ document.querySelectorAll(".post").forEach(post => {
         });
     });
 });
-
-
-//sidebar
-function showSidebar(){
-    const sidebar = document.querySelector('.sidebar');
-    sidebar.style.display = 'flex';
-}
-function hideSidebar(){
-    const sidebar = document.querySelector('.sidebar');
-    sidebar.style.display = 'none';
-}
 
 
 //bot send messages

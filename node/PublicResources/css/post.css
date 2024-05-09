@@ -22,6 +22,9 @@ header{
 }
 
 .user {
+    display: flex;
+    justify-content: center;
+    align-items: center;
     width: 50px;
     height: 50px;
     border: 2px solid grey;
@@ -47,11 +50,13 @@ header{
     justify-content: center;
     height: 80vh; 
     width: 75%;
-    margin: 10vh auto; 
+    margin: 10px auto; 
     padding: 20px;
     background-color: #fff;
     border-radius: 5px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    flex-direction: column;
+    overflow-y: auto;
 }
 
 
@@ -79,7 +84,7 @@ header{
     margin-right: 10px; 
 }
 
-button {
+#submitPost {
     width: 80px;
     background-color: lightcoral;
     color: #fff;
@@ -89,17 +94,17 @@ button {
     cursor: pointer;
 }
 
-button:hover {
+#submitPost:hover {
     background-color: rgb(235, 120, 120);
 }
 
 .post {
+    font-family: 'Lexend', sans-serif;
     background-color: #f9f9f9;
     padding: 20px;
-    margin: 70px 0 50px 0;
+    margin-bottom: 20px;
     border-radius: 5px;
-    width: 70%; 
-    display: block;
+    width: 100%;
 }
 
 .postheader {
@@ -118,6 +123,10 @@ button:hover {
 
 #point {
     margin-left: 10px;
+}
+
+#date {
+    margin-right: 10px;
 }
 
 .post-content {
@@ -174,7 +183,6 @@ button:hover {
     align-items: flex-start;
     justify-content: flex-start;
 }
-
 
 
 /* reminder-bot */
@@ -348,11 +356,7 @@ button:hover {
 
 }
 
-
-.post {
-	font-family: 'Lexend', sans-serif;
-    position: absolute;
-}
+/* likes and dislikes */
 
 .post-image {
 	display: block;
@@ -363,7 +367,6 @@ button:hover {
     margin-top: 20px; 
     margin-right: 6px;
 }
-
 
 .comment-button {
     background-color: #4CAF50; 

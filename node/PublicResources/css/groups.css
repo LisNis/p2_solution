@@ -13,15 +13,24 @@ header{
 }
 
 .user {
+    display: flex;
+    justify-content: center;
+    align-items: center;
     width: 50px;
     height: 50px;
     border: 2px solid grey;
-    background: rgba(255, 255, 255, 0.8);
+    background: rgba(255, 223, 223, 0.89);
     border-radius: 50%;
     cursor: pointer;
     font-size: 15px;
     color: #333;
 }
+
+#username {
+    display: inline-block;
+    background: rgba(255, 223, 223, 0.89);
+}
+
 
 .search-bar {
     width: 65%;
