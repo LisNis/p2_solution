@@ -218,25 +218,39 @@ function hideSidebar(){
 }
 
 let username = localStorage.getItem("username");
-    // Display username in the HTML
-    document.getElementById("username").textContent = username;
-    const postUsername = username;
+// Display username in the HTML
+document.getElementById("username").textContent = username;
+const postUsername = username;
 
 
 
 document.getElementById('submitPost').addEventListener('click', function() {
-    const postContent = document.getElementById('textInput').value;
+    let postContent = document.getElementById('textInput').value;
 
-    const today = new Date();
+    // get input in {}
+    const regex = /{([^}]*)}/;
+    const match = postContent.match(regex);
+    let contentOfPost = postContent; // Assign default value
+    let postTitle = '';
+    
+    if (match !== null) {
+        contentOfPost = postContent.replace(match[0], '').trim();
+        postTitle = match[1].trim();
+    }
+    
 
     // Get the day, month, and year
+    const today = new Date();
     const day = today.getDate();
     const month = today.getMonth() + 1; // Month starts at 0
     const year = today.getFullYear();
 
     // Get the hours and minutes
     const hours = today.getHours();
-    const minutes = today.getMinutes();
+    let minutes = today.getMinutes();
+    if (minutes < 10) {
+        minutes = "0" + minutes;
+    }
 
     // Format the date and time
     const currentDate = `${day}/${month}/${year}`;
@@ -244,7 +258,8 @@ document.getElementById('submitPost').addEventListener('click', function() {
 
 
     const postData = {
-        content: postContent,
+        title: postTitle,
+        content: contentOfPost,
         username: postUsername,
         date: currentDate,
         timestamp: currentTime, 
@@ -273,6 +288,7 @@ document.getElementById('submitPost').addEventListener('click', function() {
         console.error('There was a problem with the fetch operation:', error);
         alert('There was an error submitting the post');
     });
+    postContent = '';
 });
 
 document.querySelectorAll(".post").forEach(post => {
