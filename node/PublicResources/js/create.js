@@ -1,23 +1,50 @@
-//const canvas =; 
-//const
-//let elem = document.getElementById(string);
-//moderne verstion document.querySelector(selektorString);
-//document.qerySelectorAll(selektorString);
-//addEventListener
+document.addEventListener("DOMContentLoaded", function() {
+  const teamMemberForm = document.getElementById("team-member-form");
+  const teamMembersList = document.getElementById("team-members-list");
+  const confirmButton = document.getElementById("confirm-team");
 
-//const createBtn = document.getElementById
+  let members = [];
 
+  teamMemberForm.addEventListener("submit", function(event) {
+      event.preventDefault();
+      const memberName = document.getElementById("member-name-input").value;
+      members.push(memberName);
+      displayTeamMembers();
+      teamMemberForm.reset();
+  });
 
+  function displayTeamMembers() {
+      teamMembersList.innerHTML = ""; // Clear previous list
 
-//function navigateToAnotherPage (){
-//window.location.href = create.html;}
+      members.forEach(function(member, index) {
+          const memberElement = document.createElement("div");
+          memberElement.textContent = member;
 
-//document.getElementsByClassName('newGroup').onclick = navigateToAnotherPage;
+          const removeButton = document.createElement("button");
+          removeButton.textContent = "Remove";
+          removeButton.classList.add("remove-btn");
+          removeButton.dataset.index = index;
 
+          memberElement.appendChild(removeButton);
+          teamMembersList.appendChild(memberElement);
+      });
 
-//const newGroup = document.getElementById("newGroup");
+      // Show confirm button after displaying team members
+      confirmButton.style.display = "block";
+  }
 
-      //  newGroup.addEventListener("click", function() {
-        // if user found in json 
-      //  window.location.href = "/html/groups.html";
-      //  });
+  // Event delegation for remove buttons
+  teamMembersList.addEventListener("click", function(event) {
+      if (event.target.classList.contains("remove-btn")) {
+          const index = parseInt(event.target.dataset.index);
+          members.splice(index, 1);
+          displayTeamMembers();
+      }
+  });
+
+  // Event listener for confirm button (just for demonstration)
+  confirmButton.addEventListener("click", function() {
+      // Handle confirming team creation here
+      alert("Team creation confirmed!");
+  });
+});

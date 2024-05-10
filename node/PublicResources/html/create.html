@@ -1,52 +1,38 @@
 <!DOCTYPE html>
-<html lang ="en">
-    <head> 
-<meta charset="UTF-8">
-<meta name="veiwport" content="width=device-vidth, initail-scale=1.0" >
-<title> Create a Team</title>
-<link rel="stylesheet" href="../css/create.css">
-    </head> 
-    <body>
-        <header>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create a Team</title>
+    <link rel="stylesheet" href="../css/create.css">
+</head>
+<body>
+    <section id="form-a-team">
+        <h1>Create a team</h1>
+        <p>Here you can create your own team</p>
+        <p>You start with a team name, and then add the members you want</p>
+    </section>
 
-           <!-- createing a button that return to the groups page -->
-     <div><a href="../html/groups.html">Groups page</a></div>
-
-        </header>
-
-        <section id="form-a-team">
-                <h1> Create a team </h1>
-                <p>Here you can create your own team </p>
-                  <p> You start with a team name, and then add the members you want </p>
-        </section>
-
-     <div class="teamname">
-            <form action=""> 
-                <input type="text" name="Team Name" id="Team name">
-            </form>
-    </div>
-    <div class="add">
-            <input class="btn" id="submit-btn" type="submit" value="Team name">
+    <div class="teamname">
+        <form id="team-name-form"> 
+            <input type="text" name="teamName" id="team-name-input" placeholder="Enter Team Name">
+            <button type="submit" class="btn" id="submit-team-name">Team Name</button>
+        </form>
     </div>
 
     <div class="teammember">
-            <form action=""> 
-                <input type="text" name="Add member" id="Add member">
-            </form>
+        <form id="team-member-form"> 
+            <input type="text" name="memberName" id="member-name-input" placeholder="Enter Member Name">
+            <button type="submit" class="btn" id="submit-member">Add Team Member</button>
+        </form>
     </div>
 
-    <div class="Add">
-            <input class="btn" id="Add-btn" type="submit" value="Add Team members">
+    <div id="team-members-list" class="team-members-list">
+        <!-- Display team members here -->
     </div>
 
-<script src="create.js">
+    <button id="confirm-team" class="btn" style="display: none;">Confirm Team</button>
 
-//const newGroup = document.getElementById("new-group");
-
-   // newGroup.addEventListener("click", function() {
-    // if user found in json 
-   /// window.location.href = "/create";
-  //  }); </script>
-
+    <script src="script.js"></script>
 </body>
 </html>
