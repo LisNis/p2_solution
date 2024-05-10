@@ -12,33 +12,15 @@ const chatBox = document.querySelector('.chatbox');
 const botToggler = document.querySelector('.bot-toggler');
 const botCloseBtn = document.querySelector('.close-btn');
 
-// bot countdown
-const daysHtml = document.querySelector('.days');
-const hoursHtml = document.querySelector('.hours');
-const minutesHtml = document.querySelector('.minutes');
-const secondsHtml = document.querySelector('.seconds');
-
 document.addEventListener('DOMContentLoaded', function() {
-    // Fetch posts from the server
     fetch('/posts')
-    .then(response => {
-        if (!response.ok) {
-            throw new Error('Network response was not ok');
-        }
-        return response.json();
-    })
-    .then(posts => {
-        // Render the fetched posts onto the page
-        renderPosts(posts);
-    })
-    .catch(error => {
-        console.error('There was a problem with the fetch operation:', error);
-    });
+    .then(response => response.json())
+    .then(posts => renderPosts(posts))
+    .catch(error => console.error('There was a problem with the fetch operation:', error));
 });
 
 function renderPosts(posts) {
     const postList = document.querySelector('.container');
-
     posts.forEach(post => {
         const postElement = createPostElement(post);
         postList.appendChild(postElement);
@@ -46,166 +28,164 @@ function renderPosts(posts) {
 }
 
 function createPostElement(post) {
-    // Create post element
     const postElement = document.createElement('div');
     postElement.classList.add('post');
+    if (post.isPinned) {
+        postElement.classList.add('pinned');
+    }
 
-    // Create post header
     const postHeader = document.createElement('div');
     postHeader.classList.add('postheader');
 
-    // Create user information
     const userInformation = document.createElement('div');
     userInformation.classList.add('user-information');
 
-    // Username
     const usernameSpan = document.createElement('span');
-    usernameSpan.id = 'username';
-    usernameSpan.textContent = post.username; 
+    usernameSpan.textContent = post.username;
     userInformation.appendChild(usernameSpan);
 
-    // Point
     const pointSpan = document.createElement('span');
-    pointSpan.id = 'point';
     pointSpan.textContent = '•';
     userInformation.appendChild(pointSpan);
 
-    // Date
     const dateSpan = document.createElement('span');
-    dateSpan.id = 'date';
     dateSpan.textContent = post.date;
     userInformation.appendChild(dateSpan);
 
-    // time
     const timeSpan = document.createElement('span');
-    timeSpan.id = 'timestamp';
     timeSpan.textContent = post.timestamp;
     userInformation.appendChild(timeSpan);
 
     postHeader.appendChild(userInformation);
 
-    // Create post content
     const postContent = document.createElement('div');
     postContent.classList.add('post-content');
 
-    // Title
     const titleHeading = document.createElement('h3');
-    titleHeading.id = 'title';
     titleHeading.textContent = post.title;
     postContent.appendChild(titleHeading);
 
-    // Content
     const contentParagraph = document.createElement('p');
-    contentParagraph.textContent = post.content; 
+    contentParagraph.textContent = post.content;
     postContent.appendChild(contentParagraph);
 
-    // Thumbs up and Thumbs down buttons
+    // Pin button
+    const pinButton = document.createElement('button');
+    pinButton.textContent = 'Pin';
+    pinButton.className = 'pin-button';
+    if (post.isPinned) {
+        pinButton.disabled = true;
+    }
+    postContent.appendChild(pinButton);
+
+    pinButton.addEventListener('click', async () => {
+        const response = await fetch(`/posts/${post.id}/pin`, { method: 'POST' });
+        if (response.ok) {
+            postElement.classList.add('pinned');
+            const container = document.querySelector('.container');
+            container.prepend(postElement);
+            pinButton.disabled = true;
+        }
+    });
+
+    // Existing thumbs up and thumbs down buttons
     const thumbsUpButton = document.createElement('button');
-    thumbsUpButton.innerHTML = '&#128077;'; // Thumbs up icon
+    thumbsUpButton.innerHTML = '&#128077;';
     thumbsUpButton.classList.add('thumbs-up-btn');
     const thumbsDownButton = document.createElement('button');
-    thumbsDownButton.innerHTML = '&#128078;'; // Thumbs down icon
+    thumbsDownButton.innerHTML = '&#128078;';
     thumbsDownButton.classList.add('thumbs-down-btn');
 
-    // Like and Dislike count
-    const likeCount = document.createElement('span');
-    likeCount.classList.add('post-rating-count');
-    likeCount.textContent = post.likes; // You need to have this data from server response
-    const dislikeCount = document.createElement('span');
-    dislikeCount.classList.add('post-rating-count');
-    dislikeCount.textContent = post.dislikes; // You need to have this data from server response
-
-    // Add event listeners for thumbs up and thumbs down
     thumbsUpButton.addEventListener('click', async () => {
-        if (!thumbsUpButton.classList.contains('clicked')) {
-            // Update UI
-            likeCount.textContent = Number(likeCount.textContent) + 1;
-            thumbsUpButton.classList.add('clicked');
+        const response = await fetch(`/posts/${post.id}/like`, { method: 'POST' });
+        if(response.ok) {
+            response.json().then(data => {
+                thumbsUpButton.nextElementSibling.textContent = data.likes;
+            });
+            thumbsUpButton.disabled = true;
             thumbsDownButton.disabled = true;
-            // Send like action to server and update database
-            const response = await fetch(`/posts/${post.id}/like`, { method: 'POST' });
-            // Handle server response if necessary
         }
     });
 
     thumbsDownButton.addEventListener('click', async () => {
-        if (!thumbsDownButton.classList.contains('clicked')) {
-            // Update UI
-            dislikeCount.textContent = Number(dislikeCount.textContent) + 1;
-            thumbsDownButton.classList.add('clicked');
+        const response = await fetch(`/posts/${post.id}/dislike`, { method: 'POST' });
+        if(response.ok) {
+            response.json().then(data => {
+                thumbsDownButton.nextElementSibling.textContent = data.dislikes;
+            });
+            thumbsDownButton.disabled = true;
             thumbsUpButton.disabled = true;
-            // Send dislike action to server and update database
-            const response = await fetch(`/posts/${post.id}/dislike`, { method: 'POST' });
-            // Handle server response if necessary
         }
     });
 
-    // Append elements to post content
     postContent.appendChild(thumbsUpButton);
-    postContent.appendChild(likeCount);
     postContent.appendChild(thumbsDownButton);
-    postContent.appendChild(dislikeCount);
 
-    // Append post content to post element
     postElement.appendChild(postHeader);
     postElement.appendChild(postContent);
 
-    // Create the comment button
     const commentButton = document.createElement("button");
     commentButton.textContent = "Comment";
     commentButton.className = "comment-button";
-    commentButton.addEventListener('click', () => {
-        const commentSection = postElement.querySelector(".comment-section");
-        if (commentSection.style.display === "none") {
-            commentSection.style.display = "block";
-        } else {
-            commentSection.style.display = "none";
-        }
-    });
     postElement.appendChild(commentButton);
 
-    // Create the comment section
     const commentSection = document.createElement("div");
     commentSection.className = "comment-section";
     commentSection.style.display = "none";
+    commentButton.onclick = () => commentSection.style.display = commentSection.style.display === "none" ? "block" : "none";
 
-    // Create the comment label
     const commentLabel = document.createElement("div");
     commentLabel.textContent = "Comments:";
     commentLabel.style.textDecoration = "underline";
-    commentLabel.style.marginBottom = "5px";
     commentSection.appendChild(commentLabel);
 
-    // Create the comment list container
     const commentList = document.createElement("div");
     commentList.className = "comment-list";
     commentSection.appendChild(commentList);
 
-    // Create the comment input field
     const commentInput = document.createElement("textarea");
     commentInput.placeholder = "Write your comment here...";
     commentInput.className = "comment-field";
     commentSection.appendChild(commentInput);
 
-    // Create the submit button
     const submitButton = document.createElement("button");
     submitButton.textContent = "Submit";
     submitButton.className = "submit-comment-button";
-    submitButton.addEventListener('click', () => {
-        let comment = commentInput.value;
-        if (comment.trim() !== "") {
-            let newComment = document.createElement("div");
-            newComment.textContent = comment;
-            newComment.className = "comment";
-            commentList.appendChild(newComment);
+    commentSection.appendChild(submitButton);
+    submitButton.addEventListener('click', async () => {
+        let comment = commentInput.value.trim();
+        if (comment !== "") {
+            const commentData = {
+                postId: post.id,
+                comment: comment,
+                username: localStorage.getItem("username") // Ensure username is available in localStorage
+            };
 
-            commentInput.value = "";
+            const response = await fetch('/posts/comment', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(commentData)
+            });
+
+            if (response.ok) {
+                let newComment = document.createElement("div");
+                newComment.textContent = comment;
+                newComment.className = "comment";
+                commentList.appendChild(newComment);
+                commentInput.value = "";
+            } else {
+                console.error('Failed to submit comment:', await response.text());
+            }
         }
     });
     commentSection.appendChild(submitButton);
     postElement.appendChild(commentSection);
+
     return postElement;
 }
+
 
 //sidebar
 function showSidebar(){

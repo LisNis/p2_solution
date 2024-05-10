@@ -381,3 +381,19 @@ header{
 .comment-button:hover {
     background-color: #45a049;
 }
+.post.pinned {
+    background-color: #ffff99; /* Light yellow background for pinned posts */
+}
+
+.pin-button {
+    background-color: #4CAF50;
+    color: white;
+    padding: 5px 10px;
+    margin-top: 5px;
+    cursor: pointer;
+}
+
+.pin-button:disabled {
+    background-color: #ccc;
+}
+
