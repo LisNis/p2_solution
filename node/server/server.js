@@ -68,7 +68,41 @@ const server = http.createServer((req, res) => {
                 res.end(data);
             }
         });
-    } else {
+    } else if (req.method === 'POST' && req.url === '/group') {
+        let body = '';
+        req.on('data', (chunk) => {
+            body += chunk.toString(); // Buffer to string
+        });
+        req.on('end', () => {
+            // Parse the json data
+            const groupsData = JSON.parse(body);
+
+
+            // Append the post to json
+            appendGroupsToDatabase(groupsData, (err) => {
+                if (err) {
+                    res.writeHead(500);
+                    res.end('Error: Could not save the group');
+                } else {
+                    res.writeHead(200);
+                    res.end('Groups saved successfully');
+                }
+            });
+        });
+    } else if (req.method === 'GET' && req.url === '/groups') {
+        // get requests
+        fs.readFile(path.join(__dirname, '../PublicResources', 'groups.json'), 'utf8', (err, data) => {
+            if (err) {
+                res.writeHead(500);
+                res.end('Error: Could not fetch groups');
+            } else {
+                res.writeHead(200, { 'Content-Type': 'application/json' });
+                res.end(data);
+            }
+        });
+
+    }
+    else {
         let filePath = req.url === '/' ? '/html/login.html' : req.url;
 
 
@@ -168,6 +202,26 @@ function appendUsersToDatabase(usersData, callback) {
     });
 }
 
+function appendGroupsToDatabase(groupsData, callback) {
+    const databasePath = path.join(__dirname, '../PublicResources', 'groups.json');
+
+
+    fs.readFile(databasePath, 'utf8', (err, data) => {
+        if (err) {
+            if (err.code === 'ENOENT') {
+                data = '[]';
+            } else {
+                return callback(err);
+            }
+        }
+
+
+        // Parse existing posts
+        const groups = JSON.parse(data);
+        groups.push(groupsData);
+        fs.writeFile(databasePath, JSON.stringify(groups, null, 2), callback);
+    });
+}
 
 const PORT = process.env.PORT || 3240;
 server.listen(PORT, () => {
