@@ -12,25 +12,35 @@
       background: white;
   }
   .teamname {
-      width: 239px;
+      width: 300px;
+      height: 150px;
       border: 2px solid rgba(218, 202, 202, 0.1);
       box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
       color:black;
       border-radius: 10px;
       padding: 20px 40px;
       backdrop-filter: blur(18px);
-      margin: 10px;
+      margin: 20px;
+      display: flex; 
+      justify-content:center;
+      align-items: center;
   }
   
   .teammember {
-      width: 239px;
-      border: 2px solid rgba(218, 202, 202, 0.1);
-      box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-      border-radius: 10px;
-      padding: 20px 40px;
-      backdrop-filter: blur(18px);
-      margin: 10px;
-  
+    width: 300px;
+    height: 150px;
+    border: 2px solid rgba(218, 202, 202, 0.1);
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    color:black;
+    border-radius: 20px;
+    padding: 20px 40px;
+    backdrop-filter: blur(18px);
+    margin: 20px;
+    display: flex; 
+    justify-content:center;
+    align-items: center;
+
+   
   }
   #form-a-team {
       color: black;
@@ -44,10 +54,11 @@
       padding: 20px;
       color: white;
       background-color: pink;
-      border: 2px solid black;
       font-size:small;
       width: 239px;
-     
+      border-radius: 10px;
+      box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+     border: none;
   
   }
   header{
@@ -63,8 +74,16 @@
   }
   #team-name-input{
     width: 239px;
+    margin-bottom: 10px;
+    height: 30px;
   }
 
   #member-name-input{
     width: 239px;
+    margin-bottom: 10px;
+    height: 30px;
+  }
+  .back a{
+    color: black;
+    text-decoration:none; 
   }
