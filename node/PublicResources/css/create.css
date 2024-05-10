@@ -6,7 +6,6 @@
   
   body {
       margin:0 auto;
-      max-width: 1200px;
       justify-content: center;
       align-items: center;
       min-height: 100vh;
@@ -44,8 +43,11 @@
   .btn {
       padding: 20px;
       color: white;
-      background-color: rgb(98, 36, 85);
+      background-color: pink;
       border: 2px solid black;
+      font-size:small;
+      width: 239px;
+     
   
   }
   header{
@@ -58,4 +60,11 @@
   .page {
       margin-left: 20px;
       margin-right: 20px;
+  }
+  #team-name-input{
+    width: 239px;
+  }
+
+  #member-name-input{
+    width: 239px;
   }
