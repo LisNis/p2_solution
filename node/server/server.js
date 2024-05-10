@@ -2,6 +2,7 @@ const http = require('http');
 const fs = require('fs');
 const path = require('path');
 
+
 const server = http.createServer((req, res) => {
     if (req.method === 'POST' && req.url === '/post') {
         let body = '';
@@ -12,7 +13,8 @@ const server = http.createServer((req, res) => {
             // Parse the json data
             const postData = JSON.parse(body);
 
-            // Append the post to json 
+
+            // Append the post to json
             appendPostToDatabase(postData, (err) => {
                 if (err) {
                     res.writeHead(500);
@@ -34,8 +36,41 @@ const server = http.createServer((req, res) => {
                 res.end(data);
             }
         });
+    } else if (req.method === 'POST' && req.url === '/invitation') {
+        let body = '';
+        req.on('data', (chunk) => {
+            body += chunk.toString(); // Buffer to string
+        });
+        req.on('end', () => {
+            // Parse the json data
+            const usersData = JSON.parse(body);
+
+
+            // Append the user data to json
+            appendUsersToDatabase(usersData, (err) => {
+                if (err) {
+                    res.writeHead(500);
+                    res.end('Error: Could not save the users update');
+                } else {
+                    res.writeHead(200);
+                    res.end('Users.json update saved successfully');
+                }
+            });
+        });
+    } else if (req.method === 'GET' && req.url === '/') {
+        // get requests
+        fs.readFile(path.join(__dirname, '../PublicResources', 'users.json'), 'utf8', (err, data) => {
+            if (err) {
+                res.writeHead(500);
+                res.end('Error: Could not fetch users');
+            } else {
+                res.writeHead(200, { 'Content-Type': 'application/json' });
+                res.end(data);
+            }
+        });
     } else {
         let filePath = req.url === '/' ? '/html/login.html' : req.url;
+
 
         // path e.ks. '/post', then 'post.html'
         if (filePath === '/post') {
@@ -56,7 +91,9 @@ const server = http.createServer((req, res) => {
             filePath = '/html/login.html';
         }
 
+
         filePath = path.join(__dirname, '../PublicResources', filePath);
+
 
         fs.readFile(filePath, (error, data) => {
             if (error) {
@@ -79,6 +116,7 @@ const server = http.createServer((req, res) => {
                     contentType = 'text/javascript';
                 }
 
+
                 res.writeHead(200, { 'Content-Type': contentType });
                 res.end(data);
             }
@@ -86,8 +124,10 @@ const server = http.createServer((req, res) => {
     }
 }); // end create Server
 
+
 function appendPostToDatabase(postData, callback) {
     const databasePath = path.join(__dirname, '../PublicResources', 'posts.json');
+
 
     fs.readFile(databasePath, 'utf8', (err, data) => {
         if (err) {
@@ -98,12 +138,38 @@ function appendPostToDatabase(postData, callback) {
             }
         }
 
+
         // Parse existing posts
         const posts = JSON.parse(data);
         posts.push(postData);
         fs.writeFile(databasePath, JSON.stringify(posts, null, 2), callback);
     });
 }
+
+
+function appendUsersToDatabase(usersData, callback) {
+    const databasePath = path.join(__dirname, '../PublicResources', 'users.json');
+
+
+    fs.readFile(databasePath, 'utf8', (err, data) => {
+        if (err) {
+            if (err.code === 'ENOENT') {
+                data = '[]';
+            } else {
+                return callback(err);
+            }
+        }
+
+
+        // Parse existing posts
+        const users = JSON.parse(data);
+        users.push(usersData);
+        fs.writeFile(databasePath, JSON.stringify(users, null, 2), callback);
+    });
+}
+
+
+
 
 const PORT = process.env.PORT || 3240;
 server.listen(PORT, () => {

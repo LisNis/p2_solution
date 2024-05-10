@@ -17,12 +17,33 @@ function generateInvitationsForUser(username) {
 
                     newInvitation.innerHTML = `
                         <p>You have been invited to group: "${invitation}"</p>
-                        <button>Accept</button>
-                        <button>Decline</button>
+                        <button class="accept-btn" data-invitation="${invitation}">Accept</button>
+                        <button class="decline-btn" data-invitation="${invitation}">Decline</button>
                     `;
 
-                    newInvitation.querySelector('button').addEventListener('click', () => {
-                        // Do something when the button is clicked
+                    const acceptButton = newInvitation.querySelector('.accept-btn');
+                    const declineButton = newInvitation.querySelector('.decline-btn');
+
+                    acceptButton.addEventListener('click', (event) => {
+                        const invitation = event.target.dataset.invitation;
+                        // Remove the accepted invitation from user's invitations array
+                        user.invitations = user.invitations.filter(inv => inv !== invitation);
+                        // Add the accepted invitation to user's groups array
+                        user.group.push(invitation);
+                        // Update the JSON data
+                        updateUserJSON(users);
+                        // Remove the invitation from UI
+                        newInvitation.remove();
+                        // Optionally, perform any other actions
+                        console.log(`Accepted invitation to group: "${invitation}"`);
+                    });
+
+                    declineButton.addEventListener('click', (event) => {
+                        const invitation = event.target.dataset.invitation;
+                        // Optionally, perform any actions for declining invitation
+                        console.log(`Declined invitation to group: "${invitation}"`);
+                        // Remove the invitation from UI
+                        newInvitation.remove();
                     });
 
                     invitationsContainer.appendChild(newInvitation);
@@ -38,3 +59,23 @@ function generateInvitationsForUser(username) {
 
 const loggedInUser = "Alisanders";
 generateInvitationsForUser(loggedInUser);
+
+// Function to update the JSON data after accepting an invitation
+function updateUserJSON(users) {
+    fetch('/invitation', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(users)
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Failed to update user data');
+        }
+        console.log('User data updated successfully');
+    })
+    .catch(error => {
+        console.error('Error updating user data:', error);
+    });
+}
