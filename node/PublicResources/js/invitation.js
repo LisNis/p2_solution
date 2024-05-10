@@ -59,7 +59,6 @@ function generateInvitationsForUser(username) {
 
 const loggedInUser = "Alisanders";
 generateInvitationsForUser(loggedInUser);
-
 // Function to update the JSON data after accepting an invitation
 function updateUserJSON(users) {
     fetch('/invitation', {

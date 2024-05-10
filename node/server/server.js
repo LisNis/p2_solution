@@ -57,7 +57,7 @@ const server = http.createServer((req, res) => {
                 }
             });
         });
-    } else if (req.method === 'GET' && req.url === '/') {
+    } else if (req.method === 'GET' && req.url === '/users') {
         // get requests
         fs.readFile(path.join(__dirname, '../PublicResources', 'users.json'), 'utf8', (err, data) => {
             if (err) {
@@ -167,8 +167,6 @@ function appendUsersToDatabase(usersData, callback) {
         fs.writeFile(databasePath, JSON.stringify(users, null, 2), callback);
     });
 }
-
-
 
 
 const PORT = process.env.PORT || 3240;
