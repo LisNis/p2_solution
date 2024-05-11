@@ -68,8 +68,39 @@ const server = http.createServer((req, res) => {
                 res.end(data);
             }
         });
-    } 
-    //else if (req.method === 'POST' && req.url === '/groups') {
+    } else if (req.method === 'POST' && req.url === '/calendar') {
+        let body = '';
+        req.on('data', (chunk) => {
+            body += chunk.toString(); // Buffer to string
+        });
+        req.on('end', () => {
+            // Parse the json data
+            const calendarData = JSON.parse(body);
+
+
+            // Append the post to json
+            appendCalendarToDatabase(postData, (err) => {
+                if (err) {
+                    res.writeHead(500);
+                    res.end('Error: Could not save the post');
+                } else {
+                    res.writeHead(200);
+                    res.end('Post saved successfully');
+                }
+            });
+        });
+    } else if (req.method === 'GET' && req.url === '/calendar') {
+        // get requests
+        fs.readFile(path.join(__dirname, '../PublicResources', 'calendar.json'), 'utf8', (err, data) => {
+            if (err) {
+                res.writeHead(500);
+                res.end('Error: Could not fetch posts');
+            } else {
+                res.writeHead(200, { 'Content-Type': 'application/json' });
+                res.end(data);
+            }
+        });
+    }//else if (req.method === 'POST' && req.url === '/groups') {
         //let body = '';
         //req.on('data', (chunk) => {
             //body += chunk.toString(); // Buffer to string
@@ -125,8 +156,9 @@ const server = http.createServer((req, res) => {
             filePath = '/html/create.html';
         } else if (filePath === '/login') {
             filePath = '/html/login.html';
+        } else if (filePath === '/teamcohesion') {
+            filePath = '/html/teamcohesion.html';
         }
-
 
         filePath = path.join(__dirname, '../PublicResources', filePath);
 
@@ -201,6 +233,27 @@ function appendUsersToDatabase(usersData, callback) {
         const users = JSON.parse(data);
         users.push(usersData);
         fs.writeFile(databasePath, JSON.stringify(users, null, 2), callback);
+    });
+}
+
+function appendCalendarToDatabase(calendarData, callback) {
+    const databasePath = path.join(__dirname, '../PublicResources', 'calendar.json');
+
+
+    fs.readFile(databasePath, 'utf8', (err, data) => {
+        if (err) {
+            if (err.code === 'ENOENT') {
+                data = '[]';
+            } else {
+                return callback(err);
+            }
+        }
+
+
+        // Parse existing posts
+        const calendar = JSON.parse(data);
+        calendar.push(calendarData);
+        fs.writeFile(databasePath, JSON.stringify(posts, null, 2), callback);
     });
 }
 

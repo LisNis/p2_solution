@@ -340,6 +340,7 @@ const generateResponse = (incomingTextLi) => {
         if (diff <= 0) {
             messageElement.textContent = "Countdown has ended!";
             clearInterval(intervalId);
+            alert("The countdown has ended, it's time for a break!");
             return;
         }
 
@@ -367,7 +368,7 @@ const handleChat = () => {
     chatBox.appendChild(createTextLi(userMessage, 'outgoing'));
     chatBox.scrollTo(0, chatBox.scrollHeight);
 
-    chatInput.value = '';
+    //chatInput.value = '';
 
     setTimeout(() => {
         const incomingTextLi = createTextLi("Writing...", 'incoming');
