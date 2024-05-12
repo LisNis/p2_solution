@@ -1,6 +1,8 @@
+// invitations.js
+
 const invitationsContainer = document.querySelector('.invitation');
 
-//function to add invitations to the invitation page
+// Function to add invitations to the invitation page
 function generateInvitationsForUser(username) {
     fetch('../users.json')
         .then(response => response.json())
@@ -26,17 +28,23 @@ function generateInvitationsForUser(username) {
 
                     acceptButton.addEventListener('click', (event) => {
                         const invitation = event.target.dataset.invitation;
-                        // Remove the accepted invitation from user's invitations array
-                        user.invitations = user.invitations.filter(inv => inv !== invitation);
-                        // Add the accepted invitation to user's groups array
-                        user.group.push(invitation);
-                        // Update the JSON data
-                        updateUserJSON(users);
+                    
+                        // Construct the data object to send to the server
+                        const userData = {
+                            username: loggedInUser,
+                            invitation: invitation
+                        };
+                    
+                        // Send the data to the server
+                        updateUserJSON(userData);
+                        
                         // Remove the invitation from UI
                         newInvitation.remove();
+                        
                         // Optionally, perform any other actions
                         console.log(`Accepted invitation to group: "${invitation}"`);
                     });
+                    
 
                     declineButton.addEventListener('click', (event) => {
                         const invitation = event.target.dataset.invitation;
@@ -59,14 +67,15 @@ function generateInvitationsForUser(username) {
 
 const loggedInUser = "Alisanders";
 generateInvitationsForUser(loggedInUser);
-// Function to update the JSON data after accepting an invitation
-function updateUserJSON(users) {
+
+// Function to send a POST request to update the user data on the server
+function updateUserJSON(userData) {
     fetch('/invitation', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify(users)
+        body: JSON.stringify(userData)
     })
     .then(response => {
         if (!response.ok) {

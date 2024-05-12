@@ -214,10 +214,8 @@ function appendPostToDatabase(postData, callback) {
     });
 }
 
-
 function appendUsersToDatabase(usersData, callback) {
     const databasePath = path.join(__dirname, '../PublicResources', 'users.json');
-
 
     fs.readFile(databasePath, 'utf8', (err, data) => {
         if (err) {
@@ -228,13 +226,29 @@ function appendUsersToDatabase(usersData, callback) {
             }
         }
 
+        // Parse existing users
+        let users = JSON.parse(data);
 
-        // Parse existing posts
-        const users = JSON.parse(data);
-        users.push(usersData);
+        // Find the index of the user to be updated
+        const index = users.findIndex(user => user.username === usersData.username);
+
+        if (index !== -1) {
+            // Remove the accepted invitation from invitations array
+            users[index].invitations = users[index].invitations.filter(invitation => invitation !== usersData.invitation);
+            // Add the accepted invitation to the groups array
+            users[index].group.push(usersData.invitation);
+        } else {
+            console.error('User not found:', usersData.username);
+        }
+
+        // Write the updated user data back to the file
         fs.writeFile(databasePath, JSON.stringify(users, null, 2), callback);
     });
 }
+
+
+
+
 
 function appendCalendarToDatabase(calendarData, callback) {
     const databasePath = path.join(__dirname, '../PublicResources', 'calendar.json');
