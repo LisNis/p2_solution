@@ -32,15 +32,16 @@ function generateInvitationsForUser(username) {
                         // Construct the data object to send to the server
                         const userData = {
                             username: loggedInUser,
+                            action: 'accept',
                             invitation: invitation
                         };
                     
                         // Send the data to the server
-                        updateUserJSON(userData);
-                        
+                        updateUserData(userData);
+                    
                         // Remove the invitation from UI
                         newInvitation.remove();
-                        
+                    
                         // Optionally, perform any other actions
                         console.log(`Accepted invitation to group: "${invitation}"`);
                     });
@@ -48,10 +49,22 @@ function generateInvitationsForUser(username) {
 
                     declineButton.addEventListener('click', (event) => {
                         const invitation = event.target.dataset.invitation;
-                        // Optionally, perform any actions for declining invitation
-                        console.log(`Declined invitation to group: "${invitation}"`);
+                    
+                        // Construct the data object to send to the server
+                        const userData = {
+                            username: loggedInUser,
+                            action: 'decline',
+                            invitation: invitation
+                        };
+                    
+                        // Send the data to the server
+                        updateUserData(userData);
+                    
                         // Remove the invitation from UI
                         newInvitation.remove();
+                    
+                        // Optionally, perform any other actions
+                        console.log(`Declined invitation to group: "${invitation}"`);
                     });
 
                     invitationsContainer.appendChild(newInvitation);
@@ -69,8 +82,8 @@ const loggedInUser = "Alisanders";
 generateInvitationsForUser(loggedInUser);
 
 // Function to send a POST request to update the user data on the server
-function updateUserJSON(userData) {
-    fetch('/invitation', {
+function updateUserData(userData) {
+    fetch('/update-user-data', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'

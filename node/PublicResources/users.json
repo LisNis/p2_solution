@@ -5,13 +5,10 @@
     "group": [
       "group 1",
       "group 2",
-      "group 3"
-    ],
-    "invitations": [
+      "group 3",
       "group 4",
-      "group 5",
-      "datalogi projekt gruppe",
-      "aeble cider"
-    ]
+      "datalogi projekt gruppe"
+    ],
+    "invitations": []
   }
 ]

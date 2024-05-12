@@ -36,26 +36,37 @@ const server = http.createServer((req, res) => {
                 res.end(data);
             }
         });
-    } else if (req.method === 'POST' && req.url === '/invitation') {
+    } else if (req.method === 'POST' && req.url === '/update-user-data') {
         let body = '';
         req.on('data', (chunk) => {
             body += chunk.toString(); // Buffer to string
         });
         req.on('end', () => {
             // Parse the json data
-            const usersData = JSON.parse(body);
-
-
-            // Append the user data to json
-            appendUsersToDatabase(usersData, (err) => {
-                if (err) {
-                    res.writeHead(500);
-                    res.end('Error: Could not save the users update');
-                } else {
-                    res.writeHead(200);
-                    res.end('Users.json update saved successfully');
-                }
-            });
+            const userData = JSON.parse(body);
+    
+            // Update or remove the invitation based on the action
+            if (userData.action === 'accept') {
+                appendUsersToDatabase(userData, (err) => {
+                    if (err) {
+                        res.writeHead(500);
+                        res.end('Error: Could not accept the invitation');
+                    } else {
+                        res.writeHead(200);
+                        res.end('Invitation accepted successfully');
+                    }
+                });
+            } else if (userData.action === 'decline') {
+                removeInvitationFromUser(userData, (err) => {
+                    if (err) {
+                        res.writeHead(500);
+                        res.end('Error: Could not decline the invitation');
+                    } else {
+                        res.writeHead(200);
+                        res.end('Invitation declined successfully');
+                    }
+                });
+            }
         });
     } else if (req.method === 'GET' && req.url === '/users') {
         // get requests
@@ -291,6 +302,37 @@ function appendCalendarToDatabase(calendarData, callback) {
         //fs.writeFile(databasePath, JSON.stringify(groups, null, 2), callback);
     //});
 //}
+
+function removeInvitationFromUser(userData, callback) {
+    const databasePath = path.join(__dirname, '../PublicResources', 'users.json');
+
+    fs.readFile(databasePath, 'utf8', (err, data) => {
+        if (err) {
+            if (err.code === 'ENOENT') {
+                data = '[]';
+            } else {
+                return callback(err);
+            }
+        }
+
+        // Parse existing users
+        let users = JSON.parse(data);
+
+        // Find the index of the user to be updated
+        const index = users.findIndex(user => user.username === userData.username);
+
+        if (index !== -1) {
+            // Remove the declined invitation from the invitations array
+            users[index].invitations = users[index].invitations.filter(invitation => invitation !== userData.invitation);
+        } else {
+            console.error('User not found:', userData.username);
+        }
+
+        // Write the updated user data back to the file
+        fs.writeFile(databasePath, JSON.stringify(users, null, 2), callback);
+    });
+}
+
 
 const PORT = process.env.PORT || 3240;
 server.listen(PORT, () => {
