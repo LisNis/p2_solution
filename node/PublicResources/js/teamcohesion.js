@@ -1,7 +1,5 @@
 const radioContainers = document.querySelectorAll('.radio-container');
 const submitBtn = document.getElementById('submitBtn');
-const backDrop = document.getElementById('modalBackDrop');
-const highlightContainer = document.getElementById('highlight-container');
 const resultQuiz = document.getElementById('result-quiz');
 
 
@@ -20,8 +18,6 @@ radioContainers.forEach(container => {
 });
 
 submitBtn.addEventListener('click', function() {
-    highlightContainer.style.display = 'block';
-    backDrop.style.display = 'block';
     const radioInputs = document.querySelectorAll('input[type="radio"]');
 
     let totalPoints = 0;
@@ -32,15 +28,15 @@ submitBtn.addEventListener('click', function() {
     });
 
     if(totalPoints >= 45) {
-        resultQuiz.value = "Very High team cohesion";
+        resultQuiz.textContent = "Very High team cohesion";
     } else if(totalPoints < 45 && totalPoints >= 38) {
-        resultQuiz.value = "High team cohesion";
+        resultQuiz.textContent = "High team cohesion";
     } else if(totalPoints < 38 && totalPoints >= 28) {
-        resultQuiz.value = "Neutral team cohesion";
+        resultQuiz.textContent = "Neutral team cohesion";
     } else if(totalPoints < 28 && totalPoints >= 20) {
-        resultQuiz.value = "Low team cohesion";
+        resultQuiz.textContent = "Low team cohesion";
     } else if(totalPoints > 20) {
-        resultQuiz.value = "Very low team cohesion";
+        resultQuiz.textContent = "Very low team cohesion";
     } else {
         console.log("Something went wrong");
     }
