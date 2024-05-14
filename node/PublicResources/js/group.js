@@ -22,3 +22,8 @@ const newGroup = document.querySelector(".newGroup");
 newGroup.addEventListener("click", function(){
     window.location.href="/create";
 });
+
+const invitation = document.querySelector(".invitation");
+invitation.addEventListener("click", function(){
+    window.location.href="/invitation";
+});
