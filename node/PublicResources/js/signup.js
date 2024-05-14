@@ -35,7 +35,7 @@ signupBtn.addEventListener("click", function() {
     .then(response => {
         if (response.ok) {
             // Signup successful, redirect to groups page
-            window.location.href = "/groups";
+            window.location.href = "/login";
         } else {
             // Signup failed, display error message
             return response.text().then(errorMessage => {
