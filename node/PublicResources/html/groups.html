@@ -20,8 +20,13 @@
     </header>
     
     <div class="newGroup">
-        Join or create a group
-    </div>
+        <div id="create-group"> create a group</div>
+     </div>
+     <script> const creategroup = document.getElementById("create-group");
+     creategroup.addEventListener("click", function(){
+       window.location.href="/create";
+     });
+     </script>
     <div class="groups">
         <div id="first-group">Group 1</div>
     </div>
