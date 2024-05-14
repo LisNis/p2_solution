@@ -9,7 +9,7 @@ header{
     display: flex;
     justify-content: space-between;
     background-color: lightcoral;
-    padding: 20px;
+    padding: 10px;
 }
 
 .user {
@@ -26,17 +26,44 @@ header{
     color: #333;
 }
 
-#username {
+.firstname {
     display: inline-block;
     background: rgba(255, 223, 223, 0.89);
 }
 
+.user-profile {
+    width: 200px;
+    height: 150px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin: 0 auto;
+}
+
+.userProfile {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 75px;
+    height: 75px;
+    border: 2px solid grey;
+    background: rgba(255, 223, 223, 0.89);
+    border-radius: 50%;
+    font-size: 20px;
+    color: #333;
+    margin-bottom: 10px; 
+}
+
+.firstnameProfile {
+    background: rgba(255, 223, 223, 0.89);
+}
 
 .search-bar {
-    width: 65%;
-    height: 50px;
+    width: 50%;
+    height: 35px;
     border: 2px solid grey;
-    border-radius: 30px;
+    border-radius: 10px;
     padding: 20px;
 }
 

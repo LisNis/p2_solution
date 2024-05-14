@@ -9,6 +9,12 @@
 <body >
     <ul class="sidebar">
         <li><a href="#" onclick=hideSidebar()>x</a></li>
+        <div class="user-profile">
+            <div class="userProfile">
+                <span class="firstnameProfile"></span>
+            </div>
+            <span class="username"></span>
+        </div>
         <li><a href="/invitation">Invitation</a></li>
         <li><a href="/create">Create group</a></li>
         <li><a href="/login">Log out</a></li>
@@ -16,7 +22,9 @@
     <header>
         <div>Logo</div>
         <input class="search-bar" type="text" placeholder="Search">
-        <div onclick=showSidebar() class="user"><span id="username"></span></div>
+        <div onclick=showSidebar() class="user">
+            <span class="firstname"></span>
+        </div>
     </header>
     
     <div class="newGroup">

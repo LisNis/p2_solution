@@ -292,10 +292,19 @@ function hideSidebar(){
     const sidebar = document.querySelector('.sidebar');
     sidebar.style.display = 'none';
 }
-
+       
 let username = localStorage.getItem("username");
-// Display username in the HTML
-document.getElementById("username").textContent = username;
+
+// Check if username is not null
+if (username) {
+    // Get first letter
+    let firstLetter = username.charAt(0);
+    
+    // Display in the HTML
+    document.querySelector(".firstname").textContent = firstLetter;
+    document.querySelector(".username").textContent = username;
+    document.querySelector(".firstnameProfile").textContent = firstLetter;
+}
 const postUsername = username;
 
 

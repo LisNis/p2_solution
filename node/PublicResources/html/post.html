@@ -9,6 +9,12 @@
 <body>
     <ul class="sidebar">
         <li><a href="#" onclick=hideSidebar()>x</a></li>
+        <div class="user-profile">
+            <div class="userProfile">
+                <span class="firstnameProfile"></span>
+            </div>
+            <span class="username"></span>
+        </div>
         <li><a href="/calendar">Calendar</a></li>
         <li><a href="/coffeebreak">Coffee break room</a></li>
         <li><a href="#">Pins</a></li>
@@ -20,7 +26,9 @@
     <header>
         <div><a href="/groups">Back</a></div>
         <input class="search-bar" type="text" placeholder="Search">
-        <div onclick=showSidebar() class="user" type="submit" value="User"><span id="username"></span></div>
+        <div onclick=showSidebar() class="user" type="submit" value="User">
+            <span class="firstname"></span>
+        </div>
     </header>
 
     <!-- posting -->

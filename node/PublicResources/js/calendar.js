@@ -69,6 +69,12 @@ const weekdays = [
     'Sunday'
 ];
 
+function openModal(date) {
+    clicked = date;
+    newEventModal.style.display = 'block';
+    backDrop.style.display = 'block';
+}
+
 
 function renderCalendar() {
 
