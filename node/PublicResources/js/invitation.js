@@ -1,6 +1,7 @@
-// invitations.js
-
 const invitationsContainer = document.querySelector('.invitation');
+const loggedInUser = "JohnAvery";
+
+generateInvitationsForUser(loggedInUser);
 
 // Function to add invitations to the invitation page
 function generateInvitationsForUser(username) {
@@ -77,9 +78,6 @@ function generateInvitationsForUser(username) {
             console.error('Error fetching data:', error);
         });
 }
-
-const loggedInUser = "Alisanders";
-generateInvitationsForUser(loggedInUser);
 
 // Function to send a POST request to update the user data on the server
 function updateUserData(userData) {

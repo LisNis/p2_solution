@@ -4,7 +4,42 @@ const path = require('path');
 
 
 const server = http.createServer((req, res) => {
-    if (req.method === 'POST' && req.url === '/post') {
+    if (req.method === 'POST' && req.url === '/login') {
+        let body = '';
+        req.on('data', (chunk) => {
+            body += chunk.toString(); // Buffer to string
+        });
+        req.on('end', () => {
+            // Parse the JSON data
+            const loginData = JSON.parse(body);
+            const username = loginData.username;
+            const password = loginData.password;
+
+            // Check if the username exists in the users.json file
+            fs.readFile(path.join(__dirname, '../PublicResources', 'users.json'), 'utf8', (err, data) => {
+                if (err) {
+                    res.writeHead(500);
+                    res.end('Error: Could not read user data');
+                } else {
+                    const users = JSON.parse(data);
+                    const user = users.find(user => user.username === username);
+                    if (user) {
+                        // Username exists, now check if the password matches
+                        if (user.password === password) {
+                            res.writeHead(200, { 'Content-Type': 'application/json' });
+                            res.end(JSON.stringify({ message: 'Login successful' }));
+                        } else {
+                            res.writeHead(401);
+                            res.end('Invalid password');
+                        }
+                    } else {
+                        res.writeHead(404);
+                        res.end('User not found');
+                    }
+                }
+            });
+        });
+    } else if (req.method === 'POST' && req.url === '/post') {
         let body = '';
         req.on('data', (chunk) => {
             body += chunk.toString(); // Buffer to string
