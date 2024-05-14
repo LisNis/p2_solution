@@ -90,13 +90,13 @@ const server = http.createServer((req, res) => {
 
 
             // Append the post to json
-            appendCalendarToDatabase(postData, (err) => {
+            appendCalendarToDatabase(calendarData, (err) => {
                 if (err) {
                     res.writeHead(500);
                     res.end('Error: Could not save the post');
                 } else {
                     res.writeHead(200);
-                    res.end('Post saved successfully');
+                    res.end('Calendar saved successfully');
                 }
             });
         });
@@ -257,10 +257,6 @@ function appendUsersToDatabase(usersData, callback) {
     });
 }
 
-
-
-
-
 function appendCalendarToDatabase(calendarData, callback) {
     const databasePath = path.join(__dirname, '../PublicResources', 'calendar.json');
 
@@ -276,11 +272,13 @@ function appendCalendarToDatabase(calendarData, callback) {
 
 
         // Parse existing posts
-        const calendar = JSON.parse(data);
-        calendar.push(calendarData);
-        fs.writeFile(databasePath, JSON.stringify(posts, null, 2), callback);
+        const events = JSON.parse(data);
+        events.push(calendarData);
+        fs.writeFile(databasePath, JSON.stringify(events, null, 2), callback);
     });
 }
+
+
 
 //function appendGroupsToDatabase(groupsData, callback) {
     //const databasePath = path.join(__dirname, '../PublicResources', 'groups.json');

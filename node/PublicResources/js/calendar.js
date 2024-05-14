@@ -16,9 +16,47 @@ const cancelBtn = document.getElementById('cancel-button');
 const addBtn = document.getElementById('add-button');
 
 
+function fetchCalendarData() {
+    fetch('/calendar')
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            renderCalendar(); 
+        })
+        .catch(error => {
+            console.error('Error fetching calendar data:', error);
+        });
+}
+
+function updateCalendarData(updatedData) {
+    fetch('/calendar', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(updatedData),
+    })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.text();
+        })
+        .then(message => {
+            console.log('Server response:', message);
+        })
+        .catch(error => {
+            console.error('Error updating calendar data:', error);
+        });
+}
+
 let nav = 0;
 let clicked = null;
-let events = localStorage.getItem('events') ? JSON.parse(localStorage.getItem('events')) : [];
+
 
 
 const weekdays = [
@@ -31,12 +69,6 @@ const weekdays = [
     'Sunday'
 ];
 
-function openModal(date) {
-    clicked = date;
-    newEventModal.style.display = 'block';
-    backDrop.style.display = 'block';
-
-}
 
 function renderCalendar() {
 
@@ -109,6 +141,17 @@ function renderCalendar() {
 
 }
 
+function addNewEvent(calendarData) {
+    events.push(calendarData);
+    updateCalendarData(events);
+}
+
+
+function deleteEvent(date) {
+    events = events.filter(event => event.date !== date);
+    updateCalendarData(events);
+}
+
 function buttons() {
     nextBtn.addEventListener('click', () => {
         nav++;
@@ -142,8 +185,6 @@ addBtn.addEventListener('click', function(){
             title: inputBox.value
         });
 
-        localStorage.setItem('events', JSON.stringify(events));
-
     
     } else {
         console.log("You need to write something");  
@@ -163,23 +204,13 @@ cancelBtn.addEventListener('click', function() {
 listContainer.addEventListener('click', function(e) {
     if(e.target.tagName === 'LI'){
         e.target.classList.toggle('checked');
-        deleteEvent();
-
+        deleteEventFromJSON(clicked);
+        saveEventsToFile(events);
     } else if (e.target.tagName === 'SPAN') {
         e.target.parentElement.remove();
-        deleteEvent();
+        deleteEventFromJSON(clicked);
+        saveEventsToFile(events);
     }
-
 });
 
-function deleteEvent() {
-    events = events.filter(e => e.date !== clicked);
-    localStorage.setItem('events', JSON.stringify(events));
-    renderCalendar();
-}
-
-
-function displayList() {
-    listContainer.innerHTML = localStorage.getItem('data');
-}
-displayList();
+fetchCalendarData();
