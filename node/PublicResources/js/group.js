@@ -28,9 +28,26 @@ invitation.addEventListener("click", function(){
     window.location.href="/invitation";
 });
 
-const addingnewmember = document.querySelector(".addMember");
-addingnewmember.addEventListener("click", function(){
-    const settingforgroup = document.querySelector('.group-options');
-    settingforgroup.style.display = 'flex'; 
+const settingforgroup = document.querySelector('.group-options');
+settingforgroup.addEventListener("click", function(){
+    const addingnewmember = document.querySelector('.addMember');
+    addingnewmember.style.display = 'flex'; 
     console.log ("Fuckk det");
+}); 
+
+document.querySelector('.addMember').addEventListener('click', function() {
+    const searchBarContainer = document.querySelector('.search-bar-container');
+    searchBarContainer.style.display = 'block'; // Show the search bar
 });
+
+document.querySelector('.addMember').addEventListener('click', function() {
+    const addingnewmember = document.querySelector('.addMember');
+    const computedStyle = window.getComputedStyle(addingnewmember); // Gettinf the computed style of add Member
+    const displayStyle = computedStyle.getPropertyValue('display'); // Getting the value of the 'display' 
+
+    if (displayStyle === 'block') {
+        addingnewmember.style.display = 'none';
+    } else {
+        addingnewmember.style.display = 'block';
+    }
+}); 
