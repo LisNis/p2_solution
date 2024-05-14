@@ -1,5 +1,5 @@
 const invitationsContainer = document.querySelector('.invitation');
-const loggedInUser = "JohnAvery";
+const loggedInUser = localStorage.getItem("username");
 
 generateInvitationsForUser(loggedInUser);
 
