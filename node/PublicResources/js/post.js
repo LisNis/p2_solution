@@ -28,115 +28,114 @@ function renderPosts(posts) {
 }
 
 function createPostElement(post) {
+    // Create the post element
     const postElement = document.createElement('div');
     postElement.classList.add('post');
-    if (post.isPinned) {
-        postElement.classList.add('pinned');
-    }
 
+    // Create the post header
     const postHeader = document.createElement('div');
     postHeader.classList.add('postheader');
 
+    // Create user information
     const userInformation = document.createElement('div');
     userInformation.classList.add('user-information');
 
+    // Username
     const usernameSpan = document.createElement('span');
     usernameSpan.textContent = post.username;
     userInformation.appendChild(usernameSpan);
 
+    // Point
     const pointSpan = document.createElement('span');
     pointSpan.textContent = '•';
     userInformation.appendChild(pointSpan);
 
+    // Date
     const dateSpan = document.createElement('span');
     dateSpan.textContent = post.date;
     userInformation.appendChild(dateSpan);
 
-    const timeSpan = document.createElement('span');
-    timeSpan.textContent = post.timestamp;
-    userInformation.appendChild(timeSpan);
-
+    // Append user info to post header
     postHeader.appendChild(userInformation);
 
+    // Create post content
     const postContent = document.createElement('div');
     postContent.classList.add('post-content');
 
+    // Title
     const titleHeading = document.createElement('h3');
     titleHeading.textContent = post.title;
     postContent.appendChild(titleHeading);
 
+    // Content
     const contentParagraph = document.createElement('p');
     contentParagraph.textContent = post.content;
     postContent.appendChild(contentParagraph);
 
-    // Pin button
-    const pinButton = document.createElement('button');
-    pinButton.textContent = 'Pin';
-    pinButton.className = 'pin-button';
-    if (post.isPinned) {
-        pinButton.disabled = true;
-    }
-    postContent.appendChild(pinButton);
-
-    pinButton.addEventListener('click', async () => {
-        const response = await fetch(`/posts/${post.id}/pin`, { method: 'POST' });
-        if (response.ok) {
-            postElement.classList.add('pinned');
-            const container = document.querySelector('.container');
-            container.prepend(postElement);
-            pinButton.disabled = true;
-        }
-    });
-
-    // Existing thumbs up and thumbs down buttons
+    // Thumbs up and down buttons
     const thumbsUpButton = document.createElement('button');
     thumbsUpButton.innerHTML = '&#128077;';
     thumbsUpButton.classList.add('thumbs-up-btn');
+
     const thumbsDownButton = document.createElement('button');
     thumbsDownButton.innerHTML = '&#128078;';
     thumbsDownButton.classList.add('thumbs-down-btn');
 
+    const likeCount = document.createElement('span');
+    likeCount.classList.add('post-rating-count');
+    likeCount.textContent = post.likes;
+
+    const dislikeCount = document.createElement('span');
+    dislikeCount.classList.add('post-rating-count');
+    dislikeCount.textContent = post.dislikes;
+
+    // Event listeners for thumbs up and down
     thumbsUpButton.addEventListener('click', async () => {
-        const response = await fetch(`/posts/${post.id}/like`, { method: 'POST' });
-        if(response.ok) {
-            response.json().then(data => {
-                thumbsUpButton.nextElementSibling.textContent = data.likes;
-            });
-            thumbsUpButton.disabled = true;
+        if (!thumbsUpButton.classList.contains('clicked')) {
+            likeCount.textContent = Number(likeCount.textContent) + 1;
+            thumbsUpButton.classList.add('clicked');
             thumbsDownButton.disabled = true;
+            const response = await fetch(`/posts/${post.id}/like`, { method: 'POST' });
         }
     });
 
     thumbsDownButton.addEventListener('click', async () => {
-        const response = await fetch(`/posts/${post.id}/dislike`, { method: 'POST' });
-        if(response.ok) {
-            response.json().then(data => {
-                thumbsDownButton.nextElementSibling.textContent = data.dislikes;
-            });
-            thumbsDownButton.disabled = true;
+        if (!thumbsDownButton.classList.contains('clicked')) {
+            dislikeCount.textContent = Number(dislikeCount.textContent) + 1;
+            thumbsDownButton.classList.add('clicked');
             thumbsUpButton.disabled = true;
+            const response = await fetch(`/posts/${post.id}/dislike`, { method: 'POST' });
         }
     });
 
+    // Append all elements to post content
     postContent.appendChild(thumbsUpButton);
+    postContent.appendChild(likeCount);
     postContent.appendChild(thumbsDownButton);
+    postContent.appendChild(dislikeCount);
 
+    // Append content and header to the main post element
     postElement.appendChild(postHeader);
     postElement.appendChild(postContent);
 
+    // Comments functionality
     const commentButton = document.createElement("button");
     commentButton.textContent = "Comment";
     commentButton.className = "comment-button";
+    commentButton.addEventListener('click', () => {
+        const commentSection = postElement.querySelector(".comment-section");
+        commentSection.style.display = commentSection.style.display === "none" ? "block" : "none";
+    });
     postElement.appendChild(commentButton);
 
     const commentSection = document.createElement("div");
     commentSection.className = "comment-section";
     commentSection.style.display = "none";
-    commentButton.onclick = () => commentSection.style.display = commentSection.style.display === "none" ? "block" : "none";
 
     const commentLabel = document.createElement("div");
     commentLabel.textContent = "Comments:";
     commentLabel.style.textDecoration = "underline";
+    commentLabel.style.marginBottom = "5px";
     commentSection.appendChild(commentLabel);
 
     const commentList = document.createElement("div");
@@ -151,16 +150,19 @@ function createPostElement(post) {
     const submitButton = document.createElement("button");
     submitButton.textContent = "Submit";
     submitButton.className = "submit-comment-button";
-    commentSection.appendChild(submitButton);
     submitButton.addEventListener('click', async () => {
-        let comment = commentInput.value.trim();
-        if (comment !== "") {
+        let comment = commentInput.value;
+        if (comment.trim() !== "") {
+            let newComment = document.createElement("div");
+            newComment.textContent = comment;
+            newComment.className = "comment";
+            commentList.appendChild(newComment);
+            commentInput.value = "";
             const commentData = {
                 postId: post.id,
                 comment: comment,
-                username: localStorage.getItem("username") // Ensure username is available in localStorage
+                username: localStorage.getItem("username")
             };
-
             const response = await fetch('/posts/comment', {
                 method: 'POST',
                 headers: {
@@ -168,14 +170,7 @@ function createPostElement(post) {
                 },
                 body: JSON.stringify(commentData)
             });
-
-            if (response.ok) {
-                let newComment = document.createElement("div");
-                newComment.textContent = comment;
-                newComment.className = "comment";
-                commentList.appendChild(newComment);
-                commentInput.value = "";
-            } else {
+            if (!response.ok) {
                 console.error('Failed to submit comment:', await response.text());
             }
         }
@@ -183,8 +178,109 @@ function createPostElement(post) {
     commentSection.appendChild(submitButton);
     postElement.appendChild(commentSection);
 
+    // Pin status and button
+    const pinnedStatus = document.createElement('span');
+    pinnedStatus.textContent = "PINNED";
+    pinnedStatus.className = "pinned-status";
+    pinnedStatus.style.display = "none"; // Hidden by default
+    postHeader.appendChild(pinnedStatus); // Append to postHeader
+    
+
+    const pinButton = document.createElement("button");
+    pinButton.textContent = "Pin";
+    pinButton.className = "pin-button";
+    pinButton.addEventListener('click', () => pinPost(postElement));
+    postHeader.appendChild(pinButton);  // Tilføj knappen til headeren
     return postElement;
 }
+
+function pinPost(postElement) {
+    const postList = document.querySelector('.container');
+    const currentlyPinned = postList.querySelector('.pinned-post'); // Find already pinned post
+
+    // If there's a post already pinned, unpin it
+    if (currentlyPinned) {
+        currentlyPinned.classList.remove('pinned-post');
+        const statusLabel = currentlyPinned.querySelector('.pinned-status');
+        if (statusLabel) {
+            statusLabel.style.display = 'none';
+        }
+    }
+
+    // Move the new post to the top and mark it as pinned
+    postList.prepend(postElement);
+    postElement.classList.add('pinned-post');
+    const pinnedLabel = postElement.querySelector('.pinned-status');
+    if (pinnedLabel) {
+        pinnedLabel.style.display = 'block'; // Make the PINNED text visible
+    }
+}
+
+document.getElementById('submitPost').addEventListener('click', function() {
+    const postContent = document.getElementById('textInput').value;
+    const postData = {
+        content: postContent,
+        // username: 
+    };
+
+    // Send the post data to the server
+    fetch('/post', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(postData)
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.text();
+    })
+    .then(data => {
+        console.log(data); 
+        alert('Post submitted successfully');
+    })
+    .catch(error => {
+        console.error('There was a problem with the fetch operation:', error);
+        alert('There was an error submitting the post');
+    });
+});
+
+document.querySelectorAll(".post").forEach(post => {
+    const postId = post.dataset.postId;
+    const ratings = post.querySelectorAll(".post-rating");
+    const likeRating = ratings[0];
+
+    ratings.forEach(rating => {
+        const button = rating.querySelector(".post-rating-button");
+        const count = rating.querySelector(".post-rating-count");
+
+        button.addEventListener("click", async () => {
+            if (rating.classList.contains("post-rating-selected")) {
+                return;
+            }
+
+            count.textContent = Number(count.textContent) + 1;
+
+            ratings.forEach(rating => {
+                if (rating.classList.contains("post-rating-selected")) {
+                    const count = rating.querySelector(".post-rating-count");
+
+                    count.textContent = Math.max(0, Number(count.textContent) - 1);
+                    rating.classList.remove("post-rating-selected");
+                }
+            });
+
+            rating.classList.add("post-rating-selected");
+
+            const likeOrDislike = likeRating === rating ? "like" : "dislike";
+            const response = await fetch(`/posts/${postId}/${likeOrDislike}`);
+            const body = await response.json();
+        });
+    });
+});
+
 
 
 //sidebar
