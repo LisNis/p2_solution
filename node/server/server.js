@@ -39,6 +39,26 @@ const server = http.createServer((req, res) => {
                 }
             });
         });
+    } else if (req.method === 'POST' && req.url === '/signup') {
+        let body = '';
+        req.on('data', (chunk) => {
+            body += chunk.toString(); // Buffer to string
+        });
+        req.on('end', () => {
+            // Parse the JSON data
+            const userData = JSON.parse(body);
+
+            // Save the new user data to the users.json file
+            addNewUserToDatabase(userData, (err) => {
+                if (err) {
+                    res.writeHead(500);
+                    res.end('Error: Could not save the user');
+                } else {
+                    res.writeHead(200);
+                    res.end('User signed up successfully');
+                }
+            });
+        });
     } else if (req.method === 'POST' && req.url === '/post') {
         let body = '';
         req.on('data', (chunk) => {
@@ -366,6 +386,37 @@ function removeInvitationFromUser(userData, callback) {
     });
 }
 
+function addNewUserToDatabase (userData, callback) {
+    const databasePath = path.join(__dirname, '../PublicResources', 'users.json');
+
+    fs.readFile(databasePath, 'utf8', (err, data) => {
+        if (err) {
+            if (err.code === 'ENOENT') {
+                data = '[]';
+            } else {
+                return callback(err);
+            }
+        }
+
+        // Parse existing users
+        let users = JSON.parse(data);
+
+        // Check if the username already exists
+        const existingUser = users.find(user => user.username === userData.username);
+        if (existingUser) {
+            return callback(new Error('Username already exists'));
+        }
+
+        userData.group = userData.group || [];
+        userData.invitations = userData.invitations || [];
+        
+        // Add the new user to the users array
+        users.push(userData);
+
+        // Write the updated user data back to the file
+        fs.writeFile(databasePath, JSON.stringify(users, null, 2), callback);
+    });
+}
 
 const PORT = process.env.PORT || 3240;
 server.listen(PORT, () => {

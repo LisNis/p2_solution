@@ -26,5 +26,11 @@
       "group 4",
       "datalogi projekt gruppe"
     ]
+  },
+  {
+    "username": "gamma",
+    "password": "omega",
+    "group": [],
+    "invitations": []
   }
 ]
