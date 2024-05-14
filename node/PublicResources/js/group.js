@@ -27,3 +27,10 @@ const invitation = document.querySelector(".invitation");
 invitation.addEventListener("click", function(){
     window.location.href="/invitation";
 });
+
+const addingnewmember = document.querySelector(".addMember");
+addingnewmember.addEventListener("click", function(){
+    const settingforgroup = document.querySelector('.group-options');
+    settingforgroup.style.display = 'flex'; 
+    console.log ("Fuckk det");
+});

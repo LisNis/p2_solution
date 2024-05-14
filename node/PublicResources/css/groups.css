@@ -128,3 +128,21 @@ a {
 .sidebar a {
     width: 100%;
 }
+
+.group {
+    display: flex;
+    align-items: center;
+}
+
+.group-options {
+    cursor: pointer;
+    margin-left: auto;
+    padding: 5px;
+    display: center;
+    position: absolute;
+    top : 300px;
+    right: 30px;
+}
+.addMember {
+    display: none;
+}
