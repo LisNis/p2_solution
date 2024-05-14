@@ -38,5 +38,11 @@
     "password": "1234",
     "group": [],
     "invitations": []
+  },
+  {
+    "username": "Anisa",
+    "password": "12345",
+    "group": [],
+    "invitations": []
   }
 ]
