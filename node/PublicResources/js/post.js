@@ -181,7 +181,7 @@ function createPostElement(post) {
             const commentData = {
                 postId: post.id,
                 comment: comment,
-                username: localStorage.getItem("username") // Ensure username is available in localStorage
+                username: localStorage.getItem("username") 
             };
 
             const response = await fetch('/posts/comment', {
@@ -223,7 +223,7 @@ document.getElementById('submitPost').addEventListener('click', function() {
         return response.text();
     })
     .then(data => {
-        console.log(data); // Log the server response
+        console.log(data); 
         alert('Post submitted successfully');
     })
     .catch(error => {
