@@ -3,8 +3,7 @@ const usernameInput = document.getElementById("user-name");
 const signupBtn = document.getElementById("signup-btn");
 const passwordInput = document.getElementById("password");
 
-
-loginBtn.addEventListener("click", function() {
+function handleLogin() {
     const username = usernameInput.value;
     const password = passwordInput.value;
 
@@ -41,8 +40,18 @@ loginBtn.addEventListener("click", function() {
         console.error('Error during login:', error);
         alert('An error occurred during login. Please try again later.');
     });
-});
+}
+
+loginBtn.addEventListener("click", handleLogin);
 
 signupBtn.addEventListener("click", function() {
     window.location.href = "/signup";
+});
+
+// Event listener to allow login when pressing Enter key
+document.addEventListener("keydown", function(event) {
+    if (event.key === "Enter" && (document.activeElement === usernameInput || document.activeElement === passwordInput)) {
+        // If Enter key is pressed and focus is on username or password input fields, trigger login
+        handleLogin();
+    }
 });
