@@ -21,36 +21,12 @@
     
     <div class="newGroup">
         <div id="create-group"> create a group</div>
-     </div>
-     <script> const creategroup = document.getElementById("create-group");
-     creategroup.addEventListener("click", function(){
-       window.location.href="/create";
-     });
-     </script>
+    </div>
     <div class="groups">
         <div id="first-group">Group 1</div>
     </div>
 
-    <script>
-        const firstGroup = document.getElementById("first-group");
+<script src="../js/group.js"></script>
 
-        firstGroup.addEventListener("click", function() {
-        // if user found in json 
-        window.location.href = "/post";
-        });
-        function showSidebar(){
-            const sidebar = document.querySelector('.sidebar');
-            sidebar.style.display = 'flex';
-        }
-        function hideSidebar(){
-            const sidebar = document.querySelector('.sidebar');
-            sidebar.style.display = 'none';
-        }
-        let username = localStorage.getItem("username");
-        // Display username in the HTML
-        document.getElementById("username").textContent = username;
-    </script>
-
-    
 </body>
 </html>
