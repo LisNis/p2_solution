@@ -20,32 +20,18 @@
     </header>
     
     <div class="newGroup">
-        Join or create a group
+        <div id="create-group"> create a group</div>
     </div>
     <div class="groups">
         <div id="first-group">Group 1</div>
     </div>
 
-    <script>
-        const firstGroup = document.getElementById("first-group");
-
-        firstGroup.addEventListener("click", function() {
-        // if user found in json 
-        window.location.href = "/post";
-        });
-        function showSidebar(){
-            const sidebar = document.querySelector('.sidebar');
-            sidebar.style.display = 'flex';
-        }
-        function hideSidebar(){
-            const sidebar = document.querySelector('.sidebar');
-            sidebar.style.display = 'none';
-        }
-        let username = localStorage.getItem("username");
-        // Display username in the HTML
-        document.getElementById("username").textContent = username;
-    </script>
-
+    <div class="invitation">
+        <div id="invite">Invitation</div>
+    </div>
     
+
+<script src="../js/group.js"></script>
+
 </body>
 </html>

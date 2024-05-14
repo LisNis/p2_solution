@@ -4,7 +4,42 @@ const path = require('path');
 
 
 const server = http.createServer((req, res) => {
-    if (req.method === 'POST' && req.url === '/post') {
+    if (req.method === 'POST' && req.url === '/login') {
+        let body = '';
+        req.on('data', (chunk) => {
+            body += chunk.toString(); // Buffer to string
+        });
+        req.on('end', () => {
+            // Parse the JSON data
+            const loginData = JSON.parse(body);
+            const username = loginData.username;
+            const password = loginData.password;
+
+            // Check if the username exists in the users.json file
+            fs.readFile(path.join(__dirname, '../PublicResources', 'users.json'), 'utf8', (err, data) => {
+                if (err) {
+                    res.writeHead(500);
+                    res.end('Error: Could not read user data');
+                } else {
+                    const users = JSON.parse(data);
+                    const user = users.find(user => user.username === username);
+                    if (user) {
+                        // Username exists, now check if the password matches
+                        if (user.password === password) {
+                            res.writeHead(200, { 'Content-Type': 'application/json' });
+                            res.end(JSON.stringify({ message: 'Login successful' }));
+                        } else {
+                            res.writeHead(401);
+                            res.end('Invalid password');
+                        }
+                    } else {
+                        res.writeHead(404);
+                        res.end('User not found');
+                    }
+                }
+            });
+        });
+    } else if (req.method === 'POST' && req.url === '/post') {
         let body = '';
         req.on('data', (chunk) => {
             body += chunk.toString(); // Buffer to string
@@ -36,26 +71,37 @@ const server = http.createServer((req, res) => {
                 res.end(data);
             }
         });
-    } else if (req.method === 'POST' && req.url === '/invitation') {
+    } else if (req.method === 'POST' && req.url === '/update-user-data') {
         let body = '';
         req.on('data', (chunk) => {
             body += chunk.toString(); // Buffer to string
         });
         req.on('end', () => {
             // Parse the json data
-            const usersData = JSON.parse(body);
-
-
-            // Append the user data to json
-            appendUsersToDatabase(usersData, (err) => {
-                if (err) {
-                    res.writeHead(500);
-                    res.end('Error: Could not save the users update');
-                } else {
-                    res.writeHead(200);
-                    res.end('Users.json update saved successfully');
-                }
-            });
+            const userData = JSON.parse(body);
+    
+            // Update or remove the invitation based on the action
+            if (userData.action === 'accept') {
+                appendUsersToDatabase(userData, (err) => {
+                    if (err) {
+                        res.writeHead(500);
+                        res.end('Error: Could not accept the invitation');
+                    } else {
+                        res.writeHead(200);
+                        res.end('Invitation accepted successfully');
+                    }
+                });
+            } else if (userData.action === 'decline') {
+                removeInvitationFromUser(userData, (err) => {
+                    if (err) {
+                        res.writeHead(500);
+                        res.end('Error: Could not decline the invitation');
+                    } else {
+                        res.writeHead(200);
+                        res.end('Invitation declined successfully');
+                    }
+                });
+            }
         });
     } else if (req.method === 'GET' && req.url === '/users') {
         // get requests
@@ -68,8 +114,39 @@ const server = http.createServer((req, res) => {
                 res.end(data);
             }
         });
-    } 
-    //else if (req.method === 'POST' && req.url === '/groups') {
+    } else if (req.method === 'POST' && req.url === '/calendar') {
+        let body = '';
+        req.on('data', (chunk) => {
+            body += chunk.toString(); // Buffer to string
+        });
+        req.on('end', () => {
+            // Parse the json data
+            const calendarData = JSON.parse(body);
+
+
+            // Append the post to json
+            appendCalendarToDatabase(calendarData, (err) => {
+                if (err) {
+                    res.writeHead(500);
+                    res.end('Error: Could not save the post');
+                } else {
+                    res.writeHead(200);
+                    res.end('Calendar saved successfully');
+                }
+            });
+        });
+    } else if (req.method === 'GET' && req.url === '/calendar') {
+        // get requests
+        fs.readFile(path.join(__dirname, '../PublicResources', 'calendar.json'), 'utf8', (err, data) => {
+            if (err) {
+                res.writeHead(500);
+                res.end('Error: Could not fetch posts');
+            } else {
+                res.writeHead(200, { 'Content-Type': 'application/json' });
+                res.end(data);
+            }
+        });
+    }//else if (req.method === 'POST' && req.url === '/groups') {
         //let body = '';
         //req.on('data', (chunk) => {
             //body += chunk.toString(); // Buffer to string
@@ -125,8 +202,9 @@ const server = http.createServer((req, res) => {
             filePath = '/html/create.html';
         } else if (filePath === '/login') {
             filePath = '/html/login.html';
+        } else if (filePath === '/teamcohesion') {
+            filePath = '/html/teamcohesion.html';
         }
-
 
         filePath = path.join(__dirname, '../PublicResources', filePath);
 
@@ -182,9 +260,40 @@ function appendPostToDatabase(postData, callback) {
     });
 }
 
-
 function appendUsersToDatabase(usersData, callback) {
     const databasePath = path.join(__dirname, '../PublicResources', 'users.json');
+
+    fs.readFile(databasePath, 'utf8', (err, data) => {
+        if (err) {
+            if (err.code === 'ENOENT') {
+                data = '[]';
+            } else {
+                return callback(err);
+            }
+        }
+
+        // Parse existing users
+        let users = JSON.parse(data);
+
+        // Find the index of the user to be updated
+        const index = users.findIndex(user => user.username === usersData.username);
+
+        if (index !== -1) {
+            // Remove the accepted invitation from invitations array
+            users[index].invitations = users[index].invitations.filter(invitation => invitation !== usersData.invitation);
+            // Add the accepted invitation to the groups array
+            users[index].group.push(usersData.invitation);
+        } else {
+            console.error('User not found:', usersData.username);
+        }
+
+        // Write the updated user data back to the file
+        fs.writeFile(databasePath, JSON.stringify(users, null, 2), callback);
+    });
+}
+
+function appendCalendarToDatabase(calendarData, callback) {
+    const databasePath = path.join(__dirname, '../PublicResources', 'calendar.json');
 
 
     fs.readFile(databasePath, 'utf8', (err, data) => {
@@ -198,11 +307,13 @@ function appendUsersToDatabase(usersData, callback) {
 
 
         // Parse existing posts
-        const users = JSON.parse(data);
-        users.push(usersData);
-        fs.writeFile(databasePath, JSON.stringify(users, null, 2), callback);
+        const events = JSON.parse(data);
+        events.push(calendarData);
+        fs.writeFile(databasePath, JSON.stringify(events, null, 2), callback);
     });
 }
+
+
 
 //function appendGroupsToDatabase(groupsData, callback) {
     //const databasePath = path.join(__dirname, '../PublicResources', 'groups.json');
@@ -224,6 +335,37 @@ function appendUsersToDatabase(usersData, callback) {
         //fs.writeFile(databasePath, JSON.stringify(groups, null, 2), callback);
     //});
 //}
+
+function removeInvitationFromUser(userData, callback) {
+    const databasePath = path.join(__dirname, '../PublicResources', 'users.json');
+
+    fs.readFile(databasePath, 'utf8', (err, data) => {
+        if (err) {
+            if (err.code === 'ENOENT') {
+                data = '[]';
+            } else {
+                return callback(err);
+            }
+        }
+
+        // Parse existing users
+        let users = JSON.parse(data);
+
+        // Find the index of the user to be updated
+        const index = users.findIndex(user => user.username === userData.username);
+
+        if (index !== -1) {
+            // Remove the declined invitation from the invitations array
+            users[index].invitations = users[index].invitations.filter(invitation => invitation !== userData.invitation);
+        } else {
+            console.error('User not found:', userData.username);
+        }
+
+        // Write the updated user data back to the file
+        fs.writeFile(databasePath, JSON.stringify(users, null, 2), callback);
+    });
+}
+
 
 const PORT = process.env.PORT || 3240;
 server.listen(PORT, () => {

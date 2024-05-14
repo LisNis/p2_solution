@@ -51,6 +51,19 @@ header{
     margin: 20px;
     font-size: 15px;
 }
+.invitation{
+    position: absolute;
+    top: 150px;
+    right: 0px;
+    display: flex;
+    justify-content: center;
+    border: 2px solid grey;
+    width: 150px;
+    padding: 10px;
+    margin: 20px;
+    font-size: 15px;
+}
+
 
 #first-group {
     display: flex;
@@ -115,4 +128,3 @@ a {
 .sidebar a {
     width: 100%;
 }
-
