@@ -15,7 +15,8 @@ document.addEventListener("DOMContentLoaded", function() {
         displayTeamName();
         teamNameInput.disabled = true;
         teamMemberForm.style.display = "block";
-    });
+    }); 
+  
 
     function displayTeamName() {
         const teamNameElement = document.createElement("h2");
@@ -27,6 +28,9 @@ document.addEventListener("DOMContentLoaded", function() {
         removeButton.classList.add("remove-btn");
         removeButton.id = "remove-team-btn";
         teamNameContainer.appendChild(removeButton);
+
+        // it shows confirm button after displaying team members
+        confirmButton.style.display = "block";
     }
 
     // removing the team
@@ -63,8 +67,7 @@ document.addEventListener("DOMContentLoaded", function() {
             teamMembersContainer.appendChild(memberElement);
         });
 
-        // it shows confirm button after displaying team members
-        confirmButton.style.display = "block";
+        
     }
 
     //  remove buttons
