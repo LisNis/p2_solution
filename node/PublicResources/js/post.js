@@ -42,18 +42,27 @@ function createPostElement(post) {
 
     // Username
     const usernameSpan = document.createElement('span');
+    usernameSpan.id = 'username';
     usernameSpan.textContent = post.username;
     userInformation.appendChild(usernameSpan);
 
     // Point
     const pointSpan = document.createElement('span');
+    pointSpan.id = 'point';
     pointSpan.textContent = '•';
     userInformation.appendChild(pointSpan);
 
     // Date
     const dateSpan = document.createElement('span');
+    dateSpan.id = 'date';
     dateSpan.textContent = post.date;
     userInformation.appendChild(dateSpan);
+
+    // time
+    const timeSpan = document.createElement('span');
+    timeSpan.id = 'timestamp';
+    timeSpan.textContent = post.timestamp;
+    userInformation.appendChild(timeSpan);
 
     // Append user info to post header
     postHeader.appendChild(userInformation);
@@ -69,6 +78,7 @@ function createPostElement(post) {
 
     // Content
     const contentParagraph = document.createElement('p');
+    titleHeading.id = 'title';
     contentParagraph.textContent = post.content;
     postContent.appendChild(contentParagraph);
 

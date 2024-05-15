@@ -15,7 +15,7 @@ const listContainer = document.getElementById('list-container');
 const cancelBtn = document.getElementById('cancel-button');
 const addBtn = document.getElementById('add-button');
 
-
+/*
 function fetchCalendarData() {
     fetch('/calendar')
         .then(response => {
@@ -53,10 +53,10 @@ function updateCalendarData(updatedData) {
             console.error('Error updating calendar data:', error);
         });
 }
-
+*/
 let nav = 0;
 let clicked = null;
-
+let events = localStorage.getItem('events') ? JSON.parse(localStorage.getItem('events')) : [];
 
 
 const weekdays = [
@@ -69,6 +69,7 @@ const weekdays = [
     'Sunday'
 ];
 
+// highlight newEvent
 function openModal(date) {
     clicked = date;
     newEventModal.style.display = 'block';
@@ -124,8 +125,11 @@ function renderCalendar() {
                 daySquare.id = 'currentDay';
             }
 
+            // finds all events for a month
             const eventForDay = events.find(e => e.date === dayString);
+            console.log(eventForDay);
 
+            // creates div for event
             if(eventForDay) {
                 const eventDiv = document.createElement('div');
                 eventDiv.classList.add('event');
@@ -145,17 +149,6 @@ function renderCalendar() {
     }
    
 
-}
-
-function addNewEvent(calendarData) {
-    events.push(calendarData);
-    updateCalendarData(events);
-}
-
-
-function deleteEvent(date) {
-    events = events.filter(event => event.date !== date);
-    updateCalendarData(events);
 }
 
 function buttons() {
@@ -185,11 +178,14 @@ addBtn.addEventListener('click', function(){
         // the x symbol
         span.innerHTML = "\u00d7";
         li.appendChild(span);
-
+        
         events.push({
             date: clicked,
             title: inputBox.value
         });
+        
+        // todo 
+        localStorage.setItem('events', JSON.stringify(events));
 
     
     } else {
@@ -210,13 +206,37 @@ cancelBtn.addEventListener('click', function() {
 listContainer.addEventListener('click', function(e) {
     if(e.target.tagName === 'LI'){
         e.target.classList.toggle('checked');
-        deleteEventFromJSON(clicked);
-        saveEventsToFile(events);
+        
+        deleteEvent();
+        /*deleteEventFromJSON(clicked);
+        saveEventsToFile(events); */
     } else if (e.target.tagName === 'SPAN') {
         e.target.parentElement.remove();
-        deleteEventFromJSON(clicked);
-        saveEventsToFile(events);
+        
+        deleteEvent();
+        /*deleteEventFromJSON(clicked);
+        saveEventsToFile(events);*/
     }
 });
 
-fetchCalendarData();
+
+/*function addNewEvent(calendarData) {
+    events.push(calendarData);
+    updateCalendarData(events);
+}*/
+
+
+function deleteEvent(date) {
+    /*events = events.filter(event => event.date !== date);
+    updateCalendarData(events);*/
+
+    events = events.filter(e => e.date !== clicked);
+    localStorage.setItem('events', JSON.stringify(events));
+    renderCalendar();
+}
+
+function displayList() {
+    listContainer.innerHTML = localStorage.getItem('data');
+}
+
+//fetchCalendarData();

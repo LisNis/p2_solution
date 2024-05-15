@@ -134,7 +134,7 @@ const server = http.createServer((req, res) => {
                 res.end(data);
             }
         });
-    } else if (req.method === 'POST' && req.url === '/calendar') {
+    } /*else if (req.method === 'POST' && req.url === '/calendar') {
         let body = '';
         req.on('data', (chunk) => {
             body += chunk.toString(); // Buffer to string
@@ -144,7 +144,7 @@ const server = http.createServer((req, res) => {
             const calendarData = JSON.parse(body);
 
 
-            // Append the post to json
+            // Append the events to json
             appendCalendarToDatabase(calendarData, (err) => {
                 if (err) {
                     res.writeHead(500);
@@ -166,7 +166,7 @@ const server = http.createServer((req, res) => {
                 res.end(data);
             }
         });
-    }//else if (req.method === 'POST' && req.url === '/groups') {
+    }*///else if (req.method === 'POST' && req.url === '/groups') {
         //let body = '';
         //req.on('data', (chunk) => {
             //body += chunk.toString(); // Buffer to string

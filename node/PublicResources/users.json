@@ -44,5 +44,11 @@
     "password": "12345",
     "group": [],
     "invitations": []
+  },
+  {
+    "username": "Lisa",
+    "password": "Lisa",
+    "group": [],
+    "invitations": []
   }
 ]
