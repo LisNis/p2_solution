@@ -9,6 +9,10 @@
     "dislikes": 1,
     "date": "03/05/2024",
     "timestamp": "13:13",
+    "tags": [
+      "#tags",
+      "#Jo"
+    ],
     "comments": [
       {
         "user": "Alisanders",
