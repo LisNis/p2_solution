@@ -1,50 +1,83 @@
 document.addEventListener("DOMContentLoaded", function() {
-  const teamMemberForm = document.getElementById("team-member-form");
-  const teamMembersList = document.getElementById("team-members-list");
-  const confirmButton = document.getElementById("confirm-team");
+    const teamNameForm = document.getElementById("team-name-form");
+    const teamNameInput = document.getElementById("team-name-input");
+    const teamMemberForm = document.getElementById("team-member-form");
+    const confirmButton = document.getElementById("confirm-team");
+    const teamNameContainer = document.getElementById("team-name-container");
+    const teamMembersContainer = document.getElementById("team-members-container");
 
-  let members = [];
+    let teamName = "";
+    let members = [];
 
-  teamMemberForm.addEventListener("submit", function(event) {
-      event.preventDefault();
-      const memberName = document.getElementById("member-name-input").value;
-      members.push(memberName);
-      displayTeamMembers();
-      teamMemberForm.reset();
-  });
+    teamNameForm.addEventListener("submit", function(event) {
+        event.preventDefault();
+        teamName = teamNameInput.value;
+        displayTeamName();
+        teamNameInput.disabled = true;
+        teamMemberForm.style.display = "block";
+    });
 
-  function displayTeamMembers() {
-      teamMembersList.innerHTML = ""; // Clear previous list
+    function displayTeamName() {
+        const teamNameElement = document.createElement("h2");
+        teamNameElement.textContent = "Team: " + teamName;
+        teamNameContainer.appendChild(teamNameElement);
 
-      members.forEach(function(member, index) {
-          const memberElement = document.createElement("div");
-          memberElement.textContent = member;
+        const removeButton = document.createElement("button");
+        removeButton.textContent = "Remove Team";
+        removeButton.classList.add("remove-btn");
+        removeButton.id = "remove-team-btn";
+        teamNameContainer.appendChild(removeButton);
+    }
 
-          const removeButton = document.createElement("button");
-          removeButton.textContent = "Remove";
-          removeButton.classList.add("remove-btn");
-          removeButton.dataset.index = index;
+    // removing the team
+    teamNameContainer.addEventListener("click", function(event) {
+        if (event.target.id === "remove-team-btn") {
+            teamNameContainer.innerHTML = ""; 
+            members = []; 
+            teamNameInput.disabled = false; 
+           
+        }
+    });
 
-          memberElement.appendChild(removeButton);
-          teamMembersList.appendChild(memberElement);
-      });
+    teamMemberForm.addEventListener("submit", function(event) {
+        event.preventDefault();
+        const memberName = document.getElementById("member-name-input").value;
+        members.push(memberName);
+        displayTeamMembers();
+        teamMemberForm.reset();
+    });
 
-      // Show confirm button after displaying team members
-      confirmButton.style.display = "block";
-  }
+    function displayTeamMembers() {
+        teamMembersContainer.innerHTML = ""; // Clear previous list
 
-  // Event delegation for remove buttons
-  teamMembersList.addEventListener("click", function(event) {
-      if (event.target.classList.contains("remove-btn")) {
-          const index = parseInt(event.target.dataset.index);
-          members.splice(index, 1);
-          displayTeamMembers();
-      }
-  });
+        members.forEach(function(member, index) {
+            const memberElement = document.createElement("div");
+            memberElement.textContent = member;
 
-  // Event listener for confirm button (just for demonstration)
-  confirmButton.addEventListener("click", function() {
-      // Handle confirming team creation here
-      alert("Team creation confirmed!");
-  });
+            const removeButton = document.createElement("button");
+            removeButton.textContent = "Remove";
+            removeButton.classList.add("remove-btn");
+            removeButton.dataset.index = index;
+
+            memberElement.appendChild(removeButton);
+            teamMembersContainer.appendChild(memberElement);
+        });
+
+        // it shows confirm button after displaying team members
+        confirmButton.style.display = "block";
+    }
+
+    //  remove buttons
+    teamMembersContainer.addEventListener("click", function(event) {
+        if (event.target.classList.contains("remove-btn")) {
+            const index = parseInt(event.target.dataset.index);
+            members.splice(index, 1);
+            displayTeamMembers();
+        }
+    });
+
+    // confirm button 
+    confirmButton.addEventListener("click", function() {
+        alert("Team creation confirmed!");
+    });
 });
