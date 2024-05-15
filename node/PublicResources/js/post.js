@@ -347,7 +347,7 @@ document.getElementById('submitPost').addEventListener('click', function() {
     let postTags = [];
 
     while ((matchTags = regexTags.exec(postContent)) !== null) {
-        postTags.push(regexTags + matchTags[1].trim());
+        postTags.push("#" + matchTags[1].trim());
         contentOfPost = contentOfPost.replace(matchTags[0], '').trim();
     }
 
