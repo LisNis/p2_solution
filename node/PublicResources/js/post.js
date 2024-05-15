@@ -70,17 +70,23 @@ function createPostElement(post) {
     // Create post content
     const postContent = document.createElement('div');
     postContent.classList.add('post-content');
-
+    //todo
     // Title
     const titleHeading = document.createElement('h3');
+    titleHeading.id = 'title';
     titleHeading.textContent = post.title;
     postContent.appendChild(titleHeading);
 
     // Content
     const contentParagraph = document.createElement('p');
-    titleHeading.id = 'title';
     contentParagraph.textContent = post.content;
     postContent.appendChild(contentParagraph);
+
+    // Tags Container
+    const tagsDiv = document.createElement('div');
+    tagsDiv.classList.add('tagsContainer');
+    tagsDiv.textContent = post.tags;
+    postContent.appendChild(tagsDiv);
 
     // Thumbs up and down buttons
     const thumbsUpButton = document.createElement('button');
@@ -226,6 +232,7 @@ function pinPost(postElement) {
     }
 }
 
+/*
 document.getElementById('submitPost').addEventListener('click', function() {
     const postContent = document.getElementById('textInput').value;
     const postData = {
@@ -256,7 +263,7 @@ document.getElementById('submitPost').addEventListener('click', function() {
         alert('There was an error submitting the post');
     });
 });
-
+*/
 document.querySelectorAll(".post").forEach(post => {
     const postId = post.dataset.postId;
     const ratings = post.querySelectorAll(".post-rating");
@@ -322,7 +329,7 @@ const postUsername = username;
 document.getElementById('submitPost').addEventListener('click', function() {
     let postContent = document.getElementById('textInput').value;
 
-    // get input in {}
+    // looking for title, get input in {}
     const regex = /{([^}]*)}/;
     const match = postContent.match(regex);
     let contentOfPost = postContent; // Assign default value
@@ -332,6 +339,21 @@ document.getElementById('submitPost').addEventListener('click', function() {
         contentOfPost = postContent.replace(match[0], '').trim();
         postTitle = match[1].trim();
     }
+
+
+    // looking for tags, get input after #
+    const regexTags = /#(\w+)/g;
+    let matchTags;
+    let postTags = [];
+
+    while ((matchTags = regexTags.exec(postContent)) !== null) {
+        postTags.push(regexTags + matchTags[1].trim());
+        contentOfPost = contentOfPost.replace(matchTags[0], '').trim();
+    }
+
+    console.log("Content of Post:", contentOfPost); // "This is a post with in it."
+    console.log("Post Tags:", postTags); // ["multiple", "tags"]
+
     
 
     // Get the day, month, and year
@@ -357,7 +379,8 @@ document.getElementById('submitPost').addEventListener('click', function() {
         content: contentOfPost,
         username: postUsername,
         date: currentDate,
-        timestamp: currentTime, 
+        timestamp: currentTime,
+        tags: postTags,
     };
     console.log(postUsername);
 
@@ -421,6 +444,8 @@ document.querySelectorAll(".post").forEach(post => {
 });
 
 
+
+// Reminder Bot 
 //bot send messages
 let userMessage;
 
