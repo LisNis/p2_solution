@@ -2,7 +2,6 @@ const http = require('http');
 const fs = require('fs');
 const path = require('path');
 
-
 const server = http.createServer((req, res) => {
     if (req.method === 'POST' && req.url === '/login') {
         let body = '';
@@ -67,7 +66,10 @@ const server = http.createServer((req, res) => {
         req.on('end', () => {
             // Parse the json data
             const postData = JSON.parse(body);
-
+            postData.id = Date.now(); // Assign a unique ID to the post
+            postData.likes = postData.likes || 0;
+            postData.dislikes = postData.dislikes || 0;
+            postData.comments = []; // Initialize comments array
 
             // Append the post to json
             appendPostToDatabase(postData, (err) => {
@@ -91,6 +93,50 @@ const server = http.createServer((req, res) => {
                 res.end(data);
             }
         });
+    } else if (req.method === 'POST' && req.url.startsWith('/posts/')) {
+        const urlParts = req.url.split('/');
+        const postId = parseInt(urlParts[2]);
+        const action = urlParts[3];
+
+        if (action === 'like' || action === 'dislike') {
+            let body = '';
+            req.on('data', (chunk) => {
+                body += chunk.toString();
+            });
+
+            req.on('end', () => {
+                updatePostLikesOrDislikes(postId, action, (err) => {
+                    if (err) {
+                        res.writeHead(500);
+                        res.end('Error: Could not update post likes/dislikes');
+                    } else {
+                        res.writeHead(200, { 'Content-Type': 'application/json' });
+                        res.end(JSON.stringify({ message: 'Post updated successfully' }));
+                    }
+                });
+            });
+        } else if (action === 'comment') {
+            let body = '';
+            req.on('data', (chunk) => {
+                body += chunk.toString();
+            });
+
+            req.on('end', () => {
+                const commentData = JSON.parse(body);
+                addCommentToPost(postId, commentData, (err) => {
+                    if (err) {
+                        res.writeHead(500);
+                        res.end('Error: Could not add comment');
+                    } else {
+                        res.writeHead(200, { 'Content-Type': 'application/json' });
+                        res.end(JSON.stringify({ message: 'Comment added successfully' }));
+                    }
+                });
+            });
+        } else {
+            res.writeHead(404);
+            res.end('Error: Invalid action');
+        }
     } else if (req.method === 'POST' && req.url === '/update-user-data') {
         let body = '';
         req.on('data', (chunk) => {
@@ -99,7 +145,7 @@ const server = http.createServer((req, res) => {
         req.on('end', () => {
             // Parse the json data
             const userData = JSON.parse(body);
-    
+
             // Update or remove the invitation based on the action
             if (userData.action === 'accept') {
                 appendUsersToDatabase(userData, (err) => {
@@ -134,77 +180,8 @@ const server = http.createServer((req, res) => {
                 res.end(data);
             }
         });
-    } /*else if (req.method === 'POST' && req.url === '/calendar') {
-        let body = '';
-        req.on('data', (chunk) => {
-            body += chunk.toString(); // Buffer to string
-        });
-        req.on('end', () => {
-            // Parse the json data
-            const calendarData = JSON.parse(body);
-
-
-            // Append the events to json
-            appendCalendarToDatabase(calendarData, (err) => {
-                if (err) {
-                    res.writeHead(500);
-                    res.end('Error: Could not save the post');
-                } else {
-                    res.writeHead(200);
-                    res.end('Calendar saved successfully');
-                }
-            });
-        });
-    } else if (req.method === 'GET' && req.url === '/calendar') {
-        // get requests
-        fs.readFile(path.join(__dirname, '../PublicResources', 'calendar.json'), 'utf8', (err, data) => {
-            if (err) {
-                res.writeHead(500);
-                res.end('Error: Could not fetch posts');
-            } else {
-                res.writeHead(200, { 'Content-Type': 'application/json' });
-                res.end(data);
-            }
-        });
-    }*///else if (req.method === 'POST' && req.url === '/groups') {
-        //let body = '';
-        //req.on('data', (chunk) => {
-            //body += chunk.toString(); // Buffer to string
-        //});
-        //req.on('end', () => {
-            // Parse the json data
-            //const groupsData = JSON.parse(body);
-
-
-            // Append the post to json
-           // appendGroupsToDatabase(groupsData, (err) => {
-                //if (err) {
-                   // res.writeHead(500);
-                    //res.end('Error: Could not save the group');
-                //} else {
-                    //res.writeHead(200);
-                    //res.end('Groups saved successfully');
-                //}
-            //});
-        //});
-    //} 
-    //else if (req.method === 'GET' && req.url === '/groups') {
-        // get requests
-        //fs.readFile(path.join(__dirname, '../PublicResources', 'groups.json'), 'utf8', (err, data) => {
-            //if (err) {
-                //res.writeHead(500);
-               // res.end('Error: Could not fetch groups');
-            //} else {
-               // res.writeHead(200, { 'Content-Type': 'application/json' });
-               // res.end(data);
-            //}
-        //});
-
-    //}*/
-    
-    else {
+    } else {
         let filePath = req.url === '/' ? '/html/login.html' : req.url;
-
 
         // path e.ks. '/post', then 'post.html'
         if (filePath === '/post') {
@@ -229,7 +206,6 @@ const server = http.createServer((req, res) => {
 
         filePath = path.join(__dirname, '../PublicResources', filePath);
 
-
         fs.readFile(filePath, (error, data) => {
             if (error) {
                 if (error.code === 'ENOENT') {
@@ -251,7 +227,6 @@ const server = http.createServer((req, res) => {
                     contentType = 'text/javascript';
                 }
 
-
                 res.writeHead(200, { 'Content-Type': contentType });
                 res.end(data);
             }
@@ -259,10 +234,8 @@ const server = http.createServer((req, res) => {
     }
 }); // end create Server
 
-
 function appendPostToDatabase(postData, callback) {
     const databasePath = path.join(__dirname, '../PublicResources', 'posts.json');
-
 
     fs.readFile(databasePath, 'utf8', (err, data) => {
         if (err) {
@@ -273,11 +246,79 @@ function appendPostToDatabase(postData, callback) {
             }
         }
 
-
         // Parse existing posts
         const posts = JSON.parse(data);
+
+        postData.likes = postData.likes || 0;
+        postData.dislikes = postData.dislikes || 0;
+        postData.comments = postData.comments || [];
+
         posts.push(postData);
         fs.writeFile(databasePath, JSON.stringify(posts, null, 2), callback);
+    });
+}
+
+function updatePostLikesOrDislikes(postId, action, callback) {
+    const databasePath = path.join(__dirname, '../PublicResources', 'posts.json');
+
+    fs.readFile(databasePath, 'utf8', (err, data) => {
+        if (err) {
+            return callback(err);
+        }
+
+        const posts = JSON.parse(data);
+        const post = posts.find(post => post.id === postId);
+
+        if (post) {
+            if (action === 'like') {
+                post.likes = (post.likes || 0) + 1;
+                console.log(`Post ID ${postId} liked. New likes: ${post.likes}`);
+            } else if (action === 'dislike') {
+                post.dislikes = (post.dislikes || 0) + 1;
+                console.log(`Post ID ${postId} disliked. New dislikes: ${post.dislikes}`);
+            }
+
+            fs.writeFile(databasePath, JSON.stringify(posts, null, 2), (writeErr) => {
+                if (writeErr) {
+                    console.log('Error writing file:', writeErr);
+                    return callback(writeErr);
+                }
+                console.log('File successfully written');
+                callback(null);
+            });
+        } else {
+            console.log('Post not found:', postId);
+            callback(new Error('Post not found'));
+        }
+    });
+}
+
+function addCommentToPost(postId, commentData, callback) {
+    const databasePath = path.join(__dirname, '../PublicResources', 'posts.json');
+
+    fs.readFile(databasePath, 'utf8', (err, data) => {
+        if (err) {
+            return callback(err);
+        }
+
+        const posts = JSON.parse(data);
+        const post = posts.find(post => post.id === postId);
+
+        if (post) {
+            post.comments.push(commentData);
+
+            fs.writeFile(databasePath, JSON.stringify(posts, null, 2), (writeErr) => {
+                if (writeErr) {
+                    console.log('Error writing file:', writeErr);
+                    return callback(writeErr);
+                }
+                console.log('Comment successfully added');
+                callback(null);
+            });
+        } else {
+            console.log('Post not found:', postId);
+            callback(new Error('Post not found'));
+        }
     });
 }
 
@@ -312,50 +353,6 @@ function appendUsersToDatabase(usersData, callback) {
         fs.writeFile(databasePath, JSON.stringify(users, null, 2), callback);
     });
 }
-
-function appendCalendarToDatabase(calendarData, callback) {
-    const databasePath = path.join(__dirname, '../PublicResources', 'calendar.json');
-
-
-    fs.readFile(databasePath, 'utf8', (err, data) => {
-        if (err) {
-            if (err.code === 'ENOENT') {
-                data = '[]';
-            } else {
-                return callback(err);
-            }
-        }
-
-
-        // Parse existing posts
-        const events = JSON.parse(data);
-        events.push(calendarData);
-        fs.writeFile(databasePath, JSON.stringify(events, null, 2), callback);
-    });
-}
-
-
-
-//function appendGroupsToDatabase(groupsData, callback) {
-    //const databasePath = path.join(__dirname, '../PublicResources', 'groups.json');
-
-
-    //fs.readFile(databasePath, 'utf8', (err, data) => {
-        //if (err) {
-            //if (err.code === 'ENOENT') {
-                //data = '[]';
-           // } else {
-                //return callback(err);
-            //}
-        //}
-
-
-        // Parse existing posts
-        //const groups = JSON.parse(data);
-        //groups.push(groupsData);
-        //fs.writeFile(databasePath, JSON.stringify(groups, null, 2), callback);
-    //});
-//}
 
 function removeInvitationFromUser(userData, callback) {
     const databasePath = path.join(__dirname, '../PublicResources', 'users.json');
@@ -418,31 +415,8 @@ function addNewUserToDatabase (userData, callback) {
         fs.writeFile(databasePath, JSON.stringify(users, null, 2), callback);
     });
 }
-function updatePostLikesOrDislikes(postId, action, callback) {
-    const databasePath = path.join(__dirname, '../PublicResources', 'posts.json');
 
-    fs.readFile(databasePath, 'utf8', (err, data) => {
-        if (err) {
-            return callback(err);
-        }
-
-        const posts = JSON.parse(data);
-        const post = posts.find(post => post.id === postId);
-
-        if (post) {
-            if (action === 'like') {
-                post.likes = (post.likes || 0) + 1;
-            } else if (action === 'dislike') {
-                post.dislikes = (post.dislikes || 0) + 1;
-            }
-
-            fs.writeFile(databasePath, JSON.stringify(posts, null, 2), callback);
-        } else {
-            callback(new Error('Post not found'));
-        }
-    });
-}
 const PORT = process.env.PORT || 3240;
 server.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
-}); // end port
+});
