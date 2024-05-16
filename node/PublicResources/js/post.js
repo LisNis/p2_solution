@@ -70,7 +70,7 @@ function createPostElement(post) {
     // Create post content
     const postContent = document.createElement('div');
     postContent.classList.add('post-content');
-    //todo
+    
     // Title
     const titleHeading = document.createElement('h3');
     titleHeading.id = 'title';
@@ -84,7 +84,7 @@ function createPostElement(post) {
 
     // Tags Container
     const tagsDiv = document.createElement('div');
-    tagsDiv.classList.add('tagsContainer');
+    tagsDiv.classList.add('tags-container');
     tagsDiv.textContent = post.tags;
     postContent.appendChild(tagsDiv);
 
@@ -232,38 +232,6 @@ function pinPost(postElement) {
     }
 }
 
-/*
-document.getElementById('submitPost').addEventListener('click', function() {
-    const postContent = document.getElementById('textInput').value;
-    const postData = {
-        content: postContent,
-        // username: 
-    };
-
-    // Send the post data to the server
-    fetch('/post', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(postData)
-    })
-    .then(response => {
-        if (!response.ok) {
-            throw new Error('Network response was not ok');
-        }
-        return response.text();
-    })
-    .then(data => {
-        console.log(data); 
-        alert('Post submitted successfully');
-    })
-    .catch(error => {
-        console.error('There was a problem with the fetch operation:', error);
-        alert('There was an error submitting the post');
-    });
-});
-*/
 document.querySelectorAll(".post").forEach(post => {
     const postId = post.dataset.postId;
     const ratings = post.querySelectorAll(".post-rating");
@@ -408,6 +376,36 @@ document.getElementById('submitPost').addEventListener('click', function() {
     });
     postContent = '';
 });
+
+document.querySelector('.search-bar').addEventListener('input', function() {
+    const searchTerm = this.value.toLowerCase();
+    const postsInContainer = document.querySelectorAll('.container .post');
+    
+    postsInContainer.forEach(post => {
+        const titleElement = post.querySelector('#title');
+        const tagsElement = post.querySelector('.tags-container');
+        
+        const titleMatches = titleElement && titleElement.textContent.toLowerCase().includes(searchTerm);
+        const tagsMatch = tagsElement && tagsElement.textContent.toLowerCase().includes(searchTerm);
+        
+        if (searchTerm.startsWith('#')) {
+            // search #, only match tags
+            if (tagsMatch) {
+            post.classList.remove('hidden');
+            } else {
+            post.classList.add('hidden');
+            }
+        } else {
+            // match titles
+            if (titleMatches) {
+            post.classList.remove('hidden');
+            } else {
+            post.classList.add('hidden');
+            }
+        }
+    });
+});
+
 
 document.querySelectorAll(".post").forEach(post => {
     const postId = post.dataset.postId;

@@ -5,8 +5,8 @@
     "title": "Hello",
     "content": "This is my text i write for my post",
     "username": "User 3",
-    "likes": 4,
-    "dislikes": 1,
+    "likes": 8,
+    "dislikes": 2,
     "date": "03/05/2024",
     "timestamp": "13:13",
     "tags": [
@@ -30,9 +30,19 @@
   },
   {
     "title": "Announcement",
-    "content": "Hello there ladies and gentlemen, if you want to add a title, write in front of your text a title in these {} brackets",
+    "content": "Hello there ladies and gentlemen, if you want to add a title, write it in front of your text in these {} brackets.",
     "username": "Lisa",
     "date": "9/5/2024",
     "timestamp": "16:29"
+  },
+  {
+    "title": "Hi",
+    "content": "You can now search for posts, just write the title or tag in the search bar.",
+    "username": "Lisa",
+    "date": "15/5/2024",
+    "timestamp": "13:44",
+    "tags": [
+      "#hi"
+    ]
   }
 ]
