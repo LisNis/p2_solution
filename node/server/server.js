@@ -9,12 +9,10 @@ const server = http.createServer((req, res) => {
             body += chunk.toString(); // Buffer to string
         });
         req.on('end', () => {
-            // Parse the JSON data
             const loginData = JSON.parse(body);
             const username = loginData.username;
             const password = loginData.password;
 
-            // Check if the username exists in the users.json file
             fs.readFile(path.join(__dirname, '../PublicResources', 'users.json'), 'utf8', (err, data) => {
                 if (err) {
                     res.writeHead(500);
@@ -23,7 +21,6 @@ const server = http.createServer((req, res) => {
                     const users = JSON.parse(data);
                     const user = users.find(user => user.username === username);
                     if (user) {
-                        // Username exists, now check if the password matches
                         if (user.password === password) {
                             res.writeHead(200, { 'Content-Type': 'application/json' });
                             res.end(JSON.stringify({ message: 'Login successful' }));
@@ -44,10 +41,8 @@ const server = http.createServer((req, res) => {
             body += chunk.toString(); // Buffer to string
         });
         req.on('end', () => {
-            // Parse the JSON data
             const userData = JSON.parse(body);
 
-            // Save the new user data to the users.json file
             addNewUserToDatabase(userData, (err) => {
                 if (err) {
                     res.writeHead(500);
@@ -64,14 +59,13 @@ const server = http.createServer((req, res) => {
             body += chunk.toString(); // Buffer to string
         });
         req.on('end', () => {
-            // Parse the json data
             const postData = JSON.parse(body);
-            postData.id = Date.now(); // Assign a unique ID to the post
+            postData.id = Date.now();
             postData.likes = postData.likes || 0;
             postData.dislikes = postData.dislikes || 0;
-            postData.comments = []; // Initialize comments array
+            postData.comments = postData.comments || [];
+            postData.pinned = false;
 
-            // Append the post to json
             appendPostToDatabase(postData, (err) => {
                 if (err) {
                     res.writeHead(500);
@@ -83,7 +77,6 @@ const server = http.createServer((req, res) => {
             });
         });
     } else if (req.method === 'GET' && req.url === '/posts') {
-        // get requests
         fs.readFile(path.join(__dirname, '../PublicResources', 'posts.json'), 'utf8', (err, data) => {
             if (err) {
                 res.writeHead(500);
@@ -133,6 +126,23 @@ const server = http.createServer((req, res) => {
                     }
                 });
             });
+        } else if (action === 'pin') {
+            let body = '';
+            req.on('data', (chunk) => {
+                body += chunk.toString();
+            });
+
+            req.on('end', () => {
+                pinPost(postId, (err) => {
+                    if (err) {
+                        res.writeHead(500);
+                        res.end('Error: Could not pin post');
+                    } else {
+                        res.writeHead(200, { 'Content-Type': 'application/json' });
+                        res.end(JSON.stringify({ message: 'Post pinned successfully' }));
+                    }
+                });
+            });
         } else {
             res.writeHead(404);
             res.end('Error: Invalid action');
@@ -143,10 +153,8 @@ const server = http.createServer((req, res) => {
             body += chunk.toString(); // Buffer to string
         });
         req.on('end', () => {
-            // Parse the json data
             const userData = JSON.parse(body);
 
-            // Update or remove the invitation based on the action
             if (userData.action === 'accept') {
                 appendUsersToDatabase(userData, (err) => {
                     if (err) {
@@ -170,7 +178,6 @@ const server = http.createServer((req, res) => {
             }
         });
     } else if (req.method === 'GET' && req.url === '/users') {
-        // get requests
         fs.readFile(path.join(__dirname, '../PublicResources', 'users.json'), 'utf8', (err, data) => {
             if (err) {
                 res.writeHead(500);
@@ -183,7 +190,6 @@ const server = http.createServer((req, res) => {
     } else {
         let filePath = req.url === '/' ? '/html/login.html' : req.url;
 
-        // path e.ks. '/post', then 'post.html'
         if (filePath === '/post') {
             filePath = '/html/post.html';
         } else if (filePath === '/groups') {
@@ -216,7 +222,6 @@ const server = http.createServer((req, res) => {
                     res.end('Error: Internal Server Error');
                 }
             } else {
-                // Determine content type
                 let contentType = 'text/plain';
                 const ext = path.extname(filePath);
                 if (ext === '.html') {
@@ -230,9 +235,9 @@ const server = http.createServer((req, res) => {
                 res.writeHead(200, { 'Content-Type': contentType });
                 res.end(data);
             }
-        }); // end readFile
+        });
     }
-}); // end create Server
+});
 
 function appendPostToDatabase(postData, callback) {
     const databasePath = path.join(__dirname, '../PublicResources', 'posts.json');
@@ -246,12 +251,12 @@ function appendPostToDatabase(postData, callback) {
             }
         }
 
-        // Parse existing posts
         const posts = JSON.parse(data);
 
         postData.likes = postData.likes || 0;
         postData.dislikes = postData.dislikes || 0;
         postData.comments = postData.comments || [];
+        postData.pinned = postData.pinned || false;
 
         posts.push(postData);
         fs.writeFile(databasePath, JSON.stringify(posts, null, 2), callback);
@@ -305,14 +310,47 @@ function addCommentToPost(postId, commentData, callback) {
         const post = posts.find(post => post.id === postId);
 
         if (post) {
+            if (!post.comments) {
+                post.comments = [];
+            }
             post.comments.push(commentData);
+
+            fs.writeFile(databasePath, JSON.stringify(posts, null, 2), (writeErr) => {
+                if (writeErr) {
+                    console.error('Error writing file:', writeErr);
+                    return callback(writeErr);
+                }
+                console.log('Comment successfully added');
+                callback(null);
+            });
+        } else {
+            console.error('Post not found:', postId);
+            callback(new Error('Post not found'));
+        }
+    });
+}
+
+function pinPost(postId, callback) {
+    const databasePath = path.join(__dirname, '../PublicResources', 'posts.json');
+
+    fs.readFile(databasePath, 'utf8', (err, data) => {
+        if (err) {
+            return callback(err);
+        }
+
+        const posts = JSON.parse(data);
+        const post = posts.find(post => post.id === postId);
+
+        if (post) {
+            posts.forEach(p => p.pinned = false); // Unpin all posts
+            post.pinned = true; // Pin the selected post
 
             fs.writeFile(databasePath, JSON.stringify(posts, null, 2), (writeErr) => {
                 if (writeErr) {
                     console.log('Error writing file:', writeErr);
                     return callback(writeErr);
                 }
-                console.log('Comment successfully added');
+                console.log('Post successfully pinned');
                 callback(null);
             });
         } else {
@@ -334,22 +372,17 @@ function appendUsersToDatabase(usersData, callback) {
             }
         }
 
-        // Parse existing users
         let users = JSON.parse(data);
 
-        // Find the index of the user to be updated
         const index = users.findIndex(user => user.username === usersData.username);
 
         if (index !== -1) {
-            // Remove the accepted invitation from invitations array
             users[index].invitations = users[index].invitations.filter(invitation => invitation !== usersData.invitation);
-            // Add the accepted invitation to the groups array
             users[index].group.push(usersData.invitation);
         } else {
             console.error('User not found:', usersData.username);
         }
 
-        // Write the updated user data back to the file
         fs.writeFile(databasePath, JSON.stringify(users, null, 2), callback);
     });
 }
@@ -366,25 +399,21 @@ function removeInvitationFromUser(userData, callback) {
             }
         }
 
-        // Parse existing users
         let users = JSON.parse(data);
 
-        // Find the index of the user to be updated
         const index = users.findIndex(user => user.username === userData.username);
 
         if (index !== -1) {
-            // Remove the declined invitation from the invitations array
             users[index].invitations = users[index].invitations.filter(invitation => invitation !== userData.invitation);
         } else {
             console.error('User not found:', userData.username);
         }
 
-        // Write the updated user data back to the file
         fs.writeFile(databasePath, JSON.stringify(users, null, 2), callback);
     });
 }
 
-function addNewUserToDatabase (userData, callback) {
+function addNewUserToDatabase(userData, callback) {
     const databasePath = path.join(__dirname, '../PublicResources', 'users.json');
 
     fs.readFile(databasePath, 'utf8', (err, data) => {
@@ -396,10 +425,8 @@ function addNewUserToDatabase (userData, callback) {
             }
         }
 
-        // Parse existing users
         let users = JSON.parse(data);
 
-        // Check if the username already exists
         const existingUser = users.find(user => user.username === userData.username);
         if (existingUser) {
             return callback(new Error('Username already exists'));
@@ -408,10 +435,8 @@ function addNewUserToDatabase (userData, callback) {
         userData.group = userData.group || [];
         userData.invitations = userData.invitations || [];
         
-        // Add the new user to the users array
         users.push(userData);
 
-        // Write the updated user data back to the file
         fs.writeFile(databasePath, JSON.stringify(users, null, 2), callback);
     });
 }

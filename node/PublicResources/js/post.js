@@ -1,14 +1,14 @@
-// posting site
+// Posting site
 const postButton = document.getElementById("post-btn");
 const inputElement = document.getElementById("input-post");
 const displayElement = document.getElementById("displayText");
 
-// bot send messages
+// Bot send messages
 const chatInput = document.querySelector('.chat-input textarea');
 const sendTextBtn = document.querySelector('.chat-input button');
 const chatBox = document.querySelector('.chatbox');
 
-// bot open and close chat
+// Bot open and close chat
 const botToggler = document.querySelector('.bot-toggler');
 const botCloseBtn = document.querySelector('.close-btn');
 
@@ -21,6 +21,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 function renderPosts(posts) {
     const postList = document.querySelector('.container');
+    postList.innerHTML = ''; // Clear the container first
     posts.forEach(post => {
         const postElement = createPostElement(post);
         postList.appendChild(postElement);
@@ -28,67 +29,54 @@ function renderPosts(posts) {
 }
 
 function createPostElement(post) {
-    // Create the post element
     const postElement = document.createElement('div');
     postElement.classList.add('post');
 
-    // Create the post header
     const postHeader = document.createElement('div');
     postHeader.classList.add('postheader');
 
-    // Create user information
     const userInformation = document.createElement('div');
     userInformation.classList.add('user-information');
 
-    // Username
     const usernameSpan = document.createElement('span');
     usernameSpan.id = 'username';
     usernameSpan.textContent = post.username;
     userInformation.appendChild(usernameSpan);
 
-    // Point
     const pointSpan = document.createElement('span');
     pointSpan.id = 'point';
     pointSpan.textContent = '•';
     userInformation.appendChild(pointSpan);
 
-    // Date
     const dateSpan = document.createElement('span');
     dateSpan.id = 'date';
     dateSpan.textContent = post.date;
     userInformation.appendChild(dateSpan);
 
-    // time
     const timeSpan = document.createElement('span');
     timeSpan.id = 'timestamp';
     timeSpan.textContent = post.timestamp;
     userInformation.appendChild(timeSpan);
 
-    // Append user info to post header
     postHeader.appendChild(userInformation);
 
-    // Create post content
     const postContent = document.createElement('div');
     postContent.classList.add('post-content');
     
-    // Title
     const titleHeading = document.createElement('h3');
     titleHeading.id = 'title';
     titleHeading.textContent = post.title;
     postContent.appendChild(titleHeading);
 
-    // Content
     const contentParagraph = document.createElement('p');
     contentParagraph.textContent = post.content;
     postContent.appendChild(contentParagraph);
 
-    // Tags Container
     const tagsDiv = document.createElement('div');
     tagsDiv.classList.add('tags-container');
-    tagsDiv.textContent = post.tags;
+    tagsDiv.textContent = post.tags ? post.tags.join(', ') : '';
     postContent.appendChild(tagsDiv);
 
-    // Thumbs up and down buttons
     const thumbsUpButton = document.createElement('button');
     thumbsUpButton.innerHTML = '&#128077;';
     thumbsUpButton.classList.add('thumbs-up-btn');
@@ -105,13 +93,12 @@ function createPostElement(post) {
     dislikeCount.classList.add('post-rating-count');
     dislikeCount.textContent = post.dislikes;
 
-    // Event listeners for thumbs up and down
     thumbsUpButton.addEventListener('click', async () => {
         if (!thumbsUpButton.classList.contains('clicked')) {
             likeCount.textContent = Number(likeCount.textContent) + 1;
             thumbsUpButton.classList.add('clicked');
             thumbsDownButton.disabled = true;
-            const response = await fetch(`/posts/${post.id}/like`, { method: 'POST' });
+            await fetch(`/posts/${post.id}/like`, { method: 'POST' });
         }
     });
 
@@ -120,21 +107,18 @@ function createPostElement(post) {
             dislikeCount.textContent = Number(dislikeCount.textContent) + 1;
             thumbsDownButton.classList.add('clicked');
             thumbsUpButton.disabled = true;
-            const response = await fetch(`/posts/${post.id}/dislike`, { method: 'POST' });
+            await fetch(`/posts/${post.id}/dislike`, { method: 'POST' });
         }
     });
 
-    // Append all elements to post content
     postContent.appendChild(thumbsUpButton);
     postContent.appendChild(likeCount);
     postContent.appendChild(thumbsDownButton);
     postContent.appendChild(dislikeCount);
 
-    // Append content and header to the main post element
     postElement.appendChild(postHeader);
     postElement.appendChild(postContent);
 
-    // Comments functionality
     const commentButton = document.createElement("button");
     commentButton.textContent = "Comment";
     commentButton.className = "comment-button";
@@ -169,17 +153,27 @@ function createPostElement(post) {
     submitButton.addEventListener('click', async () => {
         let comment = commentInput.value;
         if (comment.trim() !== "") {
-            let newComment = document.createElement("div");
-            newComment.textContent = comment;
-            newComment.className = "comment";
-            commentList.appendChild(newComment);
+            let newComment = {
+                user: localStorage.getItem("username") || "Anonymous",
+                content: comment,
+                date: new Date().toLocaleDateString(),
+                timestamp: new Date().toLocaleTimeString()
+            };
+
+            // Add the new comment to the UI
+            let newCommentElement = document.createElement("div");
+            newCommentElement.textContent = `${newComment.user}: ${newComment.content}`;
+            newCommentElement.className = "comment";
+            commentList.appendChild(newCommentElement);
+
             commentInput.value = "";
             const commentData = {
-                postId: post.id,
-                comment: comment,
-                username: localStorage.getItem("username")
+                user: newComment.user,
+                content: newComment.content,
+                date: newComment.date,
+                timestamp: newComment.timestamp
             };
-            const response = await fetch('/posts/comment', {
+            const response = await fetch(`/posts/${post.id}/comment`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -194,27 +188,42 @@ function createPostElement(post) {
     commentSection.appendChild(submitButton);
     postElement.appendChild(commentSection);
 
-    // Pin status and button
+    // Render existing comments
+    if (post.comments) {
+        post.comments.forEach(comment => {
+            let existingComment = document.createElement("div");
+            existingComment.textContent = `${comment.user}: ${comment.content}`;
+            existingComment.className = "comment";
+            commentList.appendChild(existingComment);
+        });
+    }
+
     const pinnedStatus = document.createElement('span');
     pinnedStatus.textContent = "PINNED";
     pinnedStatus.className = "pinned-status";
-    pinnedStatus.style.display = "none"; // Hidden by default
-    postHeader.appendChild(pinnedStatus); // Append to postHeader
-    
+    pinnedStatus.style.display = post.pinned ? "block" : "none";
+    postHeader.appendChild(pinnedStatus);
 
     const pinButton = document.createElement("button");
     pinButton.textContent = "Pin";
     pinButton.className = "pin-button";
-    pinButton.addEventListener('click', () => pinPost(postElement));
-    postHeader.appendChild(pinButton);  // Tilføj knappen til headeren
+    pinButton.addEventListener('click', async () => {
+        const response = await fetch(`/posts/${post.id}/pin`, { method: 'POST' });
+        if (response.ok) {
+            pinPost(postElement);
+        } else {
+            console.error('Failed to pin post:', await response.text());
+        }
+    });
+    postHeader.appendChild(pinButton);
+
     return postElement;
 }
 
 function pinPost(postElement) {
     const postList = document.querySelector('.container');
-    const currentlyPinned = postList.querySelector('.pinned-post'); // Find already pinned post
+    const currentlyPinned = postList.querySelector('.pinned-post');
 
-    // If there's a post already pinned, unpin it
     if (currentlyPinned) {
         currentlyPinned.classList.remove('pinned-post');
         const statusLabel = currentlyPinned.querySelector('.pinned-status');
@@ -223,15 +232,13 @@ function pinPost(postElement) {
         }
     }
 
-    // Move the new post to the top and mark it as pinned
     postList.prepend(postElement);
     postElement.classList.add('pinned-post');
     const pinnedLabel = postElement.querySelector('.pinned-status');
     if (pinnedLabel) {
-        pinnedLabel.style.display = 'block'; // Make the PINNED text visible
+        pinnedLabel.style.display = 'block';
     }
 }
-
 document.querySelectorAll(".post").forEach(post => {
     const postId = post.dataset.postId;
     const ratings = post.querySelectorAll(".post-rating");

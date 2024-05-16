@@ -26,14 +26,16 @@
         "date": "03/05/2024",
         "timestamp": "13:14"
       }
-    ]
+    ],
+    "pinned": false
   },
   {
     "title": "Announcement",
     "content": "Hello there ladies and gentlemen, if you want to add a title, write it in front of your text in these {} brackets.",
     "username": "Lisa",
     "date": "9/5/2024",
-    "timestamp": "16:29"
+    "timestamp": "16:29",
+    "pinned": false
   },
   {
     "title": "Hi",
@@ -43,6 +45,8 @@
     "timestamp": "13:44",
     "tags": [
       "#hi"
-    ]
+    ],
+    "pinned": false
   }
+
 ]
