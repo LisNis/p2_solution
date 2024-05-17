@@ -21,8 +21,15 @@ document.addEventListener('DOMContentLoaded', function() {
 
 function renderPosts(posts) {
     const postList = document.querySelector('.container');
-    postList.innerHTML = ''; // Clear the container first
-    posts.forEach(post => {
+    postList.innerHTML = '';
+    const pinnedPosts = posts.filter(post => post.pinned);
+    pinnedPosts.forEach(post => {
+        const postElement = createPostElement(post);
+        postList.prepend(postElement); 
+    });
+
+    const otherPosts = posts.filter(post => !post.pinned);
+    otherPosts.forEach(post => {
         const postElement = createPostElement(post);
         postList.appendChild(postElement);
     });
@@ -74,7 +81,7 @@ function createPostElement(post) {
 
     const tagsDiv = document.createElement('div');
     tagsDiv.classList.add('tags-container');
-    tagsDiv.textContent = post.tags ? post.tags.join(', ') : '';
+    tagsDiv.textContent = post.tags;
     postContent.appendChild(tagsDiv);
 
     const thumbsUpButton = document.createElement('button');
@@ -98,7 +105,7 @@ function createPostElement(post) {
             likeCount.textContent = Number(likeCount.textContent) + 1;
             thumbsUpButton.classList.add('clicked');
             thumbsDownButton.disabled = true;
-            await fetch(`/posts/${post.id}/like`, { method: 'POST' });
+            const response = await fetch(`/posts/${post.id}/like`, { method: 'POST' });
         }
     });
 
@@ -107,7 +114,7 @@ function createPostElement(post) {
             dislikeCount.textContent = Number(dislikeCount.textContent) + 1;
             thumbsDownButton.classList.add('clicked');
             thumbsUpButton.disabled = true;
-            await fetch(`/posts/${post.id}/dislike`, { method: 'POST' });
+            const response = await fetch(`/posts/${post.id}/dislike`, { method: 'POST' });
         }
     });
 
@@ -153,25 +160,15 @@ function createPostElement(post) {
     submitButton.addEventListener('click', async () => {
         let comment = commentInput.value;
         if (comment.trim() !== "") {
-            let newComment = {
-                user: localStorage.getItem("username") || "Anonymous",
-                content: comment,
-                date: new Date().toLocaleDateString(),
-                timestamp: new Date().toLocaleTimeString()
-            };
-
-            // Add the new comment to the UI
-            let newCommentElement = document.createElement("div");
-            newCommentElement.textContent = `${newComment.user}: ${newComment.content}`;
-            newCommentElement.className = "comment";
-            commentList.appendChild(newCommentElement);
-
+            let newComment = document.createElement("div");
+            newComment.textContent = comment;
+            newComment.className = "comment";
+            commentList.appendChild(newComment);
             commentInput.value = "";
             const commentData = {
-                user: newComment.user,
-                content: newComment.content,
-                date: newComment.date,
-                timestamp: newComment.timestamp
+                postId: post.id,
+                comment: comment,
+                username: localStorage.getItem("username")
             };
             const response = await fetch(`/posts/${post.id}/comment`, {
                 method: 'POST',
@@ -188,20 +185,10 @@ function createPostElement(post) {
     commentSection.appendChild(submitButton);
     postElement.appendChild(commentSection);
 
-    // Render existing comments
-    if (post.comments) {
-        post.comments.forEach(comment => {
-            let existingComment = document.createElement("div");
-            existingComment.textContent = `${comment.user}: ${comment.content}`;
-            existingComment.className = "comment";
-            commentList.appendChild(existingComment);
-        });
-    }
-
     const pinnedStatus = document.createElement('span');
     pinnedStatus.textContent = "PINNED";
     pinnedStatus.className = "pinned-status";
-    pinnedStatus.style.display = post.pinned ? "block" : "none";
+    pinnedStatus.style.display = post.pinned ? "block" : "none"; // Kun vis pinned status hvis post er pinned
     postHeader.appendChild(pinnedStatus);
 
     const pinButton = document.createElement("button");
@@ -239,6 +226,9 @@ function pinPost(postElement) {
         pinnedLabel.style.display = 'block';
     }
 }
+
+
+
 document.querySelectorAll(".post").forEach(post => {
     const postId = post.dataset.postId;
     const ratings = post.querySelectorAll(".post-rating");

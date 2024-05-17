@@ -63,7 +63,7 @@ const server = http.createServer((req, res) => {
             postData.id = Date.now();
             postData.likes = postData.likes || 0;
             postData.dislikes = postData.dislikes || 0;
-            postData.comments = postData.comments || [];
+            postData.comments = [];
             postData.pinned = false;
 
             appendPostToDatabase(postData, (err) => {
@@ -131,7 +131,7 @@ const server = http.createServer((req, res) => {
             req.on('data', (chunk) => {
                 body += chunk.toString();
             });
-
+        
             req.on('end', () => {
                 pinPost(postId, (err) => {
                     if (err) {
@@ -143,7 +143,8 @@ const server = http.createServer((req, res) => {
                     }
                 });
             });
-        } else {
+        } 
+        else {
             res.writeHead(404);
             res.end('Error: Invalid action');
         }
@@ -330,6 +331,8 @@ function addCommentToPost(postId, commentData, callback) {
     });
 }
 
+
+// Function to pin a post
 function pinPost(postId, callback) {
     const databasePath = path.join(__dirname, '../PublicResources', 'posts.json');
 
@@ -359,6 +362,8 @@ function pinPost(postId, callback) {
         }
     });
 }
+
+
 
 function appendUsersToDatabase(usersData, callback) {
     const databasePath = path.join(__dirname, '../PublicResources', 'users.json');
