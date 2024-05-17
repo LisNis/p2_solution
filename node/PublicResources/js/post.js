@@ -194,10 +194,14 @@ function createPostElement(post) {
     const pinButton = document.createElement("button");
     pinButton.textContent = "Pin";
     pinButton.className = "pin-button";
+    if (post.pinned) {
+        pinButton.classList.add('pinned'); // Tilføj 'pinned' klasse hvis posten er pinned
+    }
     pinButton.addEventListener('click', async () => {
         const response = await fetch(`/posts/${post.id}/pin`, { method: 'POST' });
         if (response.ok) {
             pinPost(postElement);
+            pinButton.classList.add('pinned'); // Tilføj 'pinned' klasse ved klik
         } else {
             console.error('Failed to pin post:', await response.text());
         }
@@ -217,6 +221,10 @@ function pinPost(postElement) {
         if (statusLabel) {
             statusLabel.style.display = 'none';
         }
+        const pinButton = currentlyPinned.querySelector('.pin-button');
+        if (pinButton) {
+            pinButton.classList.remove('pinned'); // Fjern 'pinned' klasse fra tidligere pinned post
+        }
     }
 
     postList.prepend(postElement);
@@ -225,8 +233,11 @@ function pinPost(postElement) {
     if (pinnedLabel) {
         pinnedLabel.style.display = 'block';
     }
+    const pinButton = postElement.querySelector('.pin-button');
+    if (pinButton) {
+        pinButton.classList.add('pinned'); // Tilføj 'pinned' klasse til ny pinned post
+    }
 }
-
 
 
 document.querySelectorAll(".post").forEach(post => {

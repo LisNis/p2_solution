@@ -480,3 +480,6 @@ h1 {
     background-color: #051b97; 
     color: #fff;
 }
+.pin-button.pinned{
+    background-color: blue;
+}
