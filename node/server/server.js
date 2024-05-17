@@ -188,6 +188,49 @@ const server = http.createServer((req, res) => {
                 res.end(data);
             }
         });
+    } else if (req.method === 'POST' && req.url === '/create-team') {
+        let body = '';
+        req.on('data', (chunk) => {
+            body += chunk.toString();
+        });
+        req.on('end', () => {
+            const teamData = JSON.parse(body);
+            const { teamName, members, username } = teamData;
+
+            fs.readFile(path.join(__dirname, '../PublicResources', 'users.json'), 'utf8', (err, data) => {
+                if (err) {
+                    res.writeHead(500);
+                    res.end(JSON.stringify({ success: false, message: 'Error: Could not read user data' }));
+                    return;
+                }
+
+                const users = JSON.parse(data);
+
+                // Update the group for the user who created the team
+                const user = users.find(user => user.username === username);
+                if (user) {
+                    user.group.push(teamName);
+                }
+
+                // Add the group to invitations for all members
+                members.forEach(memberName => {
+                    const member = users.find(user => user.username === memberName);
+                    if (member) {
+                        member.invitations.push(teamName);
+                    }
+                });
+
+                fs.writeFile(path.join(__dirname, '../PublicResources', 'users.json'), JSON.stringify(users, null, 2), (err) => {
+                    if (err) {
+                        res.writeHead(500);
+                        res.end(JSON.stringify({ success: false, message: 'Error: Could not save user data' }));
+                    } else {
+                        res.writeHead(200);
+                        res.end(JSON.stringify({ success: true, message: 'Team created successfully' }));
+                    }
+                });
+            });
+        });
     } else {
         let filePath = req.url === '/' ? '/html/login.html' : req.url;
 

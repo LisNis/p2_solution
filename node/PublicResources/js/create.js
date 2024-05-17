@@ -39,7 +39,7 @@ document.addEventListener("DOMContentLoaded", function() {
             teamNameContainer.innerHTML = ""; 
             members = []; 
             teamNameInput.disabled = false; 
-           
+            confirmButton.style.display = "none";
         }
     });
 
@@ -66,8 +66,6 @@ document.addEventListener("DOMContentLoaded", function() {
             memberElement.appendChild(removeButton);
             teamMembersContainer.appendChild(memberElement);
         });
-
-        
     }
 
     //  remove buttons
@@ -81,6 +79,32 @@ document.addEventListener("DOMContentLoaded", function() {
 
     // confirm button 
     confirmButton.addEventListener("click", function() {
-        alert("Team creation confirmed!");
+        const username = localStorage.getItem('username'); // get the username from local storage
+        const teamData = {
+            teamName,
+            members,
+            username
+        };
+
+        fetch('/create-team', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(teamData)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert("Team creation confirmed!");
+            } else {
+                alert("Error: " + data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert("An error occurred while creating the team.");
+        });
+        window.location.href = "/groups";
     });
 });
