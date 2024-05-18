@@ -1,11 +1,49 @@
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
+const bcrypt = require('bcrypt');
 
 const server = http.createServer((req, res) => {
-    if (req.method === 'POST' && req.url === '/login') {
+    if (req.method === 'POST' && req.url === '/signup') {
         let body = '';
-        req.on('data', (chunk) => {
+        req.on('data', chunk => {
+            body += chunk.toString(); // Buffer to string
+        });
+        req.on('end', () => {
+            const userData = JSON.parse(body);
+            const username = userData.username;
+            const password = userData.password;
+
+            // Hash the password
+            bcrypt.hash(password, 10, (err, hashedPassword) => {
+                if (err) {
+                    res.writeHead(500);
+                    res.end('Error: Could not hash the password');
+                    return;
+                }
+
+                // Save the new user
+                const newUser = {
+                    username: username,
+                    password: hashedPassword,
+                    group: [],
+                    invitations: []
+                };
+
+                addNewUserToDatabase(newUser, err => {
+                    if (err) {
+                        res.writeHead(500);
+                        res.end('Error: Could not save the user');
+                    } else {
+                        res.writeHead(200);
+                        res.end('User signed up successfully');
+                    }
+                });
+            });
+        });
+    } else if (req.method === 'POST' && req.url === '/login') {
+        let body = '';
+        req.on('data', chunk => {
             body += chunk.toString(); // Buffer to string
         });
         req.on('end', () => {
@@ -17,39 +55,30 @@ const server = http.createServer((req, res) => {
                 if (err) {
                     res.writeHead(500);
                     res.end('Error: Could not read user data');
-                } else {
+                    return;
+                }
+                
+                try {
                     const users = JSON.parse(data);
                     const user = users.find(user => user.username === username);
                     if (user) {
-                        if (user.password === password) {
-                            res.writeHead(200, { 'Content-Type': 'application/json' });
-                            res.end(JSON.stringify({ message: 'Login successful' }));
-                        } else {
-                            res.writeHead(401);
-                            res.end('Invalid password');
-                        }
+                        // Compare the hashed password
+                        bcrypt.compare(password, user.password, (err, result) => {
+                            if (result) {
+                                res.writeHead(200, { 'Content-Type': 'application/json' });
+                                res.end(JSON.stringify({ message: 'Login successful' }));
+                            } else {
+                                res.writeHead(401);
+                                res.end('Invalid password');
+                            }
+                        });
                     } else {
                         res.writeHead(404);
                         res.end('User not found');
                     }
-                }
-            });
-        });
-    } else if (req.method === 'POST' && req.url === '/signup') {
-        let body = '';
-        req.on('data', (chunk) => {
-            body += chunk.toString(); // Buffer to string
-        });
-        req.on('end', () => {
-            const userData = JSON.parse(body);
-
-            addNewUserToDatabase(userData, (err) => {
-                if (err) {
+                } catch (parseError) {
                     res.writeHead(500);
-                    res.end('Error: Could not save the user');
-                } else {
-                    res.writeHead(200);
-                    res.end('User signed up successfully');
+                    res.end('Error: Could not parse user data');
                 }
             });
         });
@@ -283,6 +312,37 @@ const server = http.createServer((req, res) => {
     }
 });
 
+// Function to add new user to database
+function addNewUserToDatabase(newUser, callback) {
+    const databasePath = path.join(__dirname, '../PublicResources', 'users.json');
+
+    fs.readFile(databasePath, 'utf8', (err, data) => {
+        if (err && err.code !== 'ENOENT') {
+            return callback(err);
+        }
+
+        let users;
+        try {
+            users = data ? JSON.parse(data) : [];
+        } catch (parseError) {
+            return callback(parseError);
+        }
+
+        const existingUser = users.find(user => user.username === newUser.username);
+        if (existingUser) {
+            return callback(new Error('Username already exists'));
+        }
+
+        userData.group = userData.group || [];
+        userData.invitations = userData.invitations || [];
+
+        users.push(newUser);
+
+        fs.writeFile(databasePath, JSON.stringify(users, null, 2), callback);
+    });
+}
+
+
 function appendPostToDatabase(postData, callback) {
     const databasePath = path.join(__dirname, '../PublicResources', 'posts.json');
 
@@ -461,35 +521,8 @@ function removeInvitationFromUser(userData, callback) {
     });
 }
 
-function addNewUserToDatabase(userData, callback) {
-    const databasePath = path.join(__dirname, '../PublicResources', 'users.json');
-
-    fs.readFile(databasePath, 'utf8', (err, data) => {
-        if (err) {
-            if (err.code === 'ENOENT') {
-                data = '[]';
-            } else {
-                return callback(err);
-            }
-        }
-
-        let users = JSON.parse(data);
-
-        const existingUser = users.find(user => user.username === userData.username);
-        if (existingUser) {
-            return callback(new Error('Username already exists'));
-        }
-
-        userData.group = userData.group || [];
-        userData.invitations = userData.invitations || [];
-        
-        users.push(userData);
-
-        fs.writeFile(databasePath, JSON.stringify(users, null, 2), callback);
-    });
-}
-
 const PORT = process.env.PORT || 3240;
 server.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
 });
+

@@ -1,53 +1,13 @@
 [
   {
-    "username": "Alisanders",
-    "password": "password",
-    "group": [
-      "group 1",
-      "group 2",
-      "group 3",
-      "group 4",
-      "datalogi projekt gruppe"
-    ],
-    "invitations": [
-      "ggasdasd",
-      "hahha"
-    ]
-  },
-  {
-    "username": "JohnAvery",
-    "password": "password123",
-    "group": [
-      "group 1",
-      "group 2",
-      "group 3"
-    ],
-    "invitations": [
-      "group 4",
-      "datalogi projekt gruppe"
-    ]
-  },
-  {
-    "username": "gamma",
-    "password": "omega",
-    "group": [],
-    "invitations": []
-  },
-  {
-    "username": "Hilal",
-    "password": "1234",
-    "group": [],
-    "invitations": []
-  },
-  {
-    "username": "Anisa",
-    "password": "12345",
-    "group": [],
-    "invitations": []
-  },
-  {
     "username": "Lisa",
-    "password": "Lisa",
+    "password": "$2b$10$befvQmVhaXn/Ogxw/8vqmui.CBe1aLobQWv9/VPvO0lcjJbVLreCO",
+    "group": [],
+    "invitations": []
+  },
+  {
+    "username": "Aaron",
+    "password": "$2b$10$jmxV9NHSaHxjMvGabQqyEeZV1fqYSznmYW1WcSIgFz1OgFqdaR7wu",
     "group": [],
     "invitations": []
   }

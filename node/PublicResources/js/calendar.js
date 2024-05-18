@@ -1,22 +1,8 @@
-// der er endnu det problem, at man kan se alle events fra alle dage
-// og den gemmer i local storage...
+document.addEventListener('DOMContentLoaded', function() {
+    fetchEvents();
+});
 
-// calendar
-const header = document.querySelector('.calendar h3');
-const dates = document.querySelector('.dates');
-const prevBtn = document.querySelector('#prev');
-const nextBtn = document.querySelector('#next');
-const newEventModal = document.getElementById('newEventModal');
-const backDrop = document.getElementById('modalBackDrop');
-
-// the todo list
-const inputBox = document.getElementById('todo-input');
-const listContainer = document.getElementById('list-container');
-const cancelBtn = document.getElementById('cancel-button');
-const addBtn = document.getElementById('add-button');
-
-/*
-function fetchCalendarData() {
+function fetchEvents() {
     fetch('/calendar')
         .then(response => {
             if (!response.ok) {
@@ -24,61 +10,73 @@ function fetchCalendarData() {
             }
             return response.json();
         })
-        .then(data => {
-            renderCalendar(); 
+        .then(events => {
+            renderEvents(events);
         })
-        .catch(error => {
-            console.error('Error fetching calendar data:', error);
-        });
+        .catch(error => console.error('There was a problem with the fetch operation:', error));
 }
 
-function updateCalendarData(updatedData) {
-    fetch('/calendar', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(updatedData),
-    })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-            return response.text();
-        })
-        .then(message => {
-            console.log('Server response:', message);
-        })
-        .catch(error => {
-            console.error('Error updating calendar data:', error);
+// json event
+function renderEvents(events) {
+    const dates = document.querySelector('.dates');
+    dates.querySelectorAll('.day').forEach(day => {
+        const dayDate = new Date(day.getAttribute('data-year'), day.getAttribute('data-month'), day.getAttribute('data-day'));
+        const event = events.find(event => {
+            const eventDate = new Date(event.date);
+            return eventDate.getDate() === dayDate.getDate() &&
+                   eventDate.getMonth() === dayDate.getMonth() &&
+                   eventDate.getFullYear() === dayDate.getFullYear();
         });
+        if (event) {
+            const eventElement = createEventElement(event);
+            day.appendChild(eventElement);
+        }
+    });
 }
-*/
+
+function createEventElement(event) {
+    const eventElement = document.createElement('div');
+    eventElement.className = 'event';
+    
+    const eventTitle = document.createElement('h3');
+    eventTitle.textContent = event.title;
+    eventElement.appendChild(eventTitle);
+    
+    const eventDate = document.createElement('p');
+    eventDate.textContent = new Date(event.date).toLocaleDateString();
+    eventElement.appendChild(eventDate);
+    
+    return eventElement;
+}
+
+const header = document.querySelector('.calendar h3');
+const dates = document.querySelector('.dates');
+const prevBtn = document.querySelector('#prev');
+const nextBtn = document.querySelector('#next');
+const newEventModal = document.getElementById('newEventModal');
+const backDrop = document.getElementById('modalBackDrop');
+
+const inputBox = document.getElementById('todo-input');
+const titleInput = document.getElementById('todo-title');
+const cancelBtn = document.getElementById('cancel-button');
+const addBtn = document.getElementById('add-button');
+
 let nav = 0;
 let clicked = null;
-let events = localStorage.getItem('events') ? JSON.parse(localStorage.getItem('events')) : [];
-
 
 const weekdays = [
-    'Monday',
-    'Tuesday',
-    'Wednesday',
-    'Thursday',
-    'Friday',
-    'Saturday',
-    'Sunday'
+    'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'
 ];
 
-// highlight newEvent
+// for at highlight event
 function openModal(date) {
     clicked = date;
     newEventModal.style.display = 'block';
     backDrop.style.display = 'block';
 }
 
-
+// vigtig function (impl.), render calendar med alle dage 
 function renderCalendar() {
-
     const newDate = new Date();
 
     if (nav !== 0) {
@@ -86,7 +84,7 @@ function renderCalendar() {
     }
 
     const day = newDate.getDate();
-    const month = newDate.getMonth(); 
+    const month = newDate.getMonth();
     const year = newDate.getFullYear();
 
     // which year, which month, the first day
@@ -101,56 +99,44 @@ function renderCalendar() {
         month: "numeric",
         day: 'numeric'
     });
-    
+
     // only want to get the first element, the weekday
     const extraDays = weekdays.indexOf(dateString.split(', ')[0]);
     console.log(extraDays);
 
-    header.textContent = 
-    `${newDate.toLocaleDateString('en-us', { month: 'long'})} ${year}`;
 
+    header.textContent = `${newDate.toLocaleDateString('en-us', { month: 'long'})} ${year}`;
     dates.innerHTML = '';
 
-    for(let i = 1; i <= extraDays + daysInMonth; i++) {
+    for (let i = 1; i <= extraDays + daysInMonth; i++) {
         const daySquare = document.createElement('div');
         daySquare.classList.add('day');
 
-        const dayString = `${month + 1} / ${i-extraDays} / ${year}`;
+        const dayString = `${month + 1}/${i - extraDays}/${year}`;
 
         if (i > extraDays) {
             daySquare.innerText = i - extraDays;
+            daySquare.setAttribute('data-day', i - extraDays);
+            daySquare.setAttribute('data-month', month);
+            daySquare.setAttribute('data-year', year);
 
             // highlight current day
             if (i - extraDays === day && nav === 0) {
                 daySquare.id = 'currentDay';
             }
 
-            // finds all events for a month
-            const eventForDay = events.find(e => e.date === dayString);
-            console.log(eventForDay);
-
-            // creates div for event
-            if(eventForDay) {
-                const eventDiv = document.createElement('div');
-                eventDiv.classList.add('event');
-                eventDiv.innerText = eventForDay.title;
-                daySquare.appendChild(eventDiv);
-            }
-
-            daySquare.addEventListener('click', () => {
-                openModal(dayString);
-            });
-
+            daySquare.addEventListener('click', () => openModal(dayString));
         } else {
             daySquare.classList.add('extra');
         }
 
         dates.appendChild(daySquare);
     }
-   
 
+    fetchEvents(); // Fetch and render events
 }
 
+// next og prev button, for de andre months
 function buttons() {
     nextBtn.addEventListener('click', () => {
         nav++;
@@ -166,77 +152,55 @@ function buttons() {
 buttons();
 renderCalendar();
 
-
-// the todo list
-
-addBtn.addEventListener('click', function(){
-    if(inputBox.value){
-        let li = document.createElement('li');
-        li.innerHTML = inputBox.value;
-        listContainer.appendChild(li);
-        let span = document.createElement('span');
-        // the x symbol
-        span.innerHTML = "\u00d7";
-        li.appendChild(span);
-        
-        events.push({
-            date: clicked,
-            title: inputBox.value
-        });
-        
-        // todo 
-        localStorage.setItem('events', JSON.stringify(events));
-
-    
-    } else {
-        console.log("You need to write something");  
-    }
-    inputBox.value = '';
-
-})
-
 cancelBtn.addEventListener('click', function() {
     newEventModal.style.display = 'none';
     backDrop.style.display = 'none';
     inputBox.value = '';
+    titleInput.value = '';
     clicked = null;
     renderCalendar();
 });
 
-listContainer.addEventListener('click', function(e) {
-    if(e.target.tagName === 'LI'){
-        e.target.classList.toggle('checked');
-        
-        deleteEvent();
-        /*deleteEventFromJSON(clicked);
-        saveEventsToFile(events); */
-    } else if (e.target.tagName === 'SPAN') {
-        e.target.parentElement.remove();
-        
-        deleteEvent();
-        /*deleteEventFromJSON(clicked);
-        saveEventsToFile(events);*/
+addBtn.addEventListener('click', function() {
+    let eventDescription = inputBox.value;
+    let eventTitle = titleInput.value;
+
+    if (!eventTitle || !clicked) {
+        alert('Title and Date are required');
+        return;
     }
+
+    const eventData = {
+        title: eventTitle,
+        date: clicked,
+        description: eventDescription
+    };
+
+    fetch('/calendar', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(eventData)
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.json();
+    })
+    .then(data => {
+        console.log(data); // Log the server response
+        alert('Event submitted successfully');
+        newEventModal.style.display = 'none';
+        backDrop.style.display = 'none';
+        inputBox.value = '';
+        titleInput.value = '';
+        clicked = null;
+        renderEvents([data]); // Update calendar with new event
+    })
+    .catch(error => {
+        console.error('There was a problem with the fetch operation:', error);
+        alert('There was an error submitting the event');
+    });
 });
-
-
-/*function addNewEvent(calendarData) {
-    events.push(calendarData);
-    updateCalendarData(events);
-}*/
-
-
-function deleteEvent(date) {
-    /*events = events.filter(event => event.date !== date);
-    updateCalendarData(events);*/
-
-    events = events.filter(e => e.date !== clicked);
-    localStorage.setItem('events', JSON.stringify(events));
-    renderCalendar();
-}
-
-function displayList() {
-    listContainer.innerHTML = localStorage.getItem('data');
-}
-
-//fetchCalendarData();
