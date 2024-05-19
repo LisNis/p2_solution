@@ -333,8 +333,8 @@ function addNewUserToDatabase(newUser, callback) {
             return callback(new Error('Username already exists'));
         }
 
-        userData.group = userData.group || [];
-        userData.invitations = userData.invitations || [];
+        //userData.group = userData.group || [];
+        //userData.invitations = userData.invitations || [];
 
         users.push(newUser);
 
