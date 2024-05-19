@@ -1,20 +1,15 @@
-document.addEventListener('DOMContentLoaded', function() {
-    fetchEvents();
-});
-
 function fetchEvents() {
-    fetch('/calendar')
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-            return response.json();
-        })
-        .then(events => {
-            renderEvents(events);
-        })
-        .catch(error => console.error('There was a problem with the fetch operation:', error));
+    fetch('/events')
+    .then(response => response.json())
+    .then(data => {
+        console.log('Fetched events:', data); // Debugging log
+        renderEvents(data);
+    })
+    .catch(error => {
+        console.error('Error fetching events:', error);
+    });
 }
+
 
 // json event
 function renderEvents(events) {
@@ -56,7 +51,6 @@ const nextBtn = document.querySelector('#next');
 const newEventModal = document.getElementById('newEventModal');
 const backDrop = document.getElementById('modalBackDrop');
 
-const inputBox = document.getElementById('todo-input');
 const titleInput = document.getElementById('todo-title');
 const cancelBtn = document.getElementById('cancel-button');
 const addBtn = document.getElementById('add-button');
@@ -73,6 +67,8 @@ function openModal(date) {
     clicked = date;
     newEventModal.style.display = 'block';
     backDrop.style.display = 'block';
+
+    titleInput.value = '';
 }
 
 // vigtig function (impl.), render calendar med alle dage 
@@ -155,11 +151,63 @@ renderCalendar();
 cancelBtn.addEventListener('click', function() {
     newEventModal.style.display = 'none';
     backDrop.style.display = 'none';
-    inputBox.value = '';
     titleInput.value = '';
     clicked = null;
     renderCalendar();
 });
+
+
+/*
+// Event listener for the add button in the modal
+addBtn.addEventListener('click', () => {
+    const date = clicked; // Get the clicked date
+    const title = titleInput.value.trim(); // Get the event title from input
+
+    if (title !== '') {
+        addEvent(date, title); // Add the event
+        newEventModal.style.display = 'none'; // Hide the modal
+        backDrop.style.display = 'none';
+    } else {
+        alert('Please enter a title for the event.'); // Display an alert if title is empty
+    }
+});
+*/
+
+addBtn.addEventListener('click', function() {
+    const eventTitle = titleInput.value;
+    const eventDate = clicked
+    
+    const newEvent = {
+        title: eventTitle,
+        date: eventDate,
+    };
+    console.log(eventDate);
+
+    // Send the post data to the server
+    fetch('/events', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(newEvent)
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.text();
+    })
+    .then(data => {
+        console.log(data); // Log the server response
+        alert('Post submitted successfully');
+    })
+    .catch(error => {
+        console.error('There was a problem with the fetch operation:', error);
+        alert('There was an error submitting the post');
+    });
+});
+
+/*
 
 addBtn.addEventListener('click', function() {
     let eventDescription = inputBox.value;
@@ -197,10 +245,11 @@ addBtn.addEventListener('click', function() {
         inputBox.value = '';
         titleInput.value = '';
         clicked = null;
-        renderEvents([data]); // Update calendar with new event
+        fetchEvents(); // Fetch all events to update the calendar with the new event
     })
     .catch(error => {
         console.error('There was a problem with the fetch operation:', error);
         alert('There was an error submitting the event');
     });
 });
+*/

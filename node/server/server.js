@@ -3,6 +3,8 @@ const fs = require('fs');
 const path = require('path');
 const bcrypt = require('bcrypt');
 
+const eventsFilePath = path.join(__dirname, '../PublicResources/events.json');
+
 const server = http.createServer((req, res) => {
     if (req.method === 'POST' && req.url === '/signup') {
         let body = '';
@@ -259,6 +261,54 @@ const server = http.createServer((req, res) => {
                     }
                 });
             });
+        });
+    } else if (req.url === '/events' && req.method === 'GET') {
+        // Read events from the JSON file
+        fs.readFile(eventsFilePath, 'utf8', (error, data) => {
+            if (error) {
+                res.writeHead(500, { 'Content-Type': 'text/plain' });
+                res.end('Error: Could not read events file');
+            } else {
+                res.writeHead(200, { 'Content-Type': 'application/json' });
+                res.end(data);
+            }
+        });
+    } else if (req.url === '/events' && req.method === 'POST') {
+        let body = '';
+
+        req.on('data', chunk => {
+            body += chunk.toString();
+        });
+
+        req.on('end', () => {
+            try {
+                const newEvent = JSON.parse(body);
+
+                fs.readFile(eventsFilePath, 'utf8', (error, data) => {
+                    if (error) {
+                        res.writeHead(500, { 'Content-Type': 'text/plain' });
+                        res.end('Error: Could not read events file');
+                        return;
+                    }
+
+                    const events = JSON.parse(data);
+                    events.push(newEvent);
+
+                    fs.writeFile(eventsFilePath, JSON.stringify(events, null, 2), 'utf8', (error) => {
+                        if (error) {
+                            res.writeHead(500, { 'Content-Type': 'text/plain' });
+                            res.end('Error: Could not write to events file');
+                            return;
+                        }
+
+                        res.writeHead(200, { 'Content-Type': 'text/plain' });
+                        res.end('Event added successfully');
+                    });
+                });
+            } catch (error) {
+                res.writeHead(400, { 'Content-Type': 'text/plain' });
+                res.end('Error: Invalid JSON');
+            }
         });
     } else {
         let filePath = req.url === '/' ? '/html/login.html' : req.url;
