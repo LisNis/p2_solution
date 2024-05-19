@@ -27,6 +27,7 @@ async function handleLogin() {
 
         if (response.ok) {
             // Login successful 
+            localStorage.setItem("username", username);
             window.location.href = "/groups"; 
         } else {
             // Login failed, display error message

@@ -40,6 +40,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (response.ok) {
                 // Signup successful,
+                localStorage.setItem("username", username);
                 window.location.href = "/groups";
             } else {
                 // Signup failed, display error message
