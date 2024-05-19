@@ -34,7 +34,6 @@ function renderPosts(posts) {
         postList.appendChild(postElement);
     });
 }
-
 function createPostElement(post) {
     const postElement = document.createElement('div');
     postElement.classList.add('post');
@@ -47,7 +46,7 @@ function createPostElement(post) {
 
     const usernameSpan = document.createElement('span');
     usernameSpan.id = 'username';
-    usernameSpan.textContent = post.username;
+    usernameSpan.textContent = post.username || 'Unknown';
     userInformation.appendChild(usernameSpan);
 
     const pointSpan = document.createElement('span');
@@ -57,12 +56,12 @@ function createPostElement(post) {
 
     const dateSpan = document.createElement('span');
     dateSpan.id = 'date';
-    dateSpan.textContent = post.date;
+    dateSpan.textContent = post.date || 'Unknown date';
     userInformation.appendChild(dateSpan);
 
     const timeSpan = document.createElement('span');
     timeSpan.id = 'timestamp';
-    timeSpan.textContent = post.timestamp;
+    timeSpan.textContent = post.timestamp || 'Unknown time';
     userInformation.appendChild(timeSpan);
 
     postHeader.appendChild(userInformation);
@@ -72,16 +71,16 @@ function createPostElement(post) {
     
     const titleHeading = document.createElement('h3');
     titleHeading.id = 'title';
-    titleHeading.textContent = post.title;
+    titleHeading.textContent = post.title || 'No title';
     postContent.appendChild(titleHeading);
 
     const contentParagraph = document.createElement('p');
-    contentParagraph.textContent = post.content;
+    contentParagraph.textContent = post.content || 'No content';
     postContent.appendChild(contentParagraph);
 
     const tagsDiv = document.createElement('div');
     tagsDiv.classList.add('tags-container');
-    tagsDiv.textContent = post.tags;
+    tagsDiv.textContent = (post.tags || []).join(' ');
     postContent.appendChild(tagsDiv);
 
     const thumbsUpButton = document.createElement('button');
@@ -94,18 +93,18 @@ function createPostElement(post) {
 
     const likeCount = document.createElement('span');
     likeCount.classList.add('post-rating-count');
-    likeCount.textContent = post.likes;
+    likeCount.textContent = post.likes || 0;
 
     const dislikeCount = document.createElement('span');
     dislikeCount.classList.add('post-rating-count');
-    dislikeCount.textContent = post.dislikes;
+    dislikeCount.textContent = post.dislikes || 0;
 
     thumbsUpButton.addEventListener('click', async () => {
         if (!thumbsUpButton.classList.contains('clicked')) {
             likeCount.textContent = Number(likeCount.textContent) + 1;
             thumbsUpButton.classList.add('clicked');
             thumbsDownButton.disabled = true;
-            const response = await fetch(`/posts/${post.id}/like`, { method: 'POST' });
+            await fetch(`/posts/${post.id}/like`, { method: 'POST' });
         }
     });
 
@@ -114,7 +113,7 @@ function createPostElement(post) {
             dislikeCount.textContent = Number(dislikeCount.textContent) + 1;
             thumbsDownButton.classList.add('clicked');
             thumbsUpButton.disabled = true;
-            const response = await fetch(`/posts/${post.id}/dislike`, { method: 'POST' });
+            await fetch(`/posts/${post.id}/dislike`, { method: 'POST' });
         }
     });
 
@@ -149,6 +148,16 @@ function createPostElement(post) {
     commentList.className = "comment-list";
     commentSection.appendChild(commentList);
 
+    // Fetch and render comments
+    (post.comments || []).forEach(comment => {
+        let commentElement = document.createElement("div");
+        const user = comment.username || 'Unknown';
+        const content = comment.content || 'No content';
+        commentElement.textContent = `${user}: ${content}`;
+        commentElement.className = "comment";
+        commentList.appendChild(commentElement);
+    });
+
     const commentInput = document.createElement("textarea");
     commentInput.placeholder = "Write your comment here...";
     commentInput.className = "comment-field";
@@ -160,15 +169,16 @@ function createPostElement(post) {
     submitButton.addEventListener('click', async () => {
         let comment = commentInput.value;
         if (comment.trim() !== "") {
+            const username = localStorage.getItem("username") || 'Unknown';
             let newComment = document.createElement("div");
-            newComment.textContent = comment;
+            newComment.textContent = `${username}: ${comment}`;
             newComment.className = "comment";
             commentList.appendChild(newComment);
             commentInput.value = "";
             const commentData = {
                 postId: post.id,
-                comment: comment,
-                username: localStorage.getItem("username")
+                content: comment,
+                username: username
             };
             const response = await fetch(`/posts/${post.id}/comment`, {
                 method: 'POST',
@@ -188,20 +198,20 @@ function createPostElement(post) {
     const pinnedStatus = document.createElement('span');
     pinnedStatus.textContent = "PINNED";
     pinnedStatus.className = "pinned-status";
-    pinnedStatus.style.display = post.pinned ? "block" : "none"; // Kun vis pinned status hvis post er pinned
+    pinnedStatus.style.display = post.pinned ? "block" : "none"; // Only show pinned status if post is pinned
     postHeader.appendChild(pinnedStatus);
 
     const pinButton = document.createElement("button");
     pinButton.textContent = "Pin";
     pinButton.className = "pin-button";
     if (post.pinned) {
-        pinButton.classList.add('pinned'); // Tilføj 'pinned' klasse hvis posten er pinned
+        pinButton.classList.add('pinned'); // Add 'pinned' class if the post is pinned
     }
     pinButton.addEventListener('click', async () => {
         const response = await fetch(`/posts/${post.id}/pin`, { method: 'POST' });
         if (response.ok) {
             pinPost(postElement);
-            pinButton.classList.add('pinned'); // Tilføj 'pinned' klasse ved klik
+            pinButton.classList.add('pinned'); // Add 'pinned' class on click
         } else {
             console.error('Failed to pin post:', await response.text());
         }
@@ -210,7 +220,6 @@ function createPostElement(post) {
 
     return postElement;
 }
-
 function pinPost(postElement) {
     const postList = document.querySelector('.container');
     const currentlyPinned = postList.querySelector('.pinned-post');
