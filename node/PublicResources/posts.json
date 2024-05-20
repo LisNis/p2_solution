@@ -7,6 +7,13 @@
     "username": "User 3",
     "likes": 8,
     "dislikes": 2,
+    "likedBy": [
+      "user1",
+      "user2"
+    ],
+    "dislikedBy": [
+      "user3"
+    ],
     "date": "03/05/2024",
     "timestamp": "13:13",
     "tags": [
@@ -60,5 +67,30 @@
     "dislikes": 0,
     "comments": [],
     "pinned": false
+  },
+  {
+    "title": "like og dislike test",
+    "content": "hej hva så  og dislike",
+    "username": "Dashti",
+    "date": "20/5/2024",
+    "timestamp": "14:26",
+    "tags": [
+      "#like"
+    ],
+    "id": 1716208015823,
+    "likes": 1,
+    "dislikes": 0,
+    "comments": [
+      {
+        "postId": 1716208015823,
+        "content": "hej",
+        "username": "Dashti"
+      }
+    ],
+    "pinned": false,
+    "likedBy": [
+      "Dashti"
+    ],
+    "dislikedBy": []
   }
 ]

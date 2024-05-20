@@ -99,12 +99,34 @@ function createPostElement(post) {
     dislikeCount.classList.add('post-rating-count');
     dislikeCount.textContent = post.dislikes || 0;
 
+    const username = localStorage.getItem("username");
+    const userLikes = JSON.parse(localStorage.getItem('userLikes')) || {};
+    const userDislikes = JSON.parse(localStorage.getItem('userDislikes')) || {};
+
+    // Disable buttons if already liked/disliked
+    if (userLikes[post.id]) {
+        thumbsUpButton.classList.add('clicked');
+        thumbsDownButton.disabled = true;
+    }
+    if (userDislikes[post.id]) {
+        thumbsDownButton.classList.add('clicked');
+        thumbsUpButton.disabled = true;
+    }
+
     thumbsUpButton.addEventListener('click', async () => {
         if (!thumbsUpButton.classList.contains('clicked')) {
             likeCount.textContent = Number(likeCount.textContent) + 1;
             thumbsUpButton.classList.add('clicked');
             thumbsDownButton.disabled = true;
-            await fetch(`/posts/${post.id}/like`, { method: 'POST' });
+            userLikes[post.id] = true;
+            localStorage.setItem('userLikes', JSON.stringify(userLikes));
+            await fetch(`/posts/${post.id}/like`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ username })
+            });
         }
     });
 
@@ -113,7 +135,15 @@ function createPostElement(post) {
             dislikeCount.textContent = Number(dislikeCount.textContent) + 1;
             thumbsDownButton.classList.add('clicked');
             thumbsUpButton.disabled = true;
-            await fetch(`/posts/${post.id}/dislike`, { method: 'POST' });
+            userDislikes[post.id] = true;
+            localStorage.setItem('userDislikes', JSON.stringify(userDislikes));
+            await fetch(`/posts/${post.id}/dislike`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ username })
+            });
         }
     });
 

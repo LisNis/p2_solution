@@ -121,15 +121,16 @@ const server = http.createServer((req, res) => {
         const urlParts = req.url.split('/');
         const postId = parseInt(urlParts[2]);
         const action = urlParts[3];
-
+    
         if (action === 'like' || action === 'dislike') {
             let body = '';
             req.on('data', (chunk) => {
                 body += chunk.toString();
             });
-
+    
             req.on('end', () => {
-                updatePostLikesOrDislikes(postId, action, (err) => {
+                const { username } = JSON.parse(body);
+                updatePostLikesOrDislikes(postId, action, username, (err) => {
                     if (err) {
                         res.writeHead(500);
                         res.end('Error: Could not update post likes/dislikes');
@@ -429,7 +430,6 @@ function addNewUserToDatabase(newUser, callback) {
     });
 }
 
-
 function appendPostToDatabase(postData, callback) {
     const databasePath = path.join(__dirname, '../PublicResources', 'posts.json');
 
@@ -448,13 +448,15 @@ function appendPostToDatabase(postData, callback) {
         postData.dislikes = postData.dislikes || 0;
         postData.comments = postData.comments || [];
         postData.pinned = postData.pinned || false;
+        postData.likedBy = postData.likedBy || [];
+        postData.dislikedBy = postData.dislikedBy || [];
 
         posts.push(postData);
         fs.writeFile(databasePath, JSON.stringify(posts, null, 2), callback);
     });
 }
 
-function updatePostLikesOrDislikes(postId, action, callback) {
+function updatePostLikesOrDislikes(postId, action, username, callback) {
     const databasePath = path.join(__dirname, '../PublicResources', 'posts.json');
 
     fs.readFile(databasePath, 'utf8', (err, data) => {
@@ -466,12 +468,24 @@ function updatePostLikesOrDislikes(postId, action, callback) {
         const post = posts.find(post => post.id === postId);
 
         if (post) {
+            // Initialize likedBy and dislikedBy arrays if they are undefined
+            post.likedBy = post.likedBy || [];
+            post.dislikedBy = post.dislikedBy || [];
+
             if (action === 'like') {
-                post.likes = (post.likes || 0) + 1;
-                console.log(`Post ID ${postId} liked. New likes: ${post.likes}`);
+                if (!post.likedBy.includes(username)) {
+                    post.likes = (post.likes || 0) + 1;
+                    post.likedBy.push(username);
+                    // Ensure the user is removed from dislikedBy array if they switch from dislike to like
+                    post.dislikedBy = post.dislikedBy.filter(user => user !== username);
+                }
             } else if (action === 'dislike') {
-                post.dislikes = (post.dislikes || 0) + 1;
-                console.log(`Post ID ${postId} disliked. New dislikes: ${post.dislikes}`);
+                if (!post.dislikedBy.includes(username)) {
+                    post.dislikes = (post.dislikes || 0) + 1;
+                    post.dislikedBy.push(username);
+                    // Ensure the user is removed from likedBy array if they switch from like to dislike
+                    post.likedBy = post.likedBy.filter(user => user !== username);
+                }
             }
 
             fs.writeFile(databasePath, JSON.stringify(posts, null, 2), (writeErr) => {
@@ -479,11 +493,9 @@ function updatePostLikesOrDislikes(postId, action, callback) {
                     console.log('Error writing file:', writeErr);
                     return callback(writeErr);
                 }
-                console.log('File successfully written');
                 callback(null);
             });
         } else {
-            console.log('Post not found:', postId);
             callback(new Error('Post not found'));
         }
     });
@@ -521,7 +533,6 @@ function addCommentToPost(postId, commentData, callback) {
     });
 }
 
-
 // Function to pin a post
 function pinPost(postId, callback) {
     const databasePath = path.join(__dirname, '../PublicResources', 'posts.json');
@@ -552,8 +563,6 @@ function pinPost(postId, callback) {
         }
     });
 }
-
-
 
 function appendUsersToDatabase(usersData, callback) {
     const databasePath = path.join(__dirname, '../PublicResources', 'users.json');
@@ -612,4 +621,3 @@ const PORT = process.env.PORT || 3240;
 server.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
 });
-
