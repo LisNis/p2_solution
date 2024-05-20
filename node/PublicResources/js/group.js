@@ -8,21 +8,28 @@ function renderGroups(groups) {
     groupsContainer.innerHTML = ''; // Clear existing groups
 
     groups.forEach((group, index) => {
+        const groupContainer = document.createElement('div'); // Create container for each group
+        groupContainer.classList.add('group-container');
+        groupContainer.dataset.groupName = group; // Store group name as dataset attribute
+
         const groupElement = document.createElement('div');
         groupElement.classList.add('group');
         groupElement.id = `group-${index}`;
         groupElement.innerHTML = `
             <div class="group-name">${group}</div>
         `;
-        groupElement.addEventListener('click', function() {
+        
+        // Add click event listener to group container
+        groupContainer.addEventListener('click', function() {
             // Save the clicked group to localStorage
-            localStorage.setItem('selectedGroup', group);
+            localStorage.setItem('selectedGroup', this.dataset.groupName);
 
             // Navigate to group page
             window.location.href = `/post`;
         });
 
-        groupsContainer.appendChild(groupElement);
+        groupContainer.appendChild(groupElement);
+        groupsContainer.appendChild(groupContainer);
     });
 }
 
