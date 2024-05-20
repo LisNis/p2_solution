@@ -77,17 +77,5 @@ document.querySelector('.invitation').addEventListener('click', function() {
     window.location.href = '/invitation';
 });
 
-// Group options handling
-const settingforgroup = document.querySelector('.group-options');
-settingforgroup.addEventListener('click', function() {
-    const addingnewmember = document.querySelector('.addMember');
-    addingnewmember.style.display = addingnewmember.style.display === 'flex' ? 'none' : 'flex';
-});
-
-document.querySelector('.addMember').addEventListener('click', function() {
-    const searchBarContainer = document.querySelector('.search-bar-container');
-    searchBarContainer.style.display = 'block'; // Show the search bar
-});
-
 // Fetch and render groups on page load
 fetchUserGroups();
