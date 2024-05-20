@@ -475,11 +475,6 @@ h1 {
     background-color: #959595;  
     transform: scale(0.95); 
 }
-
-.pinned-post .pin-button {
-    background-color: #051b97; 
-    color: #fff;
-}
-.pin-button.pinned{
-    background-color: blue;
+.unpin-button{
+    color: #0000EE;
 }

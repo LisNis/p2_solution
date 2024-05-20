@@ -34,7 +34,8 @@
         "timestamp": "13:14"
       }
     ],
-    "pinned": false
+    "pinned": false,
+    "index": 0
   },
   {
     "title": "Announcement",
@@ -42,55 +43,8 @@
     "username": "Lisa",
     "date": "9/5/2024",
     "timestamp": "16:29",
-    "pinned": false
-  },
-  {
-    "title": "Hi",
-    "content": "You can now search for posts, just write the title or tag in the search bar.",
-    "username": "Lisa",
-    "date": "15/5/2024",
-    "timestamp": "13:44",
-    "tags": [
-      "#hi"
-    ],
-    "pinned": false
-  },
-  {
-    "title": "",
-    "content": "Hi",
-    "username": "Lisa",
-    "date": "18/5/2024",
-    "timestamp": "16:32",
-    "tags": [],
-    "id": 1716042770716,
-    "likes": 0,
-    "dislikes": 0,
-    "comments": [],
-    "pinned": false
-  },
-  {
-    "title": "like og dislike test",
-    "content": "hej hva så  og dislike",
-    "username": "Dashti",
-    "date": "20/5/2024",
-    "timestamp": "14:26",
-    "tags": [
-      "#like"
-    ],
-    "id": 1716208015823,
-    "likes": 1,
-    "dislikes": 0,
-    "comments": [
-      {
-        "postId": 1716208015823,
-        "content": "hej",
-        "username": "Dashti"
-      }
-    ],
     "pinned": false,
-    "likedBy": [
-      "Dashti"
-    ],
-    "dislikedBy": []
+    "index": 0
   }
+  
 ]

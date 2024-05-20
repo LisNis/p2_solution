@@ -37,6 +37,10 @@ function renderPosts(posts) {
 function createPostElement(post) {
     const postElement = document.createElement('div');
     postElement.classList.add('post');
+    postElement.dataset.index = post.index; // Sæt index som data attribut
+    if (post.pinned) {
+        postElement.classList.add('pinned-post');
+    }
 
     const postHeader = document.createElement('div');
     postHeader.classList.add('postheader');
@@ -68,7 +72,7 @@ function createPostElement(post) {
 
     const postContent = document.createElement('div');
     postContent.classList.add('post-content');
-    
+
     const titleHeading = document.createElement('h3');
     titleHeading.id = 'title';
     titleHeading.textContent = post.title || 'No title';
@@ -99,11 +103,11 @@ function createPostElement(post) {
     dislikeCount.classList.add('post-rating-count');
     dislikeCount.textContent = post.dislikes || 0;
 
+    // Disable buttons if already liked/disliked
     const username = localStorage.getItem("username");
     const userLikes = JSON.parse(localStorage.getItem('userLikes')) || {};
     const userDislikes = JSON.parse(localStorage.getItem('userDislikes')) || {};
 
-    // Disable buttons if already liked/disliked
     if (userLikes[post.id]) {
         thumbsUpButton.classList.add('clicked');
         thumbsDownButton.disabled = true;
@@ -178,7 +182,6 @@ function createPostElement(post) {
     commentList.className = "comment-list";
     commentSection.appendChild(commentList);
 
-    // Fetch and render comments
     (post.comments || []).forEach(comment => {
         let commentElement = document.createElement("div");
         const user = comment.username || 'Unknown';
@@ -232,24 +235,33 @@ function createPostElement(post) {
     postHeader.appendChild(pinnedStatus);
 
     const pinButton = document.createElement("button");
-    pinButton.textContent = "Pin";
+    pinButton.textContent = post.pinned ? "Unpin" : "Pin";
     pinButton.className = "pin-button";
     if (post.pinned) {
-        pinButton.classList.add('pinned'); // Add 'pinned' class if the post is pinned
+        pinButton.classList.add('pinned');
     }
     pinButton.addEventListener('click', async () => {
-        const response = await fetch(`/posts/${post.id}/pin`, { method: 'POST' });
+        const action = post.pinned ? 'unpin' : 'pin';
+        const response = await fetch(`/posts/${post.id}/${action}`, { method: 'POST' });
         if (response.ok) {
-            pinPost(postElement);
-            pinButton.classList.add('pinned'); // Add 'pinned' class on click
+            if (action === 'pin') {
+                pinPost(postElement);
+            } else {
+                unpinPost(postElement);
+            }
+            post.pinned = !post.pinned;  // Toggle the pinned state
+            pinButton.textContent = post.pinned ? "Unpin" : "Pin";
+            pinButton.classList.toggle('pinned');
         } else {
-            console.error('Failed to pin post:', await response.text());
+            console.error(`Failed to ${action} post:`, await response.text());
         }
     });
     postHeader.appendChild(pinButton);
 
     return postElement;
 }
+
+
 function pinPost(postElement) {
     const postList = document.querySelector('.container');
     const currentlyPinned = postList.querySelector('.pinned-post');
@@ -278,6 +290,42 @@ function pinPost(postElement) {
     }
 }
 
+function unpinPost(postElement) {
+    const postList = document.querySelector('.container');
+    postElement.remove(); // Fjern post elementet fra sin nuværende position
+
+    const otherPosts = Array.from(postList.children).filter(child => !child.classList.contains('pinned-post'));
+    postElement.classList.remove('pinned-post');
+
+    const pinnedLabel = postElement.querySelector('.pinned-status');
+    if (pinnedLabel) {
+        pinnedLabel.style.display = 'none';
+    }
+    const pinButton = postElement.querySelector('.pin-button');
+    if (pinButton) {
+        pinButton.classList.remove('pinned');
+        pinButton.textContent = "Pin";
+    }
+
+    // Fjern den blå farve med det samme ved at fjerne 'pinned' klassen
+    postElement.classList.remove('pinned-post');
+    pinButton.classList.remove('pinned');
+
+    // Find den korrekte position baseret på index
+    const postIndex = parseInt(postElement.dataset.index, 10);
+    let inserted = false;
+    for (let i = 0; i < otherPosts.length; i++) {
+        const otherPostIndex = parseInt(otherPosts[i].dataset.index, 10);
+        if (postIndex < otherPostIndex) {
+            postList.insertBefore(postElement, otherPosts[i]);
+            inserted = true;
+            break;
+        }
+    }
+    if (!inserted) {
+        postList.appendChild(postElement);
+    }
+}
 
 document.querySelectorAll(".post").forEach(post => {
     const postId = post.dataset.postId;

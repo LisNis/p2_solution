@@ -163,7 +163,7 @@ const server = http.createServer((req, res) => {
             req.on('data', (chunk) => {
                 body += chunk.toString();
             });
-        
+
             req.on('end', () => {
                 pinPost(postId, (err) => {
                     if (err) {
@@ -175,8 +175,24 @@ const server = http.createServer((req, res) => {
                     }
                 });
             });
-        } 
-        else {
+        } else if (action === 'unpin') {
+            let body = '';
+            req.on('data', (chunk) => {
+                body += chunk.toString();
+            });
+
+            req.on('end', () => {
+                unpinPost(postId, (err) => {
+                    if (err) {
+                        res.writeHead(500);
+                        res.end('Error: Could not unpin post');
+                    } else {
+                        res.writeHead(200, { 'Content-Type': 'application/json' });
+                        res.end(JSON.stringify({ message: 'Post unpinned successfully' }));
+                    }
+                });
+            });
+        } else {
             res.writeHead(404);
             res.end('Error: Invalid action');
         }
@@ -430,6 +446,8 @@ function addNewUserToDatabase(newUser, callback) {
     });
 }
 
+let nextIndex = 0;
+
 function appendPostToDatabase(postData, callback) {
     const databasePath = path.join(__dirname, '../PublicResources', 'posts.json');
 
@@ -450,7 +468,8 @@ function appendPostToDatabase(postData, callback) {
         postData.pinned = postData.pinned || false;
         postData.likedBy = postData.likedBy || [];
         postData.dislikedBy = postData.dislikedBy || [];
-
+        postData.index = nextIndex++;
+        
         posts.push(postData);
         fs.writeFile(databasePath, JSON.stringify(posts, null, 2), callback);
     });
@@ -616,7 +635,34 @@ function removeInvitationFromUser(userData, callback) {
         fs.writeFile(databasePath, JSON.stringify(users, null, 2), callback);
     });
 }
+function unpinPost(postId, callback) {
+    const databasePath = path.join(__dirname, '../PublicResources', 'posts.json');
 
+    fs.readFile(databasePath, 'utf8', (err, data) => {
+        if (err) {
+            return callback(err);
+        }
+
+        const posts = JSON.parse(data);
+        const post = posts.find(post => post.id === postId);
+
+        if (post) {
+            post.pinned = false; // Unpin the selected post
+
+            fs.writeFile(databasePath, JSON.stringify(posts, null, 2), (writeErr) => {
+                if (writeErr) {
+                    console.log('Error writing file:', writeErr);
+                    return callback(writeErr);
+                }
+                console.log('Post successfully unpinned');
+                callback(null);
+            });
+        } else {
+            console.log('Post not found:', postId);
+            callback(new Error('Post not found'));
+        }
+    });
+}
 const PORT = process.env.PORT || 3240;
 server.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
