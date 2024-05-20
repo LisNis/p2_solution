@@ -104,6 +104,30 @@ header{
     cursor: pointer;
 }
 
+.addMemberToGroup{
+    position: absolute;
+    top: 225px;
+    right: 0px;
+    display: flex;
+    justify-content: center;
+    border: 2px solid grey;
+    width: 150px;
+    padding: 10px;
+    margin: 20px;
+    font-size: 15px;
+    cursor: pointer;
+}
+
+.modal {
+    position: absolute;
+    top: 350px; /* Position it below the button */
+    right: 0px; /* Center it horizontally */
+    background-color: white;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2); /* Add shadow for better visibility */
+}
+
 .groups {
     display: flex;
     flex-wrap: wrap;

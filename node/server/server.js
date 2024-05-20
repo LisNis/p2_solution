@@ -391,6 +391,56 @@ const server = http.createServer((req, res) => {
                 res.end(JSON.stringify({ groups: user.group }));
             }
         });  
+    }else if (req.method === 'POST' && req.url === '/addNewMember') {
+        let body = '';
+        req.on('data', (chunk) => {
+            body += chunk.toString();
+        });
+        req.on('end', () => {
+            try {
+                const teamData = JSON.parse(body);
+                const { teamName, members } = teamData; // Remove 'username' here
+    
+                fs.readFile(path.join(__dirname, '../PublicResources', 'users.json'), 'utf8', (err, data) => {
+                    if (err) {
+                        res.writeHead(500);
+                        res.end(JSON.stringify({ success: false, message: 'Error: Could not read user data' }));
+                        return;
+                    }
+    
+                    const users = JSON.parse(data);
+                    let updated = false; // Flag to track if any update occurred
+    
+                    members.forEach(memberName => {
+                        const member = users.find(user => user.username === memberName);
+                        if (member) {
+                            member.invitations.push(teamName);
+                            updated = true;
+                        }
+                    });
+    
+                    if (updated) {
+                        // Save the updated user data
+                        fs.writeFile(path.join(__dirname, '../PublicResources', 'users.json'), JSON.stringify(users, null, 2), (err) => {
+                            if (err) {
+                                res.writeHead(500);
+                                res.end(JSON.stringify({ success: false, message: 'Error: Could not save user data' }));
+                            } else {
+                                res.writeHead(200);
+                                res.end(JSON.stringify({ success: true, message: 'Team created successfully' }));
+                            }
+                        });
+                    } else {
+                        // No updates were made
+                        res.writeHead(404);
+                        res.end(JSON.stringify({ success: false, message: 'No users found to update' }));
+                    }
+                });
+            } catch (error) {
+                res.writeHead(400);
+                res.end(JSON.stringify({ success: false, message: 'Error: Invalid JSON' }));
+            }
+        });
     } else {
         let filePath = req.url === '/' ? '/html/login.html' : req.url;
 

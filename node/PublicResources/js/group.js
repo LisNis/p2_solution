@@ -77,5 +77,67 @@ document.querySelector('.invitation').addEventListener('click', function() {
     window.location.href = '/invitation';
 });
 
+let modalVisible = false; // Track modal visibility
+
+document.querySelector('.addMemberToGroup').addEventListener('click', function() {
+    if (!modalVisible) {
+        const modal = document.createElement('div');
+        modal.classList.add('modal');
+        modal.innerHTML = `
+            <div class="modal-content">
+                <span class="close" onclick="closeModal()">&times;</span>
+                <input type="text" id="groupNameInput" placeholder="Group Name">
+                <input type="text" id="usernameInput" placeholder="Username">
+                <button onclick="addMemberToGroup()">Confirm</button>
+            </div>
+        `;
+        document.body.appendChild(modal);
+        modalVisible = true;
+    } else {
+        closeModal();
+        modalVisible = false;
+    }
+});
+
+// Function to add member to a group
+async function addMemberToGroup() {
+    const groupName = document.getElementById('groupNameInput').value;
+    const username = document.getElementById('usernameInput').value;
+
+    try {
+        const response = await fetch('/addNewMember', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                teamName: groupName,
+                members: [username], // Assuming you're sending a single username
+            })
+        });
+
+        if (response.ok) {
+            // Optionally, you can handle success response here
+            console.log('Team created successfully');
+        } else {
+            console.error('Error creating team:', response.statusText);
+        }
+    } catch (error) {
+        console.error('Error creating team:', error.message);
+    }
+
+    // Close modal
+    closeModal();
+}
+
+// Function to close modal
+function closeModal() {
+    const modal = document.querySelector('.modal');
+    if (modal) {
+        modal.parentNode.removeChild(modal);
+    }
+    modalVisible = false;
+}
+
 // Fetch and render groups on page load
 fetchUserGroups();

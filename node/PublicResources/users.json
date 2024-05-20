@@ -3,7 +3,9 @@
     "username": "Lisa",
     "password": "$2b$10$befvQmVhaXn/Ogxw/8vqmui.CBe1aLobQWv9/VPvO0lcjJbVLreCO",
     "group": [],
-    "invitations": []
+    "invitations": [
+      "g2"
+    ]
   },
   {
     "username": "Aaron",
