@@ -1,49 +1,3 @@
-function fetchEvents() {
-    fetch('/events')
-    .then(response => response.json())
-    .then(data => {
-        console.log('Fetched events:', data); // Debugging log
-        renderEvents(data);
-    })
-    .catch(error => {
-        console.error('Error fetching events:', error);
-    });
-}
-
-
-// json event
-function renderEvents(events) {
-    const dates = document.querySelector('.dates');
-    dates.querySelectorAll('.day').forEach(day => {
-        const dayDate = new Date(day.getAttribute('data-year'), day.getAttribute('data-month'), day.getAttribute('data-day'));
-        const event = events.find(event => {
-            const eventDate = new Date(event.date);
-            return eventDate.getDate() === dayDate.getDate() &&
-                   eventDate.getMonth() === dayDate.getMonth() &&
-                   eventDate.getFullYear() === dayDate.getFullYear();
-        });
-        if (event) {
-            const eventElement = createEventElement(event);
-            day.appendChild(eventElement);
-        }
-    });
-}
-
-function createEventElement(event) {
-    const eventElement = document.createElement('div');
-    eventElement.className = 'event';
-    
-    const eventTitle = document.createElement('h3');
-    eventTitle.textContent = event.title;
-    eventElement.appendChild(eventTitle);
-    
-    const eventDate = document.createElement('p');
-    eventDate.textContent = new Date(event.date).toLocaleDateString();
-    eventElement.appendChild(eventDate);
-    
-    return eventElement;
-}
-
 const header = document.querySelector('.calendar h3');
 const dates = document.querySelector('.dates');
 const prevBtn = document.querySelector('#prev');
@@ -54,21 +8,27 @@ const backDrop = document.getElementById('modalBackDrop');
 const titleInput = document.getElementById('todo-title');
 const cancelBtn = document.getElementById('cancel-button');
 const addBtn = document.getElementById('add-button');
+const listContainer = document.getElementById('list-container');
 
 let nav = 0;
 let clicked = null;
+let events = [];
 
 const weekdays = [
     'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'
 ];
 
-// for at highlight event
 function openModal(date) {
     clicked = date;
     newEventModal.style.display = 'block';
     backDrop.style.display = 'block';
+}
 
+function closeModal() {
+    newEventModal.style.display = 'none';
+    backDrop.style.display = 'none';
     titleInput.value = '';
+    clicked = null;
 }
 
 // vigtig function (impl.), render calendar med alle dage 
@@ -132,7 +92,6 @@ function renderCalendar() {
     fetchEvents(); // Fetch and render events
 }
 
-// next og prev button, for de andre months
 function buttons() {
     nextBtn.addEventListener('click', () => {
         nav++;
@@ -148,108 +107,131 @@ function buttons() {
 buttons();
 renderCalendar();
 
-cancelBtn.addEventListener('click', function() {
-    newEventModal.style.display = 'none';
-    backDrop.style.display = 'none';
-    titleInput.value = '';
-    clicked = null;
-    renderCalendar();
-});
+cancelBtn.addEventListener('click', closeModal);
 
-
-/*
-// Event listener for the add button in the modal
-addBtn.addEventListener('click', () => {
-    const date = clicked; // Get the clicked date
-    const title = titleInput.value.trim(); // Get the event title from input
-
-    if (title !== '') {
-        addEvent(date, title); // Add the event
-        newEventModal.style.display = 'none'; // Hide the modal
-        backDrop.style.display = 'none';
-    } else {
-        alert('Please enter a title for the event.'); // Display an alert if title is empty
-    }
-});
-*/
-
-addBtn.addEventListener('click', function() {
+addBtn.addEventListener('click', function () {
     const eventTitle = titleInput.value;
-    const eventDate = clicked
-    
-    const newEvent = {
-        title: eventTitle,
-        date: eventDate,
-    };
-    console.log(eventDate);
+    const eventDate = clicked;
 
-    // Send the post data to the server
-    fetch('/events', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(newEvent)
-    })
-    .then(response => {
-        if (!response.ok) {
-            throw new Error('Network response was not ok');
-        }
-        return response.text();
-    })
-    .then(data => {
-        console.log(data); // Log the server response
-        alert('Post submitted successfully');
-    })
-    .catch(error => {
-        console.error('There was a problem with the fetch operation:', error);
-        alert('There was an error submitting the post');
-    });
-});
+    if (eventTitle) {
+        const newEvent = {
+            title: eventTitle,
+            date: eventDate,
+        };
 
-/*
-
-addBtn.addEventListener('click', function() {
-    let eventDescription = inputBox.value;
-    let eventTitle = titleInput.value;
-
-    if (!eventTitle || !clicked) {
-        alert('Title and Date are required');
-        return;
+        fetch('/events', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(newEvent)
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.text();
+            })
+            .then(data => {
+                console.log(data); // Log the server response
+                alert('Event added successfully');
+                fetchEvents(); // Refresh events list
+                closeModal();
+            })
+            .catch(error => {
+                console.error('There was a problem with the fetch operation:', error);
+                alert('There was an error adding the event');
+            });
     }
+});
 
-    const eventData = {
-        title: eventTitle,
-        date: clicked,
-        description: eventDescription
-    };
+function fetchEvents() {
+    fetch('/events')
+        .then(response => response.json())
+        .then(data => {
+            console.log('Fetched events:', data); // Debugging log
+            renderEvents(data);
+        })
+        .catch(error => {
+            console.error('Error fetching events:', error);
+        });
+}
 
-    fetch('/calendar', {
-        method: 'POST',
+
+function renderEvents(events) {
+    dates.querySelectorAll('.day').forEach(day => {
+        const dayEvents = day.querySelectorAll('.event');
+        dayEvents.forEach(eventElement => eventElement.remove());
+    });
+
+    events.forEach(event => {
+        // Highlight events on calendar
+        dates.querySelectorAll('.day').forEach(day => {
+            const dayDate = new Date(day.getAttribute('data-year'), day.getAttribute('data-month'), day.getAttribute('data-day'));
+            const eventDate = new Date(event.date);
+
+            if (
+                eventDate.getDate() === dayDate.getDate() &&
+                eventDate.getMonth() === dayDate.getMonth() &&
+                eventDate.getFullYear() === dayDate.getFullYear()
+            ) {
+                // not duplicated in calendar
+                if (!day.querySelector(`.event[data-id="${event.date}"]`)) {
+                    const calendarEventElement = createEventElement(event, true);
+                    calendarEventElement.setAttribute('data-id', event.date); // Add a data-id to identify the event
+                    day.appendChild(calendarEventElement);
+                }
+            }
+        });
+    });
+}
+
+
+function createEventElement(event, forCalendar = false) {
+    const eventElement = document.createElement('div');
+    eventElement.className = 'event';
+
+    const eventTitle = document.createElement('h3');
+    eventTitle.textContent = event.title;
+    eventElement.appendChild(eventTitle);
+
+    const eventDate = document.createElement('p');
+    eventDate.textContent = new Date(event.date).toLocaleDateString();
+    eventElement.appendChild(eventDate);
+
+    const deleteButton = document.createElement('button');
+    deleteButton.textContent = 'Delete';
+    deleteButton.id = 'deleteEvent';
+    deleteButton.addEventListener('click', () => {
+        deleteEvent(event);
+    });
+    eventElement.appendChild(deleteButton);
+    
+    return eventElement;
+}
+
+
+function deleteEvent(eventToDelete) {
+    fetch(`/events/${encodeURIComponent(eventToDelete.date)}`, {
+        method: 'DELETE',
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify(eventData)
+        body: JSON.stringify(eventToDelete)
     })
-    .then(response => {
-        if (!response.ok) {
-            throw new Error('Network response was not ok');
-        }
-        return response.json();
-    })
-    .then(data => {
-        console.log(data); // Log the server response
-        alert('Event submitted successfully');
-        newEventModal.style.display = 'none';
-        backDrop.style.display = 'none';
-        inputBox.value = '';
-        titleInput.value = '';
-        clicked = null;
-        fetchEvents(); // Fetch all events to update the calendar with the new event
-    })
-    .catch(error => {
-        console.error('There was a problem with the fetch operation:', error);
-        alert('There was an error submitting the event');
-    });
-});
-*/
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.text();
+        })
+        .then(data => {
+            console.log(data); // Log the server response
+            alert('Event deleted successfully');
+            fetchEvents(); // Refresh events list
+        })
+        .catch(error => {
+            console.error('There was a problem with the fetch operation:', error);
+            alert('There was an error deleting the event');
+        });
+}

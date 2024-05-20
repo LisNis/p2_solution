@@ -227,3 +227,11 @@ header {
 .todo-app ul li span:hover {
     background: #edeef0;
 }
+
+#deleteEvent {
+    font-size: 10px;
+    background-color: lightcoral;
+    border: none;
+    color: #fff;
+    padding: 2px;
+}
