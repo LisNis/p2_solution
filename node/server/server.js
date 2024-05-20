@@ -348,6 +348,33 @@ const server = http.createServer((req, res) => {
                 res.end('Error: Invalid JSON');
             }
         });
+    } else if (req.method === 'GET' && req.url.startsWith('/user-groups')) {
+        const username = new URL(req.url, `http://${req.headers.host}`).searchParams.get('username');
+        
+        if (!username) {
+            res.writeHead(400, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({ error: 'Username is required' }));
+            return;
+        }
+    
+        fs.readFile(path.join(__dirname, '../PublicResources', 'users.json'), 'utf8', (err, data) => {
+            if (err) {
+                res.writeHead(500, { 'Content-Type': 'application/json' });
+                res.end(JSON.stringify({ error: 'Could not read user data' }));
+                return;
+            }
+    
+            const users = JSON.parse(data);
+            const user = users.find(user => user.username === username);
+    
+            if (!user) {
+                res.writeHead(404, { 'Content-Type': 'application/json' });
+                res.end(JSON.stringify({ error: 'User not found' }));
+            } else {
+                res.writeHead(200, { 'Content-Type': 'application/json' });
+                res.end(JSON.stringify({ groups: user.group }));
+            }
+        });  
     } else {
         let filePath = req.url === '/' ? '/html/login.html' : req.url;
 

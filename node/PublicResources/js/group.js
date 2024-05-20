@@ -1,66 +1,86 @@
-const firstGroup = document.getElementById("first-group");
+const groupsContainer = document.querySelector('.groups');
 
-firstGroup.addEventListener("click", function() {
-    // if user found in json 
-    window.location.href = "/post";
-});
-function showSidebar(){
+// gets username
+const username = localStorage.getItem('username');
+
+// Function to render groups
+function renderGroups(groups) {
+    groupsContainer.innerHTML = ''; // Clear existing groups
+
+    groups.forEach((group, index) => {
+        const groupElement = document.createElement('div');
+        groupElement.classList.add('group');
+        groupElement.id = `group-${index}`;
+        groupElement.innerHTML = `
+            <div class="group-name">${group}</div>
+        `;
+        groupElement.addEventListener('click', function() {
+            // Save the clicked group to localStorage
+            localStorage.setItem('selectedGroup', group);
+
+            // Navigate to group page
+            window.location.href = `/post`;
+        });
+
+        groupsContainer.appendChild(groupElement);
+    });
+}
+
+// Fetch user groups from the server
+async function fetchUserGroups() {
+    try {
+        const response = await fetch(`/user-groups?username=${username}`);
+        const data = await response.json();
+
+        if (response.ok) {
+            renderGroups(data.groups);
+        } else {
+            console.error('Error fetching groups:', data.error);
+        }
+    } catch (error) {
+        console.error('Error fetching groups:', error);
+    }
+}
+
+// Show/hide sidebar functions
+function showSidebar() {
     const sidebar = document.querySelector('.sidebar');
     sidebar.style.display = 'flex';
- }
-        
-function hideSidebar(){
+}
+
+function hideSidebar() {
     const sidebar = document.querySelector('.sidebar');
     sidebar.style.display = 'none';
 }
-          
-      
-let username = localStorage.getItem("username");
 
-// Check if username is not null
+// Display first letter based on username
 if (username) {
-    // Get first letter
     let firstLetter = username.charAt(0);
-    
-    // Display in the HTML
-    document.querySelector(".firstname").textContent = firstLetter;
-    document.querySelector(".username").textContent = username;
-    document.querySelector(".firstnameProfile").textContent = firstLetter;
+    document.querySelector('.firstname').textContent = firstLetter;
+    document.querySelector('.username').textContent = username;
+    document.querySelector('.firstnameProfile').textContent = firstLetter;
 }
-const postUsername = username;
 
-
-
-const newGroup = document.querySelector(".newGroup");
-newGroup.addEventListener("click", function(){
-    window.location.href="/create";
+// Navigation for new group and invitation
+document.querySelector('.newGroup').addEventListener('click', function() {
+    window.location.href = '/create';
 });
 
-const invitation = document.querySelector(".invitation");
-invitation.addEventListener("click", function(){
-    window.location.href="/invitation";
+document.querySelector('.invitation').addEventListener('click', function() {
+    window.location.href = '/invitation';
 });
 
+// Group options handling
 const settingforgroup = document.querySelector('.group-options');
-settingforgroup.addEventListener("click", function(){
+settingforgroup.addEventListener('click', function() {
     const addingnewmember = document.querySelector('.addMember');
-    addingnewmember.style.display = 'flex'; 
-    console.log ("Fuckk det");
-}); 
+    addingnewmember.style.display = addingnewmember.style.display === 'flex' ? 'none' : 'flex';
+});
 
 document.querySelector('.addMember').addEventListener('click', function() {
     const searchBarContainer = document.querySelector('.search-bar-container');
     searchBarContainer.style.display = 'block'; // Show the search bar
 });
 
-document.querySelector('.addMember').addEventListener('click', function() {
-    const addingnewmember = document.querySelector('.addMember');
-    const computedStyle = window.getComputedStyle(addingnewmember); // Gettinf the computed style of add Member
-    const displayStyle = computedStyle.getPropertyValue('display'); // Getting the value of the 'display' 
-
-    if (displayStyle === 'block') {
-        addingnewmember.style.display = 'none';
-    } else {
-        addingnewmember.style.display = 'block';
-    }
-}); 
+// Fetch and render groups on page load
+fetchUserGroups();

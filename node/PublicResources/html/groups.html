@@ -6,9 +6,9 @@
     <title>Groups</title>
     <link rel="stylesheet" href="../css/groups.css">
 </head>
-<body >
+<body>
     <ul class="sidebar">
-        <li><a href="#" onclick=hideSidebar()>x</a></li>
+        <li><a href="#" onclick="hideSidebar()">x</a></li>
         <div class="user-profile">
             <div class="userProfile">
                 <span class="firstnameProfile"></span>
@@ -22,33 +22,29 @@
     <header>
         <div class="logo">Vir ☕</div>
         <input class="search-bar" type="text" placeholder="Search">
-        <div onclick=showSidebar() class="user">
+        <div onclick="showSidebar()" class="user">
             <span class="firstname"></span>
         </div>
     </header>
     
     <div class="newGroup">
-        <div id="create-group"> create a group</div>
+        <div id="create-group">Create a group</div>
     </div>
     <div class="groups">
-        <div class = "group" id="first-group">
-        <div class="group-name">Group 1</div>
+        <!-- Groups will be dynamically added here -->
     </div>
-   
-        <div class="group-options" >...</div>
-        <ul>
-            <li class = "addMember"><a href="#">Add Members</a></li>
-        </ul>
-        <div class="search-bar-container" style="display: none;">
-            <input class="search-bar" type="text" placeholder="Search">
-            <button type="submit">Submit</button> 
-        </div> 
+    <div class="group-options">...</div>
+    <ul>
+        <li class="addMember"><a href="#">Add Members</a></li>
+    </ul>
+    <div class="search-bar-container" style="display: none;">
+        <input class="search-bar" type="text" placeholder="Search">
+        <button type="submit">Submit</button> 
+    </div> 
     <div class="invitation">
         <div id="invite">Invitation</div>
     </div>
-    
 
-<script src="../js/group.js"></script>
-
+    <script src="../js/group.js"></script>
 </body>
 </html>
