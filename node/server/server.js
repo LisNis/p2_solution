@@ -122,7 +122,7 @@ const server = http.createServer((req, res) => {
         const postId = parseInt(urlParts[2]);
         const action = urlParts[3];
     
-        if (action === 'like' || action === 'dislike') {
+        if (['like', 'dislike', 'unlike', 'undislike'].includes(action)) {
             let body = '';
             req.on('data', (chunk) => {
                 body += chunk.toString();
@@ -581,6 +581,16 @@ function updatePostLikesOrDislikes(postId, action, username, callback) {
                     post.dislikedBy.push(username);
                     // Ensure the user is removed from likedBy array if they switch from like to dislike
                     post.likedBy = post.likedBy.filter(user => user !== username);
+                }
+            }else if (action === 'unlike') {
+                if (post.likedBy.includes(username)) {
+                    post.likes = Math.max((post.likes || 1) - 1, 0);
+                    post.likedBy = post.likedBy.filter(user => user !== username);
+                }
+            } else if (action === 'undislike') {
+                if (post.dislikedBy.includes(username)) {
+                    post.dislikes = Math.max((post.dislikes || 1) - 1, 0);
+                    post.dislikedBy = post.dislikedBy.filter(user => user !== username);
                 }
             }
 

@@ -37,7 +37,7 @@ function renderPosts(posts) {
 function createPostElement(post) {
     const postElement = document.createElement('div');
     postElement.classList.add('post');
-    postElement.dataset.index = post.index; // Sæt index som data attribut
+    postElement.dataset.index = post.index; // Set index as data attribute
     if (post.pinned) {
         postElement.classList.add('pinned-post');
     }
@@ -118,7 +118,20 @@ function createPostElement(post) {
     }
 
     thumbsUpButton.addEventListener('click', async () => {
-        if (!thumbsUpButton.classList.contains('clicked')) {
+        if (thumbsUpButton.classList.contains('clicked')) {
+            likeCount.textContent = Number(likeCount.textContent) - 1;
+            thumbsUpButton.classList.remove('clicked');
+            thumbsDownButton.disabled = false;
+            delete userLikes[post.id];
+            localStorage.setItem('userLikes', JSON.stringify(userLikes));
+            await fetch(`/posts/${post.id}/unlike`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ username })
+            });
+        } else {
             likeCount.textContent = Number(likeCount.textContent) + 1;
             thumbsUpButton.classList.add('clicked');
             thumbsDownButton.disabled = true;
@@ -135,7 +148,20 @@ function createPostElement(post) {
     });
 
     thumbsDownButton.addEventListener('click', async () => {
-        if (!thumbsDownButton.classList.contains('clicked')) {
+        if (thumbsDownButton.classList.contains('clicked')) {
+            dislikeCount.textContent = Number(dislikeCount.textContent) - 1;
+            thumbsDownButton.classList.remove('clicked');
+            thumbsUpButton.disabled = false;
+            delete userDislikes[post.id];
+            localStorage.setItem('userDislikes', JSON.stringify(userDislikes));
+            await fetch(`/posts/${post.id}/undislike`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ username })
+            });
+        } else {
             dislikeCount.textContent = Number(dislikeCount.textContent) + 1;
             thumbsDownButton.classList.add('clicked');
             thumbsUpButton.disabled = true;
