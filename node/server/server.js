@@ -4,6 +4,7 @@ const path = require('path');
 const bcrypt = require('bcrypt');
 
 const eventsFilePath = path.join(__dirname, '../PublicResources/events.json');
+const postsFilePath = path.join(__dirname, '../PublicResources/posts.json');
 
 const server = http.createServer((req, res) => {
     if (req.method === 'POST' && req.url === '/signup') {
@@ -196,6 +197,55 @@ const server = http.createServer((req, res) => {
             res.writeHead(404);
             res.end('Error: Invalid action');
         }
+    }else if (req.url.startsWith('/posts/') && req.method === 'DELETE') {
+        const postId = decodeURIComponent(req.url.split('/posts/')[1]);
+        let body = '';
+
+        req.on('data', chunk => {
+            body += chunk.toString();
+        });
+
+        req.on('end', () => {
+            try {
+                const postToDelete = JSON.parse(body);
+
+                fs.readFile(postsFilePath, 'utf8', (error, data) => {
+                    if (error) {
+                        res.writeHead(500, { 'Content-Type': 'text/plain' });
+                        res.end('Error: Could not read posts file');
+                        console.error('Error reading posts file:', error);
+                        return;
+                    }
+
+                    let posts = JSON.parse(data);
+                    const initialLength = posts.length;
+                    posts = posts.filter(post => post.id !== parseInt(postId));
+
+                    if (posts.length === initialLength) {
+                        res.writeHead(404, { 'Content-Type': 'text/plain' });
+                        res.end('Error: Post not found');
+                        console.error('Post not found with ID:', postId);
+                        return;
+                    }
+
+                    fs.writeFile(postsFilePath, JSON.stringify(posts, null, 2), 'utf8', (error) => {
+                        if (error) {
+                            res.writeHead(500, { 'Content-Type': 'text/plain' });
+                            res.end('Error: Could not write to posts file');
+                            console.error('Error writing to posts file:', error);
+                            return;
+                        }
+
+                        res.writeHead(200, { 'Content-Type': 'text/plain' });
+                        res.end('Post deleted successfully');
+                    });
+                });
+            } catch (error) {
+                res.writeHead(400, { 'Content-Type': 'text/plain' });
+                res.end('Error: Invalid JSON');
+                console.error('Invalid JSON:', error);
+            }
+        });
     } else if (req.method === 'POST' && req.url === '/update-user-data') {
         let body = '';
         req.on('data', (chunk) => {

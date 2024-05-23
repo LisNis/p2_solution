@@ -2,10 +2,11 @@
   {
     "username": "Lisa",
     "password": "$2b$10$befvQmVhaXn/Ogxw/8vqmui.CBe1aLobQWv9/VPvO0lcjJbVLreCO",
-    "group": [],
-    "invitations": [
-      "g2"
-    ]
+    "group": [
+      "g2",
+      "g3"
+    ],
+    "invitations": []
   },
   {
     "username": "Aaron",

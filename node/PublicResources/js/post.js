@@ -34,10 +34,12 @@ function renderPosts(posts) {
         postList.appendChild(postElement);
     });
 }
+
 function createPostElement(post) {
     const postElement = document.createElement('div');
     postElement.classList.add('post');
     postElement.dataset.index = post.index; // Set index as data attribute
+    postElement.dataset.id = post.id;
     if (post.pinned) {
         postElement.classList.add('pinned-post');
     }
@@ -254,6 +256,14 @@ function createPostElement(post) {
     commentSection.appendChild(submitButton);
     postElement.appendChild(commentSection);
 
+    const deleteButton = document.createElement('button');
+    deleteButton.textContent = 'Delete';
+    deleteButton.id = 'delete-button';
+    deleteButton.addEventListener('click', () => {
+        showDeleteModal(post);
+    });
+    postHeader.appendChild(deleteButton);
+
     const pinnedStatus = document.createElement('span');
     pinnedStatus.textContent = "PINNED";
     pinnedStatus.className = "pinned-status";
@@ -285,6 +295,55 @@ function createPostElement(post) {
     postHeader.appendChild(pinButton);
 
     return postElement;
+}
+
+function showDeleteModal(postToDelete) {
+    const deleteBackdrop = document.getElementById('delete-backdrop'); 
+    deleteBackdrop.style.display = 'flex'; 
+
+    const deleteModal = document.querySelector('.delete-modal');
+    deleteModal.style.display = 'block';
+    const disagreeButton = document.querySelector('.disagree-button');
+    const agreeButton = document.querySelector('.agree-button');
+
+    disagreeButton.onclick = function() {
+        deleteModal.style.display = 'none';
+        deleteBackdrop.style.display = 'none'; 
+    };
+
+    agreeButton.onclick = function() {
+        deleteModal.style.display = 'none';
+        deleteBackdrop.style.display = 'none'; 
+        deletePost(postToDelete);
+    };
+}
+
+function deletePost(postToDelete) {
+    fetch(`/posts/${encodeURIComponent(postToDelete.id)}`, {
+        method: 'DELETE',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(postToDelete)
+    })
+        .then(response => {
+            if (!response.ok) {
+                return response.text().then(text => { throw new Error(text) });
+            }
+            return response.text();
+        })
+        .then(data => {
+            console.log(data); // Log the server response
+            alert('Post deleted successfully');
+            fetch('/posts')
+                .then(response => response.json())
+                .then(posts => renderPosts(posts)) // Refresh post list
+                .catch(error => console.error('There was a problem with the fetch operation:', error));
+        })
+        .catch(error => {
+            console.error('There was a problem with the fetch operation:', error);
+            alert('There was an error deleting the post');
+        });
 }
 
 
