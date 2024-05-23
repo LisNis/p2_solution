@@ -28,9 +28,23 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
+        if (username.length > 15) {
+            alert("Username is too long.");
+            return;
+        }
+
         try {
+            // Check if the username already exists
+            const response = await fetch(`/check-username?username=${encodeURIComponent(username)}`);
+            const data = await response.json();
+
+            if (!data.available) {
+                alert("Username already exists. Please choose a different username.");
+                return;
+            }
+
             // Send signup request to server
-            const response = await fetch('/signup', {
+            const signupResponse = await fetch('/signup', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -38,13 +52,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 body: JSON.stringify({ username, password })
             });
 
-            if (response.ok) {
+            if (signupResponse.ok) {
                 // Signup successful,
                 localStorage.setItem("username", username);
                 window.location.href = "/groups";
             } else {
                 // Signup failed, display error message
-                const errorMessage = await response.text();
+                const errorMessage = await signupResponse.text();
                 alert(errorMessage);
             }
         } catch (error) {

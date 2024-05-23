@@ -38,12 +38,41 @@
     "index": 0
   },
   {
+    "title": "",
+    "content": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "username": "Lisa",
+    "date": "23/5/2024",
+    "timestamp": "22:24",
+    "tags": [],
+    "id": 1716495886229,
+    "likes": 1,
+    "dislikes": 0,
+    "comments": [],
+    "pinned": false,
+    "likedBy": [
+      "Lisa"
+    ],
+    "dislikedBy": [],
+    "index": 0
+  },
+  {
     "title": "Announcement",
     "content": "Hello there ladies and gentlemen, if you want to add a title, write it in front of your text in these {} brackets.",
     "username": "Lisa",
-    "date": "9/5/2024",
-    "timestamp": "16:29",
-    "pinned": false,
+    "date": "23/5/2024",
+    "timestamp": "22:47",
+    "tags": [
+      "#Announcement"
+    ],
+    "id": 1716497256864,
+    "likes": 1,
+    "dislikes": 0,
+    "comments": [],
+    "pinned": true,
+    "likedBy": [
+      "Lisa"
+    ],
+    "dislikedBy": [],
     "index": 0
   }
 ]

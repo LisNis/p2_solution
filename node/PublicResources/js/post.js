@@ -554,7 +554,7 @@ document.getElementById('submitPost').addEventListener('click', function() {
         console.error('There was a problem with the fetch operation:', error);
         alert('There was an error submitting the post');
     });
-    postContent = '';
+    document.getElementById('textInput').value = '';
 });
 
 document.querySelector('.search-bar').addEventListener('input', function() {
