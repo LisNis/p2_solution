@@ -5,7 +5,7 @@ generateInvitationsForUser(loggedInUser);
 
 // Function to add invitations to the invitation page
 function generateInvitationsForUser(username) {
-    fetch('../users.json')
+    fetch('../data/users.json')
         .then(response => response.json())
         .then(users => {
             const invitationsContainer = document.querySelector('.invitation');
