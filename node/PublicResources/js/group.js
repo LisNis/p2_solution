@@ -4,6 +4,7 @@ const groupsContainer = document.querySelector('.groups');
 const username = localStorage.getItem('username');
 
 // Function to render groups
+/*
 function renderGroups(groups) {
     groupsContainer.innerHTML = ''; // Clear existing groups
 
@@ -47,6 +48,36 @@ function renderGroups(groups) {
             } catch (error) {
                 console.error('Error:', error);
             }
+
+            // Navigate to group page
+            window.location.href = `/post`;
+        });
+
+        groupContainer.appendChild(groupElement);
+        groupsContainer.appendChild(groupContainer);
+    });
+}
+*/
+
+function renderGroups(groups) {
+    groupsContainer.innerHTML = ''; // Clear existing groups
+
+    groups.forEach((group, index) => {
+        const groupContainer = document.createElement('div'); // Create container for each group
+        groupContainer.classList.add('group-container');
+        groupContainer.dataset.groupName = group; // Store group name as dataset attribute
+
+        const groupElement = document.createElement('div');
+        groupElement.classList.add('group');
+        groupElement.id = `group-${index}`;
+        groupElement.innerHTML = `
+            <div class="group-name">${group}</div>
+        `;
+        
+        // Add click event listener to group container
+        groupContainer.addEventListener('click', function() {
+            // Save the clicked group to localStorage
+            localStorage.setItem('selectedGroup', this.dataset.groupName);
 
             // Navigate to group page
             window.location.href = `/post`;
