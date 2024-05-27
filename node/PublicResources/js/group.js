@@ -3,62 +3,6 @@ const groupsContainer = document.querySelector('.groups');
 // Get username
 const username = localStorage.getItem('username');
 
-// Function to render groups
-/*
-function renderGroups(groups) {
-    groupsContainer.innerHTML = ''; // Clear existing groups
-
-    groups.forEach((group, index) => {
-        const groupContainer = document.createElement('div'); // Create container for each group
-        groupContainer.classList.add('group-container');
-        groupContainer.dataset.groupName = group; // Store group name as dataset attribute
-        groupContainer.dataset.groupId = index; // Add data-group-id attribute
-
-        const groupElement = document.createElement('div');
-        groupElement.classList.add('group');
-        groupElement.id = `group-${index}`;
-        groupElement.innerHTML = `
-            <div class="group-name">${group}</div>
-        `;
-        
-        // Add click event listener to group container
-        groupContainer.addEventListener('click', async function() {
-            const groupId = this.dataset.groupId; // Retrieve group ID
-            const groupName = this.dataset.groupName;
-            
-            // Save the clicked group to localStorage
-            localStorage.setItem('selectedGroup', groupName);
-            localStorage.setItem('selectedGroupId', groupId); // Save group ID
-
-            // Create JSON file on the server
-            try {
-                const response = await fetch('/create-json', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ groupName }),
-                });
-
-                if (response.ok) {
-                    console.log('JSON file created successfully');
-                } else {
-                    console.error('Failed to create JSON file');
-                }
-            } catch (error) {
-                console.error('Error:', error);
-            }
-
-            // Navigate to group page
-            window.location.href = `/post`;
-        });
-
-        groupContainer.appendChild(groupElement);
-        groupsContainer.appendChild(groupContainer);
-    });
-}
-*/
-
 function renderGroups(groups) {
     groupsContainer.innerHTML = ''; // Clear existing groups
 
