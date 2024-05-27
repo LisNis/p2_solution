@@ -329,67 +329,44 @@ const server = http.createServer((req, res) => {
         let body = '';
         req.on('data', (chunk) => {
             body += chunk.toString();
-    
-            // Check for excessively large payloads
-            if (body.length > 1e6) { // 1MB limit
-                req.connection.destroy();
-            }
         });
         req.on('end', () => {
-            try {
-                const teamData = JSON.parse(body);
-                const { teamName, members, username } = teamData;
-    
-                fs.readFile(path.join(__dirname, '../PublicResources/data', 'users.json'), 'utf8', (err, data) => {
+            const teamData = JSON.parse(body);
+            const { teamName, members, username } = teamData;
+
+            fs.readFile(path.join(__dirname, '../PublicResources/data', 'users.json'), 'utf8', (err, data) => {
+                if (err) {
+                    res.writeHead(500);
+                    res.end(JSON.stringify({ success: false, message: 'Error: Could not read user data' }));
+                    return;
+                }
+
+                const users = JSON.parse(data);
+
+                // Update the group for the user who created the team
+                const user = users.find(user => user.username === username);
+                if (user) {
+                    user.group.push(teamName);
+                }
+
+                // Add the group to invitations for all members
+                members.forEach(memberName => {
+                    const member = users.find(user => user.username === memberName);
+                    if (member) {
+                        member.invitations.push(teamName);
+                    }
+                });
+
+                fs.writeFile(path.join(__dirname, '../PublicResources/data', 'users.json'), JSON.stringify(users, null, 2), (err) => {
                     if (err) {
                         res.writeHead(500);
-                        res.end(JSON.stringify({ success: false, message: 'Error: Could not read user data' }));
-                        return;
+                        res.end(JSON.stringify({ success: false, message: 'Error: Could not save user data' }));
+                    } else {
+                        res.writeHead(200);
+                        res.end(JSON.stringify({ success: true, message: 'Team created successfully' }));
                     }
-    
-                    let users;
-                    try {
-                        users = JSON.parse(data);
-                    } catch (parseErr) {
-                        res.writeHead(500);
-                        res.end(JSON.stringify({ success: false, message: 'Error: Could not parse user data' }));
-                        return;
-                    }
-    
-                    // Update the group for the user who created the team
-                    const user = users.find(user => user.username === username);
-                    if (user) {
-                        if (!Array.isArray(user.group)) {
-                            user.group = [];
-                        }
-                        user.group.push(teamName);
-                    }
-    
-                    // Add the group to invitations for all members
-                    members.forEach(memberName => {
-                        const member = users.find(user => user.username === memberName);
-                        if (member) {
-                            if (!Array.isArray(member.invitations)) {
-                                member.invitations = [];
-                            }
-                            member.invitations.push(teamName);
-                        }
-                    });
-    
-                    fs.writeFile(path.join(__dirname, '../PublicResources/data', 'users.json'), JSON.stringify(users, null, 2), (err) => {
-                        if (err) {
-                            res.writeHead(500);
-                            res.end(JSON.stringify({ success: false, message: 'Error: Could not save user data' }));
-                        } else {
-                            res.writeHead(200);
-                            res.end(JSON.stringify({ success: true, message: 'Team created successfully' }));
-                        }
-                    });
                 });
-            } catch (jsonErr) {
-                res.writeHead(400);
-                res.end(JSON.stringify({ success: false, message: 'Error: Invalid JSON' }));
-            }
+            });
         });
     } else if (req.url === '/events' && req.method === 'GET') {
         fs.readFile(eventsFilePath, 'utf8', (error, data) => {
