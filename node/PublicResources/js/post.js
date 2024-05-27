@@ -13,13 +13,9 @@ const botToggler = document.querySelector('.bot-toggler');
 const botCloseBtn = document.querySelector('.close-btn');
 
 document.addEventListener('DOMContentLoaded', function() {
-    const groupName = localStorage.getItem('selectedGroup');
-    fetch(`/posts?groupName=${groupName}`)
+    fetch('/posts')
     .then(response => response.json())
-    .then(posts => {
-        console.log(posts); // Log the posts variable
-        renderPosts(posts);
-    })
+    .then(posts => renderPosts(posts))
     .catch(error => console.error('There was a problem with the fetch operation:', error));
 });
 
@@ -537,7 +533,7 @@ document.getElementById('submitPost').addEventListener('click', function() {
     console.log(postUsername);
 
     // Send the post data to the server
-    fetch('/posts/', {
+    fetch('/post', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
