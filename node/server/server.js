@@ -5,8 +5,8 @@ const bcrypt = require('bcrypt');
 const url = require('url');
 
 const eventsFilePath = path.join(__dirname, '../PublicResources/data/events.json');
-const postsFilePath = path.join(__dirname, '../PublicResources/data', 'posts.json');
-const usersFilePath = path.join(__dirname, '../PublicResources/data', 'users.json');
+const postsFilePath = path.join(__dirname, '../PublicResources/data/posts.json');
+const usersFilePath = path.join(__dirname, '../PublicResources/data/users.json');
 
 const server = http.createServer((req, res) => {
     if (req.method === 'POST' && req.url === '/signup') {
@@ -49,22 +49,22 @@ const server = http.createServer((req, res) => {
     } else if (req.method === 'GET' && req.url.startsWith('/check-username')) {
         const parsedUrl = new URL(req.url, `http://${req.headers.host}`);
         const username = parsedUrl.searchParams.get('username');
-    
+
         if (!username) {
             res.writeHead(400);
             res.end('Error: Username is required for username availability check');
             return;
         }
-    
+
         // Check if the username already exists in the database
-        const databasePath = path.join(__dirname, '../PublicResources/data', 'users.json');
+        const databasePath = path.join(__dirname, '../PublicResources/data/users.json');
         fs.readFile(databasePath, 'utf8', (err, data) => {
             if (err && err.code !== 'ENOENT') {
                 res.writeHead(500);
                 res.end('Error: Could not read user database');
                 return;
             }
-    
+
             let users;
             try {
                 users = data ? JSON.parse(data) : [];
@@ -73,17 +73,16 @@ const server = http.createServer((req, res) => {
                 res.end('Error: Could not parse user database');
                 return;
             }
-    
+
             const existingUser = users.find(user => user.username === username);
             const response = {
                 available: !existingUser
             };
-    
+
             res.writeHead(200, { 'Content-Type': 'application/json' });
             res.end(JSON.stringify(response));
         });
-    }
-    else if (req.method === 'POST' && req.url === '/login') {
+    } else if (req.method === 'POST' && req.url === '/login') {
         let body = '';
         req.on('data', chunk => {
             body += chunk.toString(); // Buffer to string
@@ -93,13 +92,13 @@ const server = http.createServer((req, res) => {
             const username = loginData.username;
             const password = loginData.password;
 
-            fs.readFile(path.join(__dirname, '../PublicResources/data', 'users.json'), 'utf8', (err, data) => {
+            fs.readFile(path.join(__dirname, '../PublicResources/data/users.json'), 'utf8', (err, data) => {
                 if (err) {
                     res.writeHead(500);
                     res.end('Error: Could not read user data');
                     return;
                 }
-                
+
                 try {
                     const users = JSON.parse(data);
                     const user = users.find(user => user.username === username);
@@ -148,7 +147,7 @@ const server = http.createServer((req, res) => {
             });
         });
     } else if (req.method === 'GET' && req.url === '/posts') {
-        fs.readFile(path.join(__dirname, '../PublicResources/data', 'posts.json'), 'utf8', (err, data) => {
+        fs.readFile(path.join(__dirname, '../PublicResources/data/posts.json'), 'utf8', (err, data) => {
             if (err) {
                 res.writeHead(500);
                 res.end('Error: Could not fetch posts');
@@ -161,13 +160,13 @@ const server = http.createServer((req, res) => {
         const urlParts = req.url.split('/');
         const postId = parseInt(urlParts[2]);
         const action = urlParts[3];
-    
+
         if (['like', 'dislike', 'unlike', 'undislike'].includes(action)) {
             let body = '';
             req.on('data', (chunk) => {
                 body += chunk.toString();
             });
-    
+
             req.on('end', () => {
                 const { username } = JSON.parse(body);
                 updatePostLikesOrDislikes(postId, action, username, (err) => {
@@ -236,7 +235,7 @@ const server = http.createServer((req, res) => {
             res.writeHead(404);
             res.end('Error: Invalid action');
         }
-    }else if (req.url.startsWith('/posts/') && req.method === 'DELETE') {
+    } else if (req.url.startsWith('/posts/') && req.method === 'DELETE') {
         const postId = decodeURIComponent(req.url.split('/posts/')[1]);
         let body = '';
 
@@ -316,7 +315,7 @@ const server = http.createServer((req, res) => {
             }
         });
     } else if (req.method === 'GET' && req.url === '/users') {
-        fs.readFile(path.join(__dirname, '../PublicResources/data', 'users.json'), 'utf8', (err, data) => {
+        fs.readFile(path.join(__dirname, '../PublicResources/data/users.json'), 'utf8', (err, data) => {
             if (err) {
                 res.writeHead(500);
                 res.end('Error: Could not fetch users');
@@ -334,7 +333,7 @@ const server = http.createServer((req, res) => {
             const teamData = JSON.parse(body);
             const { teamName, members, username } = teamData;
 
-            fs.readFile(path.join(__dirname, '../PublicResources/data', 'users.json'), 'utf8', (err, data) => {
+            fs.readFile(path.join(__dirname, '../PublicResources/data/users.json'), 'utf8', (err, data) => {
                 if (err) {
                     res.writeHead(500);
                     res.end(JSON.stringify({ success: false, message: 'Error: Could not read user data' }));
@@ -357,7 +356,7 @@ const server = http.createServer((req, res) => {
                     }
                 });
 
-                fs.writeFile(path.join(__dirname, '../PublicResources/data', 'users.json'), JSON.stringify(users, null, 2), (err) => {
+                fs.writeFile(path.join(__dirname, '../PublicResources/data/users.json'), JSON.stringify(users, null, 2), (err) => {
                     if (err) {
                         res.writeHead(500);
                         res.end(JSON.stringify({ success: false, message: 'Error: Could not save user data' }));
@@ -458,7 +457,7 @@ const server = http.createServer((req, res) => {
         req.on('data', chunk => {
             body += chunk.toString();
         });
-    
+
         req.on('end', () => {
             try {
                 const { groupName } = JSON.parse(body);
@@ -467,9 +466,9 @@ const server = http.createServer((req, res) => {
                     res.end(JSON.stringify({ error: 'Group name is required' }));
                     return;
                 }
-    
+
                 const filePath = path.join(__dirname, '../PublicResources/data/', `${groupName}.json`);
-    
+
                 // Check if the file already exists
                 fs.access(filePath, fs.constants.F_OK, (err) => {
                     if (!err) {
@@ -479,7 +478,7 @@ const server = http.createServer((req, res) => {
                     } else {
                         // File does not exist, create it
                         const data = { group: groupName };
-    
+
                         fs.writeFile(filePath, JSON.stringify(data, null, 2), err => {
                             if (err) {
                                 res.writeHead(500, { 'Content-Type': 'application/json' });
@@ -496,27 +495,26 @@ const server = http.createServer((req, res) => {
                 res.end(JSON.stringify({ error: 'Invalid JSON' }));
             }
         });
-    }
-     else if (req.method === 'GET' && req.url.startsWith('/user-groups')) {
+    } else if (req.method === 'GET' && req.url.startsWith('/user-groups')) {
         const queryObject = url.parse(req.url, true).query;
         const username = queryObject.username;
-        
+
         if (!username) {
             res.writeHead(400, { 'Content-Type': 'application/json' });
             res.end(JSON.stringify({ error: 'Username is required' }));
             return;
         }
-    
-        fs.readFile(path.join(__dirname, '../PublicResources/data', 'users.json'), 'utf8', (err, data) => {
+
+        fs.readFile(path.join(__dirname, '../PublicResources/data/users.json'), 'utf8', (err, data) => {
             if (err) {
                 res.writeHead(500, { 'Content-Type': 'application/json' });
                 res.end(JSON.stringify({ error: 'Could not read user data' }));
                 return;
             }
-    
+
             const users = JSON.parse(data);
             const user = users.find(user => user.username === username);
-    
+
             if (!user) {
                 res.writeHead(404, { 'Content-Type': 'application/json' });
                 res.end(JSON.stringify({ error: 'User not found' }));
@@ -524,7 +522,7 @@ const server = http.createServer((req, res) => {
                 res.writeHead(200, { 'Content-Type': 'application/json' });
                 res.end(JSON.stringify({ groups: user.group }));
             }
-        });  
+        });
     } else if (req.method === 'POST' && req.url === '/addNewMember') {
         let body = '';
         req.on('data', (chunk) => {
@@ -534,17 +532,17 @@ const server = http.createServer((req, res) => {
             try {
                 const teamData = JSON.parse(body);
                 const { teamName, members } = teamData;
-    
-                fs.readFile(path.join(__dirname, '../PublicResources/data', 'users.json'), 'utf8', (err, data) => {
+
+                fs.readFile(path.join(__dirname, '../PublicResources/data/users.json'), 'utf8', (err, data) => {
                     if (err) {
                         res.writeHead(500);
                         res.end(JSON.stringify({ success: false, message: 'Error: Could not read user data' }));
                         return;
                     }
-    
+
                     const users = JSON.parse(data);
                     let updated = false;
-    
+
                     members.forEach(memberName => {
                         const member = users.find(user => user.username === memberName);
                         if (member) {
@@ -552,9 +550,9 @@ const server = http.createServer((req, res) => {
                             updated = true;
                         }
                     });
-    
+
                     if (updated) {
-                        fs.writeFile(path.join(__dirname, '../PublicResources/data', 'users.json'), JSON.stringify(users, null, 2), (err) => {
+                        fs.writeFile(path.join(__dirname, '../PublicResources/data/users.json'), JSON.stringify(users, null, 2), (err) => {
                             if (err) {
                                 res.writeHead(500);
                                 res.end(JSON.stringify({ success: false, message: 'Error: Could not save user data' }));
@@ -573,60 +571,60 @@ const server = http.createServer((req, res) => {
                 res.end(JSON.stringify({ success: false, message: 'Error: Invalid JSON' }));
             }
         });
+    } else if (req.method === 'GET') {
+        serveStaticFile(req, res);
     } else {
-        let filePath = req.url === '/' ? '/html/login.html' : req.url;
-
-        if (filePath === '/post') {
-            filePath = '/html/post.html';
-        } else if (filePath === '/groups') {
-            filePath = '/html/groups.html';
-        } else if (filePath === '/calendar') {
-            filePath = '/html/calendar.html';
-        } else if (filePath === '/signup') {
-            filePath = '/html/signup.html';
-        } else if (filePath === '/coffeebreak') {
-            filePath = '/html/coffeebreak.html';
-        } else if (filePath === '/invitation') {
-            filePath = '/html/invitation.html';
-        } else if (filePath === '/create') {
-            filePath = '/html/create.html';
-        } else if (filePath === '/login') {
-            filePath = '/html/login.html';
-        } else if (filePath === '/teamcohesion') {
-            filePath = '/html/teamcohesion.html';
-        }
-
-        filePath = path.join(__dirname, '../PublicResources', filePath);
-
-        fs.readFile(filePath, (error, data) => {
-            if (error) {
-                if (error.code === 'ENOENT') {
-                    res.writeHead(404);
-                    res.end('Error: File not found');
-                } else {
-                    res.writeHead(500);
-                    res.end('Error: Internal Server Error');
-                }
-            } else {
-                let contentType = 'text/plain';
-                const ext = path.extname(filePath);
-                if (ext === '.html') {
-                    contentType = 'text/html';
-                } else if (ext === '.css') {
-                    contentType = 'text/css';
-                } else if (ext === '.js') {
-                    contentType = 'text/javascript';
-                }
-
-                res.writeHead(200, { 'Content-Type': contentType });
-                res.end(data);
-            }
-        });
+        res.writeHead(404);
+        res.end('Error: Not found');
     }
 });
+
+// Function to serve static files
+function serveStaticFile(req, res) {
+    let filePath = req.url === '/' ? '/html/login.html' : req.url;
+
+    filePath = path.join(__dirname, '../PublicResources', filePath);
+
+    fs.readFile(filePath, (error, data) => {
+        if (error) {
+            if (error.code === 'ENOENT') {
+                res.writeHead(404);
+                res.end('Error: File not found');
+            } else {
+                res.writeHead(500);
+                res.end('Error: Internal Server Error');
+            }
+        } else {
+            let contentType = 'text/plain';
+            const ext = path.extname(filePath);
+            switch (ext) {
+                case '.html':
+                    contentType = 'text/html';
+                    break;
+                case '.css':
+                    contentType = 'text/css';
+                    break;
+                case '.js':
+                    contentType = 'text/javascript';
+                    break;
+                case '.jpg':
+                    contentType = 'image/jpeg';
+                    break;
+                case '.png':
+                    contentType = 'image/png';
+                    break;
+                // Add more content types as needed
+            }
+
+            res.writeHead(200, { 'Content-Type': contentType });
+            res.end(data);
+        }
+    });
+}
+
 // Function to add new user to database
 function addNewUserToDatabase(newUser, callback) {
-    const databasePath = path.join(__dirname, '../PublicResources/data', 'users.json');
+    const databasePath = path.join(__dirname, '../PublicResources/data/users.json');
 
     fs.readFile(databasePath, 'utf8', (err, data) => {
         if (err && err.code !== 'ENOENT') {
@@ -645,9 +643,6 @@ function addNewUserToDatabase(newUser, callback) {
             return callback(new Error('Username already exists'));
         }
 
-        //userData.group = userData.group || [];
-        //userData.invitations = userData.invitations || [];
-
         users.push(newUser);
 
         fs.writeFile(databasePath, JSON.stringify(users, null, 2), callback);
@@ -657,7 +652,7 @@ function addNewUserToDatabase(newUser, callback) {
 let nextIndex = 0;
 
 function appendPostToDatabase(postData, callback) {
-    const databasePath = path.join(__dirname, '../PublicResources/data', 'posts.json');
+    const databasePath = path.join(__dirname, '../PublicResources/data/posts.json');
 
     fs.readFile(databasePath, 'utf8', (err, data) => {
         if (err) {
@@ -677,14 +672,14 @@ function appendPostToDatabase(postData, callback) {
         postData.likedBy = postData.likedBy || [];
         postData.dislikedBy = postData.dislikedBy || [];
         postData.index = nextIndex++;
-        
+
         posts.push(postData);
         fs.writeFile(databasePath, JSON.stringify(posts, null, 2), callback);
     });
 }
 
 function updatePostLikesOrDislikes(postId, action, username, callback) {
-    const databasePath = path.join(__dirname, '../PublicResources/data', 'posts.json');
+    const databasePath = path.join(__dirname, '../PublicResources/data/posts.json');
 
     fs.readFile(databasePath, 'utf8', (err, data) => {
         if (err) {
@@ -713,7 +708,7 @@ function updatePostLikesOrDislikes(postId, action, username, callback) {
                     // Ensure the user is removed from likedBy array if they switch from like to dislike
                     post.likedBy = post.likedBy.filter(user => user !== username);
                 }
-            }else if (action === 'unlike') {
+            } else if (action === 'unlike') {
                 if (post.likedBy.includes(username)) {
                     post.likes = Math.max((post.likes || 1) - 1, 0);
                     post.likedBy = post.likedBy.filter(user => user !== username);
@@ -739,7 +734,7 @@ function updatePostLikesOrDislikes(postId, action, username, callback) {
 }
 
 function addCommentToPost(postId, commentData, callback) {
-    const databasePath = path.join(__dirname, '../PublicResources/data', 'posts.json');
+    const databasePath = path.join(__dirname, '../PublicResources/data/posts.json');
 
     fs.readFile(databasePath, 'utf8', (err, data) => {
         if (err) {
@@ -772,7 +767,7 @@ function addCommentToPost(postId, commentData, callback) {
 
 // Function to pin a post
 function pinPost(postId, callback) {
-    const databasePath = path.join(__dirname, '../PublicResources/data', 'posts.json');
+    const databasePath = path.join(__dirname, '../PublicResources/data/posts.json');
 
     fs.readFile(databasePath, 'utf8', (err, data) => {
         if (err) {
@@ -802,7 +797,7 @@ function pinPost(postId, callback) {
 }
 
 function appendUsersToDatabase(usersData, callback) {
-    const databasePath = path.join(__dirname, '../PublicResources/data', 'users.json');
+    const databasePath = path.join(__dirname, '../PublicResources/data/users.json');
 
     fs.readFile(databasePath, 'utf8', (err, data) => {
         if (err) {
@@ -829,7 +824,7 @@ function appendUsersToDatabase(usersData, callback) {
 }
 
 function removeInvitationFromUser(userData, callback) {
-    const databasePath = path.join(__dirname, '../PublicResources/data', 'users.json');
+    const databasePath = path.join(__dirname, '../PublicResources/data/users.json');
 
     fs.readFile(databasePath, 'utf8', (err, data) => {
         if (err) {
@@ -853,8 +848,9 @@ function removeInvitationFromUser(userData, callback) {
         fs.writeFile(databasePath, JSON.stringify(users, null, 2), callback);
     });
 }
+
 function unpinPost(postId, callback) {
-    const databasePath = path.join(__dirname, '../PublicResources/data', 'posts.json');
+    const databasePath = path.join(__dirname, '../PublicResources/data/posts.json');
 
     fs.readFile(databasePath, 'utf8', (err, data) => {
         if (err) {
@@ -881,6 +877,7 @@ function unpinPost(postId, callback) {
         }
     });
 }
+
 const PORT = process.env.PORT || 3240;
 server.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
