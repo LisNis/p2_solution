@@ -4,19 +4,14 @@
     "password": "$2b$10$befvQmVhaXn/Ogxw/8vqmui.CBe1aLobQWv9/VPvO0lcjJbVLreCO",
     "group": [
       "g2",
-      "g3",
-      "Slayyy",
-      "Buh"
+      "g3"
     ],
     "invitations": []
   },
   {
     "username": "Aaron",
     "password": "$2b$10$jmxV9NHSaHxjMvGabQqyEeZV1fqYSznmYW1WcSIgFz1OgFqdaR7wu",
-    "group": [
-      "Slayyy",
-      "Buh"
-    ],
+    "group": [],
     "invitations": []
   },
   {
@@ -27,14 +22,7 @@
       "g2",
       "g3",
       "g4",
-      "g5",
-      "group 70000123",
-      "g1",
-      "g2",
-      "g3",
-      "g4",
-      "g5",
-      "ÆÆÆÆÆÆÆÆÆÆÆÆÆ"
+      "g5"
     ],
     "invitations": []
   },
