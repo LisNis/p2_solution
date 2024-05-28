@@ -31,7 +31,7 @@ function closeModal() {
     clicked = null;
 }
 
-// vigtig function (impl.), render calendar med alle dage 
+// render the calendar, every month, every day
 function renderCalendar() {
     const newDate = new Date();
 
@@ -64,6 +64,7 @@ function renderCalendar() {
     header.textContent = `${newDate.toLocaleDateString('en-us', { month: 'long'})} ${year}`;
     dates.innerHTML = '';
 
+    // get the extra days, e.eks. May has two, because its starts on a wendsday
     for (let i = 1; i <= extraDays + daysInMonth; i++) {
         const daySquare = document.createElement('div');
         daySquare.classList.add('day');
@@ -92,6 +93,7 @@ function renderCalendar() {
     fetchEvents(); // Fetch and render events
 }
 
+// navigate between months
 function buttons() {
     nextBtn.addEventListener('click', () => {
         nav++;
@@ -109,6 +111,7 @@ renderCalendar();
 
 cancelBtn.addEventListener('click', closeModal);
 
+// add events json
 addBtn.addEventListener('click', function () {
     const eventTitle = titleInput.value;
     const eventDate = clicked;
@@ -190,15 +193,18 @@ function renderEvents(events) {
 function createEventElement(event, forCalendar = false) {
     const eventElement = document.createElement('div');
     eventElement.className = 'event';
-
+    
+    //title
     const eventTitle = document.createElement('h3');
     eventTitle.textContent = event.title;
     eventElement.appendChild(eventTitle);
 
+    //date
     const eventDate = document.createElement('p');
     eventDate.textContent = new Date(event.date).toLocaleDateString();
     eventElement.appendChild(eventDate);
 
+    //delete button
     const deleteButton = document.createElement('button');
     deleteButton.textContent = 'Delete';
     deleteButton.id = 'deleteEvent';
@@ -210,7 +216,7 @@ function createEventElement(event, forCalendar = false) {
     return eventElement;
 }
 
-
+// delete events json
 function deleteEvent(eventToDelete) {
     fetch(`/events/${encodeURIComponent(eventToDelete.date)}`, {
         method: 'DELETE',

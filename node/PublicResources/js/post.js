@@ -1,7 +1,3 @@
-// Posting site
-const postButton = document.getElementById("post-btn");
-const inputElement = document.getElementById("input-post");
-const displayElement = document.getElementById("displayText");
 
 // Bot send messages
 const chatInput = document.querySelector('.chat-input textarea');
@@ -50,57 +46,67 @@ function createPostElement(post) {
     const userInformation = document.createElement('div');
     userInformation.classList.add('user-information');
 
+    //username
     const usernameSpan = document.createElement('span');
     usernameSpan.id = 'username';
     usernameSpan.textContent = post.username || 'Unknown';
     userInformation.appendChild(usernameSpan);
 
+    //point
     const pointSpan = document.createElement('span');
     pointSpan.id = 'point';
     pointSpan.textContent = '•';
     userInformation.appendChild(pointSpan);
 
+    //Date
     const dateSpan = document.createElement('span');
     dateSpan.id = 'date';
     dateSpan.textContent = post.date || 'Unknown date';
     userInformation.appendChild(dateSpan);
 
+    // timestamp
     const timeSpan = document.createElement('span');
     timeSpan.id = 'timestamp';
     timeSpan.textContent = post.timestamp || 'Unknown time';
     userInformation.appendChild(timeSpan);
 
     postHeader.appendChild(userInformation);
-
     const postContent = document.createElement('div');
     postContent.classList.add('post-content');
 
+    //title
     const titleHeading = document.createElement('h3');
     titleHeading.id = 'title';
     titleHeading.textContent = post.title || 'No title';
     postContent.appendChild(titleHeading);
 
+    //content of post
     const contentParagraph = document.createElement('p');
     contentParagraph.textContent = post.content || 'No content';
     postContent.appendChild(contentParagraph);
 
+    //tags
     const tagsDiv = document.createElement('div');
     tagsDiv.classList.add('tags-container');
     tagsDiv.textContent = (post.tags || []).join(' ');
     postContent.appendChild(tagsDiv);
 
+    // thumbs up
     const thumbsUpButton = document.createElement('button');
     thumbsUpButton.innerHTML = '&#128077;';
     thumbsUpButton.classList.add('thumbs-up-btn');
 
+    // thumbs down
     const thumbsDownButton = document.createElement('button');
     thumbsDownButton.innerHTML = '&#128078;';
     thumbsDownButton.classList.add('thumbs-down-btn');
 
+    // likes
     const likeCount = document.createElement('span');
     likeCount.classList.add('post-rating-count');
     likeCount.textContent = post.likes || 0;
 
+    //dislikes
     const dislikeCount = document.createElement('span');
     dislikeCount.classList.add('post-rating-count');
     dislikeCount.textContent = post.dislikes || 0;
@@ -187,6 +193,7 @@ function createPostElement(post) {
     postElement.appendChild(postHeader);
     postElement.appendChild(postContent);
 
+    //comments
     const commentButton = document.createElement("button");
     commentButton.textContent = "Comment";
     commentButton.className = "comment-button";
@@ -256,6 +263,7 @@ function createPostElement(post) {
     commentSection.appendChild(submitButton);
     postElement.appendChild(commentSection);
 
+    // delete post
     const deleteButton = document.createElement('button');
     deleteButton.textContent = 'Delete';
     deleteButton.id = 'delete-button';
@@ -264,6 +272,7 @@ function createPostElement(post) {
     });
     postHeader.appendChild(deleteButton);
 
+    //pin
     const pinnedStatus = document.createElement('span');
     pinnedStatus.textContent = "PINNED";
     pinnedStatus.className = "pinned-status";
@@ -318,6 +327,7 @@ function showDeleteModal(postToDelete) {
     };
 }
 
+// delete post json
 function deletePost(postToDelete) {
     fetch(`/posts/${encodeURIComponent(postToDelete.id)}`, {
         method: 'DELETE',
@@ -346,7 +356,6 @@ function deletePost(postToDelete) {
         });
 }
 
-
 function pinPost(postElement) {
     const postList = document.querySelector('.container');
     const currentlyPinned = postList.querySelector('.pinned-post');
@@ -371,13 +380,15 @@ function pinPost(postElement) {
     }
     const pinButton = postElement.querySelector('.pin-button');
     if (pinButton) {
-        pinButton.classList.add('pinned'); // Tilføj 'pinned' klasse til ny pinned post
+        // add 'pinned' class to the new pinned post
+        pinButton.classList.add('pinned');
     }
 }
 
 function unpinPost(postElement) {
     const postList = document.querySelector('.container');
-    postElement.remove(); // Fjern post elementet fra sin nuværende position
+    // remove post element from the present position
+    postElement.remove(); 
 
     const otherPosts = Array.from(postList.children).filter(child => !child.classList.contains('pinned-post'));
     postElement.classList.remove('pinned-post');
@@ -392,11 +403,11 @@ function unpinPost(postElement) {
         pinButton.textContent = "Pin";
     }
 
-    // Fjern den blå farve med det samme ved at fjerne 'pinned' klassen
+    // remove blue color and 'pinned' class
     postElement.classList.remove('pinned-post');
     pinButton.classList.remove('pinned');
 
-    // Find den korrekte position baseret på index
+    // find the correct position based on index
     const postIndex = parseInt(postElement.dataset.index, 10);
     let inserted = false;
     for (let i = 0; i < otherPosts.length; i++) {
@@ -446,17 +457,6 @@ document.querySelectorAll(".post").forEach(post => {
     });
 });
 
-
-
-//sidebar
-function showSidebar(){
-    const sidebar = document.querySelector('.sidebar');
-    sidebar.style.display = 'flex';
-}
-function hideSidebar(){
-    const sidebar = document.querySelector('.sidebar');
-    sidebar.style.display = 'none';
-}
        
 let username = localStorage.getItem("username");
 
@@ -473,7 +473,7 @@ if (username) {
 const postUsername = username;
 
 
-
+// post json
 document.getElementById('submitPost').addEventListener('click', function() {
     let postContent = document.getElementById('textInput').value;
 
@@ -488,7 +488,6 @@ document.getElementById('submitPost').addEventListener('click', function() {
         postTitle = match[1].trim();
     }
 
-
     // looking for tags, get input after #
     const regexTags = /#(\w+)/g;
     let matchTags;
@@ -501,8 +500,6 @@ document.getElementById('submitPost').addEventListener('click', function() {
 
     console.log("Content of Post:", contentOfPost); // "This is a post with in it."
     console.log("Post Tags:", postTags); // ["multiple", "tags"]
-
-    
 
     // Get the day, month, and year
     const today = new Date();
@@ -520,7 +517,6 @@ document.getElementById('submitPost').addEventListener('click', function() {
     // Format the date and time
     const currentDate = `${day}/${month}/${year}`;
     const currentTime = `${hours}:${minutes}`;
-
 
     const postData = {
         title: postTitle,
@@ -557,6 +553,7 @@ document.getElementById('submitPost').addEventListener('click', function() {
     document.getElementById('textInput').value = '';
 });
 
+// looking for tags in post
 document.querySelector('.search-bar').addEventListener('input', function() {
     const searchTerm = this.value.toLowerCase();
     const postsInContainer = document.querySelectorAll('.container .post');
@@ -586,7 +583,7 @@ document.querySelector('.search-bar').addEventListener('input', function() {
     });
 });
 
-
+// post likes and dislikes
 document.querySelectorAll(".post").forEach(post => {
     const postId = post.dataset.postId;
     const ratings = post.querySelectorAll(".post-rating");
@@ -622,6 +619,15 @@ document.querySelectorAll(".post").forEach(post => {
 });
 
 
+//sidebar
+function showSidebar(){
+    const sidebar = document.querySelector('.sidebar');
+    sidebar.style.display = 'flex';
+}
+function hideSidebar(){
+    const sidebar = document.querySelector('.sidebar');
+    sidebar.style.display = 'none';
+}
 
 // Reminder Bot 
 //bot send messages
@@ -670,9 +676,6 @@ const generateResponse = (incomingTextLi) => {
         let result = days + " days " + hours + " hours " + minutes + " minutes " + seconds + " seconds ";
 
         messageElement.textContent = result;
-
-        // stop the timer when 0, stop timer when writing another one, 
-        // delete text in chatbox, after sending
     }
 
     setInterval(updateCountdown, 1000);
@@ -685,8 +688,6 @@ const handleChat = () => {
     // append user message to chatbox
     chatBox.appendChild(createTextLi(userMessage, 'outgoing'));
     chatBox.scrollTo(0, chatBox.scrollHeight);
-
-    //chatInput.value = '';
 
     setTimeout(() => {
         const incomingTextLi = createTextLi("Writing...", 'incoming');

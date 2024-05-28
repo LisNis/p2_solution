@@ -6,6 +6,7 @@ const resultQuiz = document.getElementById('result-quiz');
 radioContainers.forEach(container => {
     const radioInputs = container.querySelectorAll('input[type="radio"]');
     
+    // can only toggle one radio buttun per row
     radioInputs.forEach(input => {
         input.addEventListener('click', function() {
             radioInputs.forEach(radio => {
@@ -27,6 +28,7 @@ submitBtn.addEventListener('click', function() {
         }
     });
 
+    // get result
     if(totalPoints >= 45) {
         resultQuiz.textContent = "Very High team cohesion";
     } else if(totalPoints < 45 && totalPoints >= 38) {

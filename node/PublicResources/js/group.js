@@ -4,12 +4,15 @@ const groupsContainer = document.querySelector('.groups');
 const username = localStorage.getItem('username');
 
 function renderGroups(groups) {
-    groupsContainer.innerHTML = ''; // Clear existing groups
+    // Clear existing groups
+    groupsContainer.innerHTML = '';
 
     groups.forEach((group, index) => {
-        const groupContainer = document.createElement('div'); // Create container for each group
+        // Create container for each group
+        const groupContainer = document.createElement('div'); 
         groupContainer.classList.add('group-container');
-        groupContainer.dataset.groupName = group; // Store group name as dataset attribute
+        // Store group name as dataset attribute
+        groupContainer.dataset.groupName = group; 
 
         const groupElement = document.createElement('div');
         groupElement.classList.add('group');
@@ -76,7 +79,8 @@ document.querySelector('.invitation').addEventListener('click', function() {
     window.location.href = '/invitation';
 });
 
-let modalVisible = false; // Track modal visibility
+// Track modal visibility
+let modalVisible = false;
 
 document.querySelector('.addMemberToGroup').addEventListener('click', function() {
     if (!modalVisible) {
@@ -111,7 +115,7 @@ async function addMemberToGroup() {
             },
             body: JSON.stringify({
                 teamName: groupName,
-                members: [username], // Assuming you're sending a single username
+                members: [username], 
             })
         });
 
@@ -124,7 +128,6 @@ async function addMemberToGroup() {
         console.error('Error adding member:', error.message);
     }
 
-    // Close modal
     closeModal();
 }
 

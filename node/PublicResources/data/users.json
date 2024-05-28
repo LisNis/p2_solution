@@ -4,7 +4,8 @@
     "password": "$2b$10$befvQmVhaXn/Ogxw/8vqmui.CBe1aLobQWv9/VPvO0lcjJbVLreCO",
     "group": [
       "g2",
-      "g3"
+      "g3",
+      "Slayyy"
     ],
     "invitations": []
   },
@@ -12,7 +13,9 @@
     "username": "Aaron",
     "password": "$2b$10$jmxV9NHSaHxjMvGabQqyEeZV1fqYSznmYW1WcSIgFz1OgFqdaR7wu",
     "group": [],
-    "invitations": []
+    "invitations": [
+      "Slayyy"
+    ]
   },
   {
     "username": "aj",
@@ -31,6 +34,12 @@
       "g5",
       "ÆÆÆÆÆÆÆÆÆÆÆÆÆ"
     ],
+    "invitations": []
+  },
+  {
+    "username": "Liza",
+    "password": "$2b$10$jf9S1hf/qMZFvsb200eiMOCqGr0PA./tXpBi3ViAeb7wvHqTe.JqW",
+    "group": [],
     "invitations": []
   }
 ]

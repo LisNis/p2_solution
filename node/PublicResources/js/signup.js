@@ -28,6 +28,7 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
+        // username too long
         if (username.length > 15) {
             alert("Username is too long.");
             return;
