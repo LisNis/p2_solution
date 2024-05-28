@@ -5,7 +5,7 @@ const bcrypt = require('bcrypt');
 const url = require('url');
 
 const eventsFilePath = path.join(__dirname, '../PublicResources/data/events.json');
-//const postsFilePath = path.join(__dirname, '../PublicResources/data', 'posts.json');
+const postsFilePath = path.join(__dirname, '../PublicResources/data', 'posts.json');
 const usersFilePath = path.join(__dirname, '../PublicResources/data', 'users.json');
 
 const server = http.createServer((req, res) => {
