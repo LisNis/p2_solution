@@ -12,8 +12,8 @@
     font-size: 1.2rem;
     top: 0;
     z-index: 999;
-    background-color: rgb(115, 81, 81);
-    background-image: linear-gradient(to left, #cc9dae 0%, #e13172 100%);
+    background-color: lightcoral;
+    background-image: lightcoral;
 }
 
 .navGroup__container {
