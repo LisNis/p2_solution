@@ -9,6 +9,7 @@ const postsFilePath = path.join(__dirname, '../PublicResources/data', 'posts.jso
 const usersFilePath = path.join(__dirname, '../PublicResources/data', 'users.json');
 
 const server = http.createServer((req, res) => {
+    // for signup
     if (req.method === 'POST' && req.url === '/signup') {
         let body = '';
         req.on('data', chunk => {
@@ -46,6 +47,7 @@ const server = http.createServer((req, res) => {
                 });
             });
         });
+        // for signup
     } else if (req.method === 'GET' && req.url.startsWith('/check-username')) {
         const parsedUrl = new URL(req.url, `http://${req.headers.host}`);
         const username = parsedUrl.searchParams.get('username');
@@ -82,6 +84,7 @@ const server = http.createServer((req, res) => {
             res.writeHead(200, { 'Content-Type': 'application/json' });
             res.end(JSON.stringify(response));
         });
+        // for login
     } else if (req.method === 'POST' && req.url === '/login') {
         let body = '';
         req.on('data', chunk => {
@@ -123,6 +126,7 @@ const server = http.createServer((req, res) => {
                 }
             });
         });
+        // for post
     } else if (req.method === 'POST' && req.url === '/post') {
         let body = '';
         req.on('data', (chunk) => {
@@ -146,6 +150,7 @@ const server = http.createServer((req, res) => {
                 }
             });
         });
+        // for post
     } else if (req.method === 'GET' && req.url === '/posts') {
         fs.readFile(path.join(__dirname, '../PublicResources/data', 'posts.json'), 'utf8', (err, data) => {
             if (err) {
@@ -156,6 +161,7 @@ const server = http.createServer((req, res) => {
                 res.end(data);
             }
         });
+        // for post
     } else if (req.method === 'POST' && req.url.startsWith('/posts/')) {
         const urlParts = req.url.split('/');
         const postId = parseInt(urlParts[2]);
@@ -235,6 +241,7 @@ const server = http.createServer((req, res) => {
             res.writeHead(404);
             res.end('Error: Invalid action');
         }
+        // for post
     } else if (req.url.startsWith('/posts/') && req.method === 'DELETE') {
         const postId = decodeURIComponent(req.url.split('/posts/')[1]);
         let body = '';
@@ -284,6 +291,7 @@ const server = http.createServer((req, res) => {
                 console.error('Invalid JSON:', error);
             }
         });
+        // for invitation
     } else if (req.method === 'POST' && req.url === '/update-user-data') {
         let body = '';
         req.on('data', (chunk) => {
@@ -314,6 +322,7 @@ const server = http.createServer((req, res) => {
                 });
             }
         });
+        // for invitation
     } else if (req.method === 'GET' && req.url === '/users') {
         fs.readFile(path.join(__dirname, '../PublicResources/data', 'users.json'), 'utf8', (err, data) => {
             if (err) {
@@ -324,6 +333,7 @@ const server = http.createServer((req, res) => {
                 res.end(data);
             }
         });
+        // for create
     } else if (req.method === 'POST' && req.url === '/create-team') {
         let body = '';
         req.on('data', (chunk) => {
@@ -367,6 +377,7 @@ const server = http.createServer((req, res) => {
                 });
             });
         });
+        // for calendar
     } else if (req.url === '/events' && req.method === 'GET') {
         fs.readFile(eventsFilePath, 'utf8', (error, data) => {
             if (error) {
@@ -377,6 +388,7 @@ const server = http.createServer((req, res) => {
                 res.end(data);
             }
         });
+        // for calendar
     } else if (req.url === '/events' && req.method === 'POST') {
         let body = '';
 
@@ -414,6 +426,7 @@ const server = http.createServer((req, res) => {
                 res.end('Error: Invalid JSON');
             }
         });
+        // for calendar
     } else if (req.url.startsWith('/events/') && req.method === 'DELETE') {
         let body = '';
 
@@ -452,51 +465,8 @@ const server = http.createServer((req, res) => {
                 res.end('Error: Invalid JSON');
             }
         });
-    } else if (req.method === 'POST' && req.url === '/create-json') {
-        let body = '';
-        req.on('data', chunk => {
-            body += chunk.toString();
-        });
-    
-        req.on('end', () => {
-            try {
-                const { groupName } = JSON.parse(body);
-                if (!groupName) {
-                    res.writeHead(400, { 'Content-Type': 'application/json' });
-                    res.end(JSON.stringify({ error: 'Group name is required' }));
-                    return;
-                }
-    
-                const filePath = path.join(__dirname, '../PublicResources/data/', `${groupName}.json`);
-    
-                // Check if the file already exists
-                fs.access(filePath, fs.constants.F_OK, (err) => {
-                    if (!err) {
-                        // File exists, return error response
-                        res.writeHead(400, { 'Content-Type': 'application/json' });
-                        res.end(JSON.stringify({ error: 'File already exists for this group' }));
-                    } else {
-                        // File does not exist, create it
-                        const data = { group: groupName };
-    
-                        fs.writeFile(filePath, JSON.stringify(data, null, 2), err => {
-                            if (err) {
-                                res.writeHead(500, { 'Content-Type': 'application/json' });
-                                res.end(JSON.stringify({ error: 'Failed to create file' }));
-                                return;
-                            }
-                            res.writeHead(200, { 'Content-Type': 'application/json' });
-                            res.end(JSON.stringify({ success: true, message: 'File created successfully' }));
-                        });
-                    }
-                });
-            } catch (error) {
-                res.writeHead(400, { 'Content-Type': 'application/json' });
-                res.end(JSON.stringify({ error: 'Invalid JSON' }));
-            }
-        });
-    }
-     else if (req.method === 'GET' && req.url.startsWith('/user-groups')) {
+        // for groups
+    } else if (req.method === 'GET' && req.url.startsWith('/user-groups')) {
         const queryObject = url.parse(req.url, true).query;
         const username = queryObject.username;
         
@@ -523,7 +493,8 @@ const server = http.createServer((req, res) => {
                 res.writeHead(200, { 'Content-Type': 'application/json' });
                 res.end(JSON.stringify({ groups: user.group }));
             }
-        });  
+        }); 
+        // for groups 
     } else if (req.method === 'POST' && req.url === '/addNewMember') {
         let body = '';
         req.on('data', (chunk) => {
@@ -572,6 +543,7 @@ const server = http.createServer((req, res) => {
                 res.end(JSON.stringify({ success: false, message: 'Error: Invalid JSON' }));
             }
         });
+        // filepath to the pages
     } else {
         let filePath = req.url === '/' ? '/html/login.html' : req.url;
 
