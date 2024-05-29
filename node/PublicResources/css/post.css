@@ -326,7 +326,7 @@ h1 {
 }
 
 .show-bot .bot-toggler {
-    transform: rotate(90deg);
+    transform: rotate(360deg);
 }
 
 .bot-toggler span {
